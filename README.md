@@ -1,4 +1,4 @@
 # mirafintech
 Mira P.O.C
 
-default branch s "main" (the "master" has retired)
+default branch is "main" (the "master" has retired)
