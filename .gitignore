@@ -1,6 +1,13 @@
 # Compiled class file
 *.class
 
+# intellij
+.idea
+*.iml
+
+local_do_not_commit/
+*/target/
+
 # Log file
 *.log
 
@@ -15,9 +22,12 @@
 *.war
 *.nar
 *.ear
-*.zip
+#*.zip
 *.tar.gz
 *.rar
+*.csv
+*.xls
+*.xlsx
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
