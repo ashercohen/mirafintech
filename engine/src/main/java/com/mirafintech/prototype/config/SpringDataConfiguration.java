@@ -15,7 +15,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableJpaRepositories("com.mirafintech.prototype")
-@ComponentScan("com.mirafintech.prototype") // required for non repository bean to be detected
+@ComponentScan("com.mirafintech.prototype") // required for non repository beans to be detected
 public class SpringDataConfiguration {
 
     private static final DatabaseConfiguration DATABASE_CONFIGURATION;
@@ -53,7 +53,7 @@ public class SpringDataConfiguration {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setDataSource(getDataSource());
-        factory.setPackagesToScan("com.mirafintech.mlinfra");
+        factory.setPackagesToScan("com.mirafintech.prototype");
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setJpaProperties(jpaProperties);
         factory.afterPropertiesSet(); // signal beans setup is complete (spring lifecycle event)
