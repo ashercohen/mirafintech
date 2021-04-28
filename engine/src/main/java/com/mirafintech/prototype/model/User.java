@@ -37,26 +37,10 @@ public class User implements Parent<Transaction> {
     private List<Transaction> transactions = new ArrayList<>();
 
     public boolean addTransaction(Transaction transaction) {
-
         return addToCollection(this.transactions, transaction, this, "transaction", transaction::setUser);
-
-//        return Optional.ofNullable(transaction)
-//                .map(t -> {
-//                    t.setUser(this);
-//                    return transactions.add(t);
-//                })
-//                .orElseThrow(() -> new IllegalArgumentException("transaction is null"));
     }
 
     public boolean removeTransaction(Transaction transaction) {
-
         return removeFromCollection(this.transactions, transaction, "transaction", transaction::setUser);
-
-//        return Optional.ofNullable(transaction)
-//                .map(t -> {
-//                    t.setUser(null);
-//                    return transactions.remove(transaction);
-//                })
-//                .orElseThrow(() -> new IllegalArgumentException("transaction is null"));
     }
 }

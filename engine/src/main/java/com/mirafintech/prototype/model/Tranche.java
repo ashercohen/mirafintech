@@ -41,22 +41,10 @@ public class Tranche implements Parent<Transaction> {
 
     public boolean addTransaction(Transaction transaction) {
         return addToCollection(this.transactions, transaction, this, "transaction", transaction::setTranche);
-//        return Optional.ofNullable(transaction)
-//                .map(t -> {
-//                    t.setTranche(this);
-//                    return transactions.add(t);
-//                })
-//                .orElseThrow(() -> new IllegalArgumentException("transaction is null"));
     }
 
     public boolean removeTransaction(Transaction transaction) {
         return removeFromCollection(this.transactions, transaction, "transaction", transaction::setTranche);
-//        return Optional.ofNullable(transaction)
-//                .map(t -> {
-//                    t.setTranche(null);
-//                    return transactions.remove(transaction);
-//                })
-//                .orElseThrow(() -> new IllegalArgumentException("transaction is null"));
     }
 
     @Override

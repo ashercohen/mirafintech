@@ -29,25 +29,10 @@ public class Exchange implements Parent<Tranche> {
     private List<Tranche> tranches = new ArrayList<>();
 
     public boolean addTranche(Tranche tranche) {
-
         return addToCollection(this.tranches, tranche, this, "tranche", tranche::setExchange);
-
-//        return Optional.ofNullable(tranche)
-//                .map(t -> {
-//                    t.setExchange(this);
-//                    return tranches.add(t);
-//                })
-//                .orElseThrow(() -> new IllegalArgumentException("tranche is null"));
     }
 
     public boolean removeTrance(Tranche tranche) {
         return removeFromCollection(this.tranches, tranche, "tranche", tranche::setExchange);
-
-//        return Optional.ofNullable(tranche)
-//                .map(t -> {
-//                    t.setExchange(null);
-//                    return tranches.remove(tranche);
-//                })
-//                .orElseThrow(() -> new IllegalArgumentException("tranche is null"));
     }
 }
