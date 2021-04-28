@@ -16,7 +16,6 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-//@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UCICreditCard implements Serializable {
 
