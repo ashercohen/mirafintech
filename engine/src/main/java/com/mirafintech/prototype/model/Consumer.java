@@ -12,13 +12,13 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "CONSUMERS")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User implements Parent<Transaction> {
+public class Consumer implements Parent<Transaction>{
 
     @Id
     private Long id;
@@ -33,14 +33,17 @@ public class User implements Parent<Transaction> {
 
     private int age; // int years
 
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<Payment> payments = new ArrayList<>();
+
     public boolean addTransaction(Transaction transaction) {
-        return addToCollection(this.transactions, transaction, this, "transaction", transaction::setUser);
+        return addToCollection(this.transactions, transaction, this, "transaction", transaction::setConsumer);
     }
 
     public boolean removeTransaction(Transaction transaction) {
-        return removeFromCollection(this.transactions, transaction, "transaction", transaction::setUser);
+        return removeFromCollection(this.transactions, transaction, "transaction", transaction::setConsumer);
     }
 }

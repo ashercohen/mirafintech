@@ -36,6 +36,17 @@ public class Tranche implements Parent<Transaction> {
     @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 
+    // TODO:
+    //  for each transaction in the list, we need to mark it as "in" / "not in" the tranche
+    //  because:
+    //  1. transaction might be removed from this tranche to another (change in risk is one use case)
+    //  2. we agreed, in this prototype, that we don't change the state of the entities (= keep full history
+    //     so we can analyze/learn/debug/...
+    //  one possible solution would be to add another layer of indirection: instead of having a list of transactions
+    //  we can have a list of an entities each of them contains one transaction and additional information like the
+    //  flag "is in tranche" as well as "timestamp inserted/removed to/from tranche"
+
+
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Exchange exchange;
 

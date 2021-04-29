@@ -8,6 +8,8 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -21,10 +23,12 @@ import java.util.Objects;
 public class Transaction {
 
     @Id
-    private long id;
+    private Long id;
+
+    private Integer timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private User user;
+    private Consumer consumer;
 
     private BigDecimal amount;
 
@@ -32,7 +36,7 @@ public class Transaction {
 
     private String status;
 
-    private BigDecimal fraudScore;
+    private BigDecimal fraudScore; // TODO: rethink on this. fraud or risk? how do we maintain history of the loan risk (keep list and get latest)
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Merchant merchant;
@@ -43,6 +47,13 @@ public class Transaction {
     @OneToOne(mappedBy = "transaction", cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
     private TransactionMeta meta;
 
+    @OneToMany(mappedBy = "transaction", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "transaction", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<Charge> charges = new ArrayList<>();
+
+    // TODO: move to interface/base class and make a static method
     public void setMeta(TransactionMeta meta) {
 
         if (meta == null) {

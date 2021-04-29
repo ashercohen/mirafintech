@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 interface Parent<C> {
 
+    // TODO: make static with type params specified in the method in order to support multiple associations with a single entity
     default <P extends Parent<C>> boolean addToCollection(Collection<C> collection, C element, P parent, String name, Consumer<P> setter) {
 
         return Optional.ofNullable(element)
