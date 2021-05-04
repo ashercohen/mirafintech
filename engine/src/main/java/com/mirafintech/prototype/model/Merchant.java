@@ -18,19 +18,19 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Merchant implements Parent<Transaction> {
+public class Merchant implements Parent<Loan> {
 
     @Id
     private Long id;
 
     @OneToMany(mappedBy = "merchant", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<Transaction> transactions = new ArrayList<>();
+    private List<Loan> loans = new ArrayList<>();
 
-    public boolean addTransaction(Transaction transaction) {
-        return addToCollection(this.transactions, transaction, this, "transaction", transaction::setMerchant);
+    public boolean addTransaction(Loan loan) {
+        return addToCollection(this.loans, loan, this, "transaction", loan::setMerchant);
     }
 
-    public boolean removeTransaction(Transaction transaction) {
-        return removeFromCollection(this.transactions, transaction, "transaction", transaction::setMerchant);
+    public boolean removeTransaction(Loan loan) {
+        return removeFromCollection(this.loans, loan, "transaction", loan::setMerchant);
     }
 }

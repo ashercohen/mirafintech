@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Consumer implements Parent<Transaction>{
+public class Consumer implements Parent<Loan>{
 
     @Id
     private Long id;
@@ -34,16 +34,16 @@ public class Consumer implements Parent<Transaction>{
     private int age; // int years
 
     @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<Transaction> transactions = new ArrayList<>();
+    private List<Loan> loans = new ArrayList<>();
 
     @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
 
-    public boolean addTransaction(Transaction transaction) {
-        return addToCollection(this.transactions, transaction, this, "transaction", transaction::setConsumer);
+    public boolean addTransaction(Loan loan) {
+        return addToCollection(this.loans, loan, this, "transaction", loan::setConsumer);
     }
 
-    public boolean removeTransaction(Transaction transaction) {
-        return removeFromCollection(this.transactions, transaction, "transaction", transaction::setConsumer);
+    public boolean removeTransaction(Loan loan) {
+        return removeFromCollection(this.loans, loan, "transaction", loan::setConsumer);
     }
 }

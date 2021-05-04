@@ -22,7 +22,7 @@ public class Charge {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    private Transaction transaction;
+    private Loan loan;
 
     private Integer timestamp;
 

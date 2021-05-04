@@ -20,7 +20,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Tranche implements Parent<Transaction> {
+public class Tranche implements Parent<Loan> {
 
     @Id
     private Long id;
@@ -34,7 +34,7 @@ public class Tranche implements Parent<Transaction> {
     private String type; // Maintained / Diminished
 
     @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<Transaction> transactions = new ArrayList<>();
+    private List<Loan> loans = new ArrayList<>();
 
     // TODO:
     //  for each transaction in the list, we need to mark it as "in" / "not in" the tranche
@@ -50,12 +50,12 @@ public class Tranche implements Parent<Transaction> {
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Exchange exchange;
 
-    public boolean addTransaction(Transaction transaction) {
-        return addToCollection(this.transactions, transaction, this, "transaction", transaction::setTranche);
+    public boolean addTransaction(Loan loan) {
+        return addToCollection(this.loans, loan, this, "transaction", loan::setTranche);
     }
 
-    public boolean removeTransaction(Transaction transaction) {
-        return removeFromCollection(this.transactions, transaction, "transaction", transaction::setTranche);
+    public boolean removeTransaction(Loan loan) {
+        return removeFromCollection(this.loans, loan, "transaction", loan::setTranche);
     }
 
     @Override

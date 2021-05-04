@@ -25,7 +25,7 @@ public class PaymentAllocation {
     private Payment payment;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    private Transaction transaction;
+    private Loan loan;
 
     private BigDecimal principle;
 

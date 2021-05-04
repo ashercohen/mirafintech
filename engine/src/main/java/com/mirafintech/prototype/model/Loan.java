@@ -14,13 +14,13 @@ import java.util.Objects;
 
 
 @Entity
-@Table(name = "TRANSACTIONS")
+@Table(name = "LOANS")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Transaction {
+public class Loan {
 
     @Id
     private Long id;
@@ -45,7 +45,7 @@ public class Transaction {
     private Tranche tranche;
 
     @OneToOne(mappedBy = "transaction", cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
-    private TransactionMeta meta;
+    private LoanMeta meta;
 
     @OneToMany(mappedBy = "transaction", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
@@ -54,15 +54,15 @@ public class Transaction {
     private List<Charge> charges = new ArrayList<>();
 
     // TODO: move to interface/base class and make a static method
-    public void setMeta(TransactionMeta meta) {
+    public void setMeta(LoanMeta meta) {
 
         if (meta == null) {
             if (this.meta != null) {
-                this.meta.setTransaction(null);
+                this.meta.setLoan(null);
             }
         }
         else {
-            meta.setTransaction(this);
+            meta.setLoan(this);
         }
         this.meta = meta;
     }
@@ -71,7 +71,7 @@ public class Transaction {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Transaction that = (Transaction) o;
+        Loan that = (Loan) o;
         return id == that.id;
     }
 
