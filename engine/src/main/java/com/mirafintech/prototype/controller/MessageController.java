@@ -1,7 +1,7 @@
 package com.mirafintech.prototype.controller;
 
 import com.mirafintech.prototype.model.UCICreditCard;
-import com.mirafintech.prototype.service.TransactionService;
+import com.mirafintech.prototype.service.UCITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +11,19 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("transactions")
-public class TransactionController {
+@RequestMapping("messages")
+public class MessageController {
 
     @Autowired
-    TransactionService transactionService;
+    UCITransactionService uciTransactionService;
 
 
-    @RequestMapping(path = {"write/"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(path = {"uci/write/"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UCICreditCard> acceptTransaction(@RequestBody String csv) {
 
         UCICreditCard uciCreditCard = new UCICreditCard(csv);
 
-        UCICreditCard savedEntity = this.transactionService.writeUCICreditCard(uciCreditCard);
+        UCICreditCard savedEntity = this.uciTransactionService.writeUCICreditCard(uciCreditCard);
 
         return ResponseEntity.of(Optional.of(savedEntity));
     }

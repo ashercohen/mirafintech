@@ -19,7 +19,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Payment implements Parent<PaymentAllocation> {
+public class Payment extends EntityBase<Payment> {
 
     @Id
     private Long id;

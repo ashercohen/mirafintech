@@ -20,7 +20,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Loan {
+public class Loan extends EntityBase<Loan> {
 
     @Id
     private Long id;
@@ -44,28 +44,11 @@ public class Loan {
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Tranche tranche;
 
-    @OneToOne(mappedBy = "transaction", cascade = CascadeType.ALL, optional = true, fetch = FetchType.LAZY)
-    private LoanMeta meta;
-
-    @OneToMany(mappedBy = "transaction", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "transaction", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Charge> charges = new ArrayList<>();
-
-    // TODO: move to interface/base class and make a static method
-    public void setMeta(LoanMeta meta) {
-
-        if (meta == null) {
-            if (this.meta != null) {
-                this.meta.setLoan(null);
-            }
-        }
-        else {
-            meta.setLoan(this);
-        }
-        this.meta = meta;
-    }
 
     @Override
     public boolean equals(Object o) {

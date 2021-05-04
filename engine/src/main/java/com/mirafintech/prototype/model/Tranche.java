@@ -20,7 +20,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Tranche implements Parent<Loan> {
+public class Tranche extends EntityBase<Tranche> {
 
     @Id
     private Long id;
@@ -37,25 +37,25 @@ public class Tranche implements Parent<Loan> {
     private List<Loan> loans = new ArrayList<>();
 
     // TODO:
-    //  for each transaction in the list, we need to mark it as "in" / "not in" the tranche
+    //  for each loan in the list, we need to mark it as "in" / "not in" the tranche
     //  because:
-    //  1. transaction might be removed from this tranche to another (change in risk is one use case)
+    //  1. loan might be removed from this tranche to another (change in risk is one use case)
     //  2. we agreed, in this prototype, that we don't change the state of the entities (= keep full history
     //     so we can analyze/learn/debug/...
-    //  one possible solution would be to add another layer of indirection: instead of having a list of transactions
-    //  we can have a list of an entities each of them contains one transaction and additional information like the
+    //  one possible solution would be to add another layer of indirection: instead of having a list of loans
+    //  we can have a list of an entities each of them contains one loan and additional information like the
     //  flag "is in tranche" as well as "timestamp inserted/removed to/from tranche"
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Exchange exchange;
 
-    public boolean addTransaction(Loan loan) {
-        return addToCollection(this.loans, loan, this, "transaction", loan::setTranche);
+    public boolean addLoan(Loan loan) {
+        return addToCollection(this.loans, loan, this, "loan", loan::setTranche);
     }
 
-    public boolean removeTransaction(Loan loan) {
-        return removeFromCollection(this.loans, loan, "transaction", loan::setTranche);
+    public boolean removeLoan(Loan loan) {
+        return removeFromCollection(this.loans, loan, "loan", loan::setTranche);
     }
 
     @Override

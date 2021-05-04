@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Exchange implements Parent<Tranche> {
+public class Exchange extends EntityBase<Exchange> {
 
     @Id
     private Long id;

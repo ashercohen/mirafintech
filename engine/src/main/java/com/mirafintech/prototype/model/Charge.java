@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Charge {
+public class Charge extends EntityBase<Charge> {
 
     @Id
     private Long id;

@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Merchant implements Parent<Loan> {
+public class Merchant extends EntityBase<Merchant> {
 
     @Id
     private Long id;
@@ -26,11 +26,11 @@ public class Merchant implements Parent<Loan> {
     @OneToMany(mappedBy = "merchant", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Loan> loans = new ArrayList<>();
 
-    public boolean addTransaction(Loan loan) {
-        return addToCollection(this.loans, loan, this, "transaction", loan::setMerchant);
+    public boolean addLoan(Loan loan) {
+        return addToCollection(this.loans, loan, this, "loans", loan::setMerchant);
     }
 
-    public boolean removeTransaction(Loan loan) {
-        return removeFromCollection(this.loans, loan, "transaction", loan::setMerchant);
+    public boolean removeLoan(Loan loan) {
+        return removeFromCollection(this.loans, loan, "loans", loan::setMerchant);
     }
 }
