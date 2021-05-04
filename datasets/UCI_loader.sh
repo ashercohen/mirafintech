@@ -4,7 +4,7 @@ while IFS= read -r line
 do
   echo "$line"
 
-  curl --location --request POST 'http://localhost:8080/transactions/write/' \
+  curl --location --request POST 'http://localhost:8080/messages/uci/write/' \
   --header 'Content-Type: text/plain' \
   --data-raw "$line"
 
