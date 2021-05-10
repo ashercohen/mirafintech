@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class ConsumerService {
+public class ConsumersService {
 
     @Autowired
     private ConsumerRepository repository;

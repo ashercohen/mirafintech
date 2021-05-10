@@ -22,7 +22,7 @@ in order to simplify the engine's implementation, the engine assumes that the ne
 
 **Endpoint Details**   
 1. POST, date time string is passed in the request body (plain text - not json)
-2. ~/messages/time/set
+2. ~/time/set
 ### add consumer
 **Description**
 1. add a new consumer to the system
@@ -31,7 +31,7 @@ in order to simplify the engine's implementation, the engine assumes that the ne
 
 **Endpoint Details**
 1. POST, a json representation of the Consumer object is passed in the request body
-2.  ~/consumer/{id}
+2.  ~/consumers/{id}
 3. id of the consumer is to be passed as a path variable - this value must match the value specified in the json/request body
 
 **TBD:** format/fields of a consumer entity

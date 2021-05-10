@@ -1,9 +1,11 @@
 package com.mirafintech.prototype.controller;
 
 import com.mirafintech.prototype.model.Consumer;
+import com.mirafintech.prototype.model.Loan;
 import com.mirafintech.prototype.model.SystemTime;
 import com.mirafintech.prototype.model.UCICreditCard;
-import com.mirafintech.prototype.service.ConsumerService;
+import com.mirafintech.prototype.service.ConsumersService;
+import com.mirafintech.prototype.service.LoansService;
 import com.mirafintech.prototype.service.TimeService;
 import com.mirafintech.prototype.service.UCITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,14 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("messages")
+@RequestMapping("/")
 public class MessageController {
 
     @Autowired
-    private ConsumerService consumerService;
+    private LoansService loansService;
+
+    @Autowired
+    private ConsumersService consumersService;
 
     @Autowired
     private TimeService timeService;
@@ -28,15 +33,26 @@ public class MessageController {
     @Autowired
     private UCITransactionService uciTransactionService;
 
-    @RequestMapping(path = {"consumer/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(path = {"loans/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Loan> addLoan(@RequestBody Loan loan, @PathVariable long id) {
+
+        if (loan.getId() != id) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        Loan savedLoan = this.loansService.addLoan(loan);
+
+        return ResponseEntity.of(Optional.ofNullable(savedLoan));
+    }
+
+    @RequestMapping(path = {"consumers/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Consumer> addConsumer(@RequestBody Consumer consumer, @PathVariable long id) {
 
         if (consumer.getId() != id) {
             return ResponseEntity.badRequest().body(null);
         }
-        Consumer savedEntity = this.consumerService.addConsumer(consumer);
+        Consumer savedEntity = this.consumersService.addConsumer(consumer);
 
-        return ResponseEntity.of(Optional.of(savedEntity));
+        return ResponseEntity.of(Optional.ofNullable(savedEntity));
     }
 
     @RequestMapping(path = {"time/set"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -45,7 +61,7 @@ public class MessageController {
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime);
         SystemTime systemTime = this.timeService.setTime(localDateTime);
 
-        return ResponseEntity.of(Optional.of(systemTime.getDateTime()));
+        return ResponseEntity.of(Optional.ofNullable(systemTime.getDateTime()));
     }
 
     @RequestMapping(path = {"uci/write/"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -54,7 +70,7 @@ public class MessageController {
         UCICreditCard uciCreditCard = new UCICreditCard(csv);
         UCICreditCard savedEntity = this.uciTransactionService.writeUCICreditCard(uciCreditCard);
 
-        return ResponseEntity.of(Optional.of(savedEntity));
+        return ResponseEntity.of(Optional.ofNullable(savedEntity));
     }
 
 }
