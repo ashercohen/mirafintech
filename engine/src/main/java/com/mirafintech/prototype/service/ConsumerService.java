@@ -22,7 +22,7 @@ public class ConsumerService {
             throw new IllegalArgumentException("consumer already exists: id=" + consumer.getId());
         }
 
-        consumer.setAddedAt(timeService.getCurrentTime());
+        consumer.setAddedAt(timeService.getCurrentDateTime());
 
         return this.repository.saveAndFlush(consumer);
     }
