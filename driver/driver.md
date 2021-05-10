@@ -24,7 +24,7 @@ in order to simplify the engine's implementation, the engine assumes that the ne
 1. POST, date time string is passed in the request body (plain text - not json)
 2. ~/messages/time/set
 ### add consumer
-** Description **
+**Description**
 1. add a new consumer to the system
 2. it is assumed that a consumer is added via this endpoint before any loan/transaction/... that references this consumer is sent to the engine.
 3. consumer id - assumed that it is determined by the driver (probably already contained in the dataset)
