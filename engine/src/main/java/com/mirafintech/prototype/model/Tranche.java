@@ -22,16 +22,27 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tranche extends EntityBase<Tranche> {
 
+    enum Status {
+        ACTIVE, NOT_ACTIVE
+    }
+
+    public enum RiskLevel {
+        LOW, MEDIUM, HIGH
+    }
+
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private BigDecimal initialDebt;
+    private BigDecimal initialValue;
 
     private BigDecimal currentDebt;
 
-    private Integer rank;
+    @Enumerated(EnumType.STRING)
+    private RiskLevel riskLevel;
 
-    private String type; // Maintained / Diminished
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Loan> loans = new ArrayList<>();
@@ -46,9 +57,22 @@ public class Tranche extends EntityBase<Tranche> {
     //  we can have a list of an entities each of them contains one loan and additional information like the
     //  flag "is in tranche" as well as "timestamp inserted/removed to/from tranche"
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Exchange exchange;
+
+    private Tranche(Long id, BigDecimal initialValue, BigDecimal currentDebt, RiskLevel riskLevel, Status status, List<Loan> loans, Exchange exchange) {
+        this.id = id;
+        this.initialValue = initialValue;
+        this.currentDebt = currentDebt;
+        this.riskLevel = riskLevel;
+        this.status = status;
+        this.loans = loans;
+        this.exchange = exchange;
+    }
+
+    public Tranche(BigDecimal initialValue, RiskLevel riskLevel) {
+        this(null, initialValue, BigDecimal.ZERO, riskLevel, Status.ACTIVE, new ArrayList<>(), null);
+    }
 
     public boolean addLoan(Loan loan) {
         return addToCollection(this.loans, loan, this, "loan", loan::setTranche);
