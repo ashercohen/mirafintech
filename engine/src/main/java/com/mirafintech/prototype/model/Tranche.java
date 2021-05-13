@@ -8,7 +8,9 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,20 +28,22 @@ public class Tranche extends EntityBase<Tranche> {
         ACTIVE, NOT_ACTIVE
     }
 
-    public enum RiskLevel {
-        LOW, MEDIUM, HIGH
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private BigDecimal initialValue;
 
+    private LocalDateTime creationDate; // virtual time TODO: maybe change to SystemTime
+
     private BigDecimal currentDebt;
 
-    @Enumerated(EnumType.STRING)
-    private RiskLevel riskLevel;
+    /**
+     * maintains the history of the risk levels associated with this trnache
+     * to get current risk level use 'currentRiskLevel()'
+     */
+    @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private List<RiskLevel> riskLevels;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -60,18 +64,36 @@ public class Tranche extends EntityBase<Tranche> {
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Exchange exchange;
 
-    private Tranche(Long id, BigDecimal initialValue, BigDecimal currentDebt, RiskLevel riskLevel, Status status, List<Loan> loans, Exchange exchange) {
+    private Tranche(Long id,
+                    BigDecimal initialValue,
+                    LocalDateTime creationDate,
+                    BigDecimal currentDebt,
+                    List<RiskLevel> riskLevels,
+                    Status status,
+                    List<Loan> loans,
+                    Exchange exchange) {
         this.id = id;
         this.initialValue = initialValue;
+        this.creationDate = creationDate;
         this.currentDebt = currentDebt;
-        this.riskLevel = riskLevel;
+        this.riskLevels = riskLevels;
         this.status = status;
         this.loans = loans;
         this.exchange = exchange;
     }
 
-    public Tranche(BigDecimal initialValue, RiskLevel riskLevel) {
-        this(null, initialValue, BigDecimal.ZERO, riskLevel, Status.ACTIVE, new ArrayList<>(), null);
+    public Tranche(BigDecimal initialValue, RiskLevel riskLevel, LocalDateTime creationDate) {
+        this(null, initialValue, creationDate, BigDecimal.ZERO, new ArrayList<>(List.of(riskLevel)), Status.ACTIVE, new ArrayList<>(), null);
+    }
+
+    public RiskLevel currentRiskLevel() {
+        return this.riskLevels.stream()
+                .max(Comparator.comparing(RiskLevel::getStartDate))
+                .orElseThrow(() -> new RuntimeException("current risk level not available"));
+    }
+
+    public List<RiskLevel> riskLevelHistory() {
+        return this.riskLevels.stream().sorted(Comparator.comparing(RiskLevel::getStartDate).reversed()).toList();
     }
 
     public boolean addLoan(Loan loan) {

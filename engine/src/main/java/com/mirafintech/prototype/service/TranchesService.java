@@ -1,16 +1,17 @@
 package com.mirafintech.prototype.service;
 
+import com.mirafintech.prototype.model.RiskLevel;
 import com.mirafintech.prototype.model.Tranche;
+import com.mirafintech.prototype.model.dto.Configuration;
 import com.mirafintech.prototype.repository.TrancheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -19,13 +20,36 @@ public class TranchesService {
     @Autowired
     private TrancheRepository repository;
 
+    @Autowired
+    private TimeService timeService;
 
-    public void initializeTranches() {
+    private List<Tranche> tranches = new ArrayList<>();
 
-        Map<Tranche.RiskLevel, Tranche> trancheMap = Arrays.stream(Tranche.RiskLevel.values())
-                .collect(Collectors.toMap(Function.identity(), risk -> new Tranche(new BigDecimal("100_000"), risk)));
+    public void initializeTranches(List<Configuration.RiskLevel> riskLevels) {
 
-        List<Tranche> persistedTranches = this.repository.saveAll(trancheMap.values());
+        LocalDateTime virtualTime = timeService.getCurrentDateTime();
+        List<Tranche> tranches = riskLevels.stream()
+                .map(riskLevelDTO -> {
+                    return new RiskLevel(
+                            riskLevelDTO.getLevel(),
+                            riskLevelDTO.getLabel(),
+                            riskLevelDTO.getLowerBound(),
+                            riskLevelDTO.getUpperBound(),
+                            virtualTime);
+                })
+                .map(riskLevel -> new Tranche(new BigDecimal("100_000"), riskLevel, virtualTime))
+                .toList();
+
+        addTranches(tranches);
+    }
+
+    private void addTranches(Collection<Tranche> newTranches) {
+        newTranches.forEach(this::addTranche);
+    }
+
+    private void addTranche(Tranche tranche) {
+        Tranche persistedTranche = this.repository.save(tranche);
+        this.tranches.add(persistedTranche);
     }
 
 }

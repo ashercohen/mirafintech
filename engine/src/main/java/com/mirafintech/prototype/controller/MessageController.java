@@ -4,10 +4,8 @@ import com.mirafintech.prototype.model.Consumer;
 import com.mirafintech.prototype.model.Loan;
 import com.mirafintech.prototype.model.SystemTime;
 import com.mirafintech.prototype.model.UCICreditCard;
-import com.mirafintech.prototype.service.ConsumersService;
-import com.mirafintech.prototype.service.LoansService;
-import com.mirafintech.prototype.service.TimeService;
-import com.mirafintech.prototype.service.UCITransactionService;
+import com.mirafintech.prototype.model.dto.Configuration;
+import com.mirafintech.prototype.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +27,9 @@ public class MessageController {
 
     @Autowired
     private TimeService timeService;
+
+    @Autowired
+    private ConfigurationService configurationService;
 
     @Autowired
     private UCITransactionService uciTransactionService;
@@ -55,13 +56,21 @@ public class MessageController {
         return ResponseEntity.of(Optional.ofNullable(savedEntity));
     }
 
-    @RequestMapping(path = {"time/set"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(path = {"set/time"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<LocalDateTime> setTime(@RequestBody String dateTime) {
 
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime);
         SystemTime systemTime = this.timeService.setTime(localDateTime);
 
         return ResponseEntity.of(Optional.ofNullable(systemTime.getDateTime()));
+    }
+
+    @RequestMapping(path = {"set/config"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Void> setConfiguration(@RequestBody Configuration configuration) {
+
+        this.configurationService.apply(configuration);
+
+        return ResponseEntity.ok(null);
     }
 
     @RequestMapping(path = {"uci/write/"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
