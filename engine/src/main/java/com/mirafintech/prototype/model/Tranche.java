@@ -39,7 +39,7 @@ public class Tranche extends EntityBase<Tranche> {
     private BigDecimal currentDebt;
 
     /**
-     * maintains the history of the risk levels associated with this trnache
+     * maintains the history of the risk levels associated with this tranche
      * to get current risk level use 'currentRiskLevel()'
      */
     @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)

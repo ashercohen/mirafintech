@@ -2,7 +2,7 @@ package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.model.RiskLevel;
 import com.mirafintech.prototype.model.Tranche;
-import com.mirafintech.prototype.model.dto.Configuration;
+import com.mirafintech.prototype.dto.ConfigurationDto;
 import com.mirafintech.prototype.repository.TrancheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class TranchesService {
 
     private List<Tranche> tranches = new ArrayList<>();
 
-    public void initializeTranches(List<Configuration.RiskLevel> riskLevels) {
+    public void initializeTranches(List<ConfigurationDto.RiskLevel> riskLevels) {
 
         LocalDateTime virtualTime = timeService.getCurrentDateTime();
         List<Tranche> tranches = riskLevels.stream()

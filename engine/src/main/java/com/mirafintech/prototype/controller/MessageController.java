@@ -1,10 +1,12 @@
 package com.mirafintech.prototype.controller;
 
+import com.mirafintech.prototype.dto.ConfigurationDto;
+import com.mirafintech.prototype.dto.ConsumerDto;
+import com.mirafintech.prototype.dto.LoanDto;
 import com.mirafintech.prototype.model.Consumer;
 import com.mirafintech.prototype.model.Loan;
 import com.mirafintech.prototype.model.SystemTime;
 import com.mirafintech.prototype.model.UCICreditCard;
-import com.mirafintech.prototype.model.dto.Configuration;
 import com.mirafintech.prototype.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,7 +37,7 @@ public class MessageController {
     private UCITransactionService uciTransactionService;
 
     @RequestMapping(path = {"loans/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Loan> addLoan(@RequestBody Loan loan, @PathVariable long id) {
+    public ResponseEntity<Loan> addLoan(@RequestBody LoanDto loan, @PathVariable long id) {
 
         if (loan.getId() != id) {
             return ResponseEntity.badRequest().body(null);
@@ -46,7 +48,7 @@ public class MessageController {
     }
 
     @RequestMapping(path = {"consumers/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Consumer> addConsumer(@RequestBody Consumer consumer, @PathVariable long id) {
+    public ResponseEntity<Consumer> addConsumer(@RequestBody ConsumerDto consumer, @PathVariable long id) {
 
         if (consumer.getId() != id) {
             return ResponseEntity.badRequest().body(null);
@@ -66,13 +68,16 @@ public class MessageController {
     }
 
     @RequestMapping(path = {"set/config"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Void> setConfiguration(@RequestBody Configuration configuration) {
+    public ResponseEntity<Void> setConfiguration(@RequestBody ConfigurationDto configuration) {
 
         this.configurationService.apply(configuration);
 
         return ResponseEntity.ok(null);
     }
 
+    /**
+     * this endpoint is for testing only - loads a row of the UCI dataset into the database
+     */
     @RequestMapping(path = {"uci/write/"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UCICreditCard> acceptTransaction(@RequestBody String csv) {
 
