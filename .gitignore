@@ -34,5 +34,6 @@ local_do_not_commit/
 hs_err_pid*
 
 #npm_node_modules_folder
+*node_modules/*
 
 
