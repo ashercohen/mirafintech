@@ -1,3 +1,8 @@
+//const async = require("async");
+// const axios_request = require("./utils/axios-instance");
+
+
+
 module.exports = async function generate_transaction_dataset(user){
     //init customer
     const { ID,LIMIT_BAL,SEX, EDUCATION,MARRIAGE,AGE} = user; 
