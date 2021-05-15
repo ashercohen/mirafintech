@@ -1,6 +1,7 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.model.Consumer;
+import com.mirafintech.prototype.dto.ConsumerDto;
 import com.mirafintech.prototype.repository.ConsumerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,19 @@ public class ConsumersService {
     private TimeService timeService;
 
 
-    public Consumer addConsumer(Consumer consumer) {
+    public Consumer addConsumer(ConsumerDto consumer) {
 
         if (this.repository.findById(consumer.getId()).isPresent()) {
             throw new IllegalArgumentException("consumer already exists: id=" + consumer.getId());
         }
 
-        consumer.setAddedAt(timeService.getCurrentDateTime());
+        // create consumer from dto incl dateTime
+        //TODO
+//        consumer.setAddedAt(timeService.getCurrentDateTime());
 
-        return this.repository.saveAndFlush(consumer);
+        // persist consumer
+        //TODO:
+//        return this.repository.saveAndFlush(consumer);
+        return null;
     }
 }
