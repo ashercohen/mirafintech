@@ -13,6 +13,13 @@ in order to simplify the engine's implementation, the engine assumes that the ne
 2. Set time messages (see below) supports DateTime, i.e. time within the day (including hours, minutes, seconds and millis) is supported/recorded.
 
 ## Messages
+
+### set configuration
+**Description**
+1. pass the server initial configuration incl risk level setup (number of risk levels, range for each)
+2. it is expected that first message of the simulation would be a configuration message via this endpoint
+3. [exact details here](https://github.com/ashercohen/mirafintech/blob/main/engine/src/main/java/com/mirafintech/prototype/controller/MessageController.java)
+
 ### set time
 **Description**
 1. update/set the date and time of the system
@@ -22,7 +29,7 @@ in order to simplify the engine's implementation, the engine assumes that the ne
 
 **Endpoint Details**   
 1. POST, date time string is passed in the request body (plain text - not json)
-2. ~/time/set
+2. [exact details here](https://github.com/ashercohen/mirafintech/blob/main/engine/src/main/java/com/mirafintech/prototype/controller/MessageController.java) 
 ### add consumer
 **Description**
 1. add a new consumer to the system
@@ -31,7 +38,7 @@ in order to simplify the engine's implementation, the engine assumes that the ne
 
 **Endpoint Details**
 1. POST, a json representation of the Consumer object is passed in the request body
-2.  ~/consumers/{id}
+2. [exact details here](https://github.com/ashercohen/mirafintech/blob/main/engine/src/main/java/com/mirafintech/prototype/controller/MessageController.java)
 3. id of the consumer is to be passed as a path variable - this value must match the value specified in the json/request body
 
 **TBD:** format/fields of a consumer entity

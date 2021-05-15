@@ -73,6 +73,9 @@ public class MessageController {
         return ResponseEntity.ok(null);
     }
 
+    /**
+     * this endpoint is for testing only - loads a row of the UCI dataset into the database
+     */
     @RequestMapping(path = {"uci/write/"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UCICreditCard> acceptTransaction(@RequestBody String csv) {
 
