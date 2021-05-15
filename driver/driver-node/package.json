@@ -1,0 +1,24 @@
+{
+  "name": "build-csv-from-dataset",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mira Fintech",
+  "license": "ISC",
+  "dependencies": {
+    "async": "*",
+    "lodash": "*",
+    "json2csv": "*",
+    "moment": "^*",
+    "axios": "*",
+    "csv": "*",
+    "async-local-storage": "*",
+    "bluebird": "*"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0"
+  }
+}
