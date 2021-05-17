@@ -1,27 +1,47 @@
-// const moment = require("moment");
-const csv = require("./utils/csv-node-handler");
-const generateTransactionDataset = require("./lib/generate-transactions-dataset");
-const _ = require("lodash");
+"use strict";
 
-const csv_file_path  = "../../datasets/UCI_Credit_Card.100.csv";
+const { bindAllHandlers } = require("./event-handlers");
+bindAllHandlers(process);
 
+const axios = require("axios");
+const generateTransactionDataset = require("./src/generate-transactions-dataset");
+const { Constants, files, Logger } = require("./src/utils/");
+const { HTTP_METHODS, LOG_FOLDER, GENERATOR_LOG_FILE } = Constants;
 
-// const first_date = moment().set("year", 2021).set("month", 1).set("date", 1);
-// const last_date = moment().set("year", 2021).set("month", 6).set("date", 31);
+files.createDirectory(LOG_FOLDER);
+const logger = new Logger(GENERATOR_LOG_FILE, true);
 
+//TODO: pass this filename as a parameter from Docker run command
+const csvFilePath  = "./data/source/UCI_Credit_Card.100.csv";
 
-async function run(){
-    try {
-        const users_default_dataset = await csv.read(csv_file_path);
-        _.forEach(users_default_dataset, (user_data)=>{
-          console.log(user_data);
-            generateTransactionDataset(user_data);
-        }
-        );
-    } catch (error) {
-        console.error(error);
-    }
-}
+const generateTransactionsFromFile = async () => {
+    logger.info("Starting the transaction generation process...");
 
+    await generateTransactionDataset(csvFilePath);
+
+    logger.info("Process complete.");
+};
+
+const setTrancheEngineConfig = async () => {
+    const options = {
+        method: HTTP_METHODS.POST,
+        data: await getConfig() //get from configs decorator
+    };
+
+    await axios(options);
+    logger.info("Server config set successfully.");
+};
+
+const runSimulation = async () => {
+    logger.info("Starting simulation...");
+    //Do something to run simulation
+    logger.info("Starting completed!");
+};
+
+const run = async () => {
+    await generateTransactionsFromFile();
+    await setTrancheEngineConfig();
+    await runSimulation();
+};
 
 run();
