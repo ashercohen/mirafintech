@@ -8,7 +8,7 @@ const generateLoan = async (payload, generateFake = false) => {
         const clonePayload = cloneDeep(payload);
 
         return {
-            //do something
+            //Use Monte-Carlo distribution to generate the loan transaction based on the total Bill amount
         };
     }
 
