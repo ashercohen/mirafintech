@@ -7,14 +7,22 @@ import java.time.LocalDateTime;
 
 public class NewDateEvent extends ApplicationEvent {
 
-    private final LocalDateTime newDate;
+    private final LocalDateTime dateTime;
 
-    public NewDateEvent(Object source, LocalDateTime newDate) {
+    public NewDateEvent(Object source, LocalDateTime dateTime) {
         super(source);
-        this.newDate = newDate;
+        this.dateTime = dateTime;
     }
 
-    public LocalDateTime getNewDate() {
-        return this.newDate;
+    public LocalDateTime getDateTime() {
+        return this.dateTime;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("NewDateEvent{");
+        sb.append("dateTime=").append(dateTime);
+        sb.append('}');
+        return sb.toString();
     }
 }

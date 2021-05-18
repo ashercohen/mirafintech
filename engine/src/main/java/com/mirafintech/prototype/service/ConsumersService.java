@@ -17,19 +17,16 @@ public class ConsumersService {
     private TimeService timeService;
 
 
-    public Consumer addConsumer(ConsumerDto consumer) {
+    public Consumer addConsumer(ConsumerDto consumerDto) {
 
-        if (this.repository.findById(consumer.getId()).isPresent()) {
-            throw new IllegalArgumentException("consumer already exists: id=" + consumer.getId());
+        if (this.repository.findById(consumerDto.getId()).isPresent()) {
+            throw new IllegalArgumentException("consumer already exists: id=" + consumerDto.getId());
         }
 
         // create consumer from dto incl dateTime
-        //TODO
-//        consumer.setAddedAt(timeService.getCurrentDateTime());
+        Consumer consumer = new Consumer(consumerDto, this.timeService.getCurrentSystemTime());
 
         // persist consumer
-        //TODO:
-//        return this.repository.saveAndFlush(consumer);
-        return null;
+        return this.repository.saveAndFlush(consumer);
     }
 }

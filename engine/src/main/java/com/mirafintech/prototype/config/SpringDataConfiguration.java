@@ -47,7 +47,7 @@ public class SpringDataConfiguration {
          * see more:
          * https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/#configuration-misc-properties
          */
-        jpaProperties.put("hibernate.hbm2ddl.auto", "update");
+        jpaProperties.put("hibernate.hbm2ddl.auto", "create");
         jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
         jpaProperties.put("hibernate.show_sql", "true");
 

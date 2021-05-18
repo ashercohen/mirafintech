@@ -3,6 +3,7 @@ package com.mirafintech.prototype.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigurationDto {
 
@@ -19,6 +21,7 @@ public class ConfigurationDto {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class RiskLevel {
         private int level;
         private String label;

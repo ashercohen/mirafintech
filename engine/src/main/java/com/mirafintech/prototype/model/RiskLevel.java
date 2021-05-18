@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RiskLevel {
+public class RiskLevel extends EntityBase<RiskLevel> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,7 +48,7 @@ public class RiskLevel {
         this.endDate = endDate;
     }
 
-    public RiskLevel(int level, String label, Double lowerBound, Double upperBound, LocalDateTime startDate) {
-        this(null, level, label, lowerBound, upperBound, startDate, null);
+    public RiskLevel(int level, String label, Double lowerBound, Double upperBound) {
+        this(null, level, label, lowerBound, upperBound, null, null);
     }
 }

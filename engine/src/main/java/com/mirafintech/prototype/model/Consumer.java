@@ -1,6 +1,7 @@
 package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mirafintech.prototype.dto.ConsumerDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -58,12 +59,20 @@ public class Consumer extends EntityBase<Consumer> {
         this.martialStatus = martialStatus;
         this.age = age;
         this.addedAt = addedAt;
-        this.loans = loans;
-        this.payments = payments;
+        this.loans = loans == null ? new ArrayList<>() : loans;
+        this.payments = payments == null ? new ArrayList<>() : payments;
     }
 
-    public Consumer(Long id, Integer limitBalance, Integer education, Integer sex, Integer martialStatus, Integer age) {
-        this(id, limitBalance, education, sex, martialStatus, age, null, new ArrayList<>(), new ArrayList<>());
+    public Consumer(ConsumerDto dto, SystemTime systemTime) {
+        this(dto.getId(),
+                dto.getLimitBalance(),
+                dto.getEducation(),
+                dto.getSex(),
+                dto.getMartialStatus(),
+                dto.getAge(),
+                systemTime.getDateTime(),
+                null,
+                null);
     }
 
     public boolean addLoan(Loan loan) {

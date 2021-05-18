@@ -29,15 +29,14 @@ public class TranchesService {
 
         LocalDateTime virtualTime = timeService.getCurrentDateTime();
         List<Tranche> tranches = riskLevels.stream()
-                .map(riskLevelDTO -> {
-                    return new RiskLevel(
-                            riskLevelDTO.getLevel(),
-                            riskLevelDTO.getLabel(),
-                            riskLevelDTO.getLowerBound(),
-                            riskLevelDTO.getUpperBound(),
-                            virtualTime);
-                })
-                .map(riskLevel -> new Tranche(new BigDecimal("100_000"), riskLevel, virtualTime))
+                .map(riskLevelDTO ->
+                        new RiskLevel(
+                                riskLevelDTO.getLevel(),
+                                riskLevelDTO.getLabel(),
+                                riskLevelDTO.getLowerBound(),
+                                riskLevelDTO.getUpperBound())
+                )
+                .map(riskLevel -> Tranche.createEmptyTranche(new BigDecimal("100000.0"), virtualTime, riskLevel))
                 .toList();
 
         addTranches(tranches);

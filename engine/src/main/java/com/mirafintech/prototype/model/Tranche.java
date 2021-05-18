@@ -76,14 +76,19 @@ public class Tranche extends EntityBase<Tranche> {
         this.initialValue = initialValue;
         this.creationDate = creationDate;
         this.currentDebt = currentDebt;
-        this.riskLevels = riskLevels;
+        this.riskLevels = riskLevels == null ? new ArrayList<>() : riskLevels;
         this.status = status;
-        this.loans = loans;
+        this.loans = loans == null ? new ArrayList<>() : loans;
         this.exchange = exchange;
     }
 
-    public Tranche(BigDecimal initialValue, RiskLevel riskLevel, LocalDateTime creationDate) {
-        this(null, initialValue, creationDate, BigDecimal.ZERO, new ArrayList<>(List.of(riskLevel)), Status.ACTIVE, new ArrayList<>(), null);
+    public static Tranche createEmptyTranche(BigDecimal initialValue, LocalDateTime creationDate, RiskLevel riskLevel) {
+
+        Tranche tranche = new Tranche(null, initialValue, creationDate, BigDecimal.ZERO, null, Status.ACTIVE, null, null);
+        riskLevel.setStartDate(creationDate);
+        tranche.setRiskLevel(riskLevel);
+
+        return tranche;
     }
 
     public RiskLevel currentRiskLevel() {
@@ -94,6 +99,10 @@ public class Tranche extends EntityBase<Tranche> {
 
     public List<RiskLevel> riskLevelHistory() {
         return this.riskLevels.stream().sorted(Comparator.comparing(RiskLevel::getStartDate).reversed()).toList();
+    }
+
+    public boolean setRiskLevel(RiskLevel riskLevel) {
+        return addToCollection(this.riskLevels, riskLevel, this, "riskLevel", riskLevel ::setTranche);
     }
 
     public boolean addLoan(Loan loan) {
