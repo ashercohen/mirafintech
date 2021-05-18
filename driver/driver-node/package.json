@@ -1,22 +1,26 @@
 {
-  "name": "build-csv-from-dataset",
+  "name": "simulation-driver",
   "version": "1.0.0",
-  "description": "",
+  "description": "Use this app to simulate generation of loan transactions for Mira tranche engine",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Mira Fintech",
   "license": "ISC",
   "dependencies": {
     "async": "*",
-    "lodash": "*",
-    "json2csv": "*",
-    "moment": "^*",
-    "axios": "*",
-    "csv": "*",
     "async-local-storage": "*",
-    "bluebird": "*"
+    "axios": "*",
+    "bluebird": "*",
+    "config": "^3.3.6",
+    "csv": "*",
+    "faker": "^5.5.3",
+    "json2csv": "*",
+    "lodash": "*",
+    "log4js": "^6.3.0",
+    "moment": "^*"
   },
   "devDependencies": {
     "eslint": "^7.26.0"
