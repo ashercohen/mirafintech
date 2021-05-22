@@ -42,3 +42,10 @@ in order to simplify the engine's implementation, the engine assumes that the ne
 3. id of the consumer is to be passed as a path variable - this value must match the value specified in the json/request body
 
 **TBD:** format/fields of a consumer entity
+
+### add loan
+**Description**
+1. add a new loan **with timestamp**
+2. system's virtual time will be updated accordingly
+3. example:
+`{"timestamp": "2021-05-08T17:15:30", "id": 1000, "consumerId": 12345, "amount": 100.0, "merchantId": 999}`

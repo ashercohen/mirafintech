@@ -17,4 +17,6 @@ public class ConsumerDto {
     private int martialStatus; // (1=married, 2=single, 3=others)
 
     private int age; // int years
+
+    private int creditScore; // initial credit score for the user: 0-100 (inclusive)
 }

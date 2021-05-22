@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -17,15 +18,16 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConfigurationDto {
 
-    private List<RiskLevel> riskLevels;
+    private LocalDateTime initTimestamp;
+
+    private List<TrancheConfig> trancheConfigs;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class RiskLevel {
-        private int level;
-        private String label;
-        private Double lowerBound; // inclusive
-        private Double upperBound; // exclusive
+    public static class TrancheConfig {
+        private int initialValue; // USD
+        private int lowerBoundRiskLevel; // inclusive
+        private int upperBoundRiskLevel; // exclusive
     }
 }
