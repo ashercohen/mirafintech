@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "PAYMENT_ALLOCATIONS")
+@Table(name = "PAYMENT_ALLOCATION")
 @Getter
 @Setter
 @ToString

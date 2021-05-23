@@ -13,7 +13,7 @@ public class ConfigurationService {
     @Autowired
     private TranchesService tranchesService;
 
-    public void apply(ConfigurationDto configuration) {
-        tranchesService.initializeTranches(configuration.getRiskLevels());
+    public int apply(ConfigurationDto configuration) {
+        return tranchesService.initializeTranches(configuration.getTrancheConfigs());
     }
 }

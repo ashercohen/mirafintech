@@ -1,6 +1,5 @@
 package com.mirafintech.prototype.model;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,29 +7,29 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+
 
 @Entity
-@Table(name = "SYSTEM_TIME")
+@Table(name = "RISK_SCORE")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SystemTime {
+public class RiskScore extends EntityBase<RiskScore> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private LocalDateTime dateTime;
+    private int value; // [0..100]
 
-    private SystemTime(Long id, LocalDateTime dateTime) {
+    private RiskScore(Long id, int value) {
         this.id = id;
-        this.dateTime = dateTime;
+        this.value = value;
     }
 
-    public SystemTime(LocalDateTime dateTime) {
-        this(null, dateTime);
+    public RiskScore(int value) {
+        this(null, value);
     }
 }
