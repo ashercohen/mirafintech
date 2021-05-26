@@ -16,7 +16,7 @@ import java.util.List;
 @Table(name = "PAYMENT")
 @Getter
 @Setter
-//@ToString
+@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Payment extends EntityBase<Payment> {

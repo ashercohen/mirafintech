@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Table(name = "PAYMENT_ALLOCATION")
 @Getter
 @Setter
-//@ToString
+@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentAllocation extends EntityBase<PaymentAllocation> {
@@ -26,8 +26,6 @@ public class PaymentAllocation extends EntityBase<PaymentAllocation> {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     private Loan loan;
-
-    // TODO: missing association with a tranche
 
     private BigDecimal principle;
 
