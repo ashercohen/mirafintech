@@ -1,20 +1,22 @@
 package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 @Entity
 @Table(name = "MERCHANT")
 @Getter
 @Setter
-//@ToString
+@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Merchant extends EntityBase<Merchant> {
@@ -26,8 +28,6 @@ public class Merchant extends EntityBase<Merchant> {
 
     private LocalDateTime since;
 
-    @Setter(value = AccessLevel.PRIVATE)
-    @Getter(value = AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "merchant", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Loan> loans = new ArrayList<>();
 
@@ -43,14 +43,10 @@ public class Merchant extends EntityBase<Merchant> {
     }
 
     public boolean addLoan(Loan loan) {
-        // not calling addToCollection() since this merchant is already set at loan
-        return Optional.ofNullable(loan)
-                .map(this.loans::add)
-                .orElseThrow(() -> new IllegalArgumentException("loan is null"));
+        return addToCollection(this.loans, loan, this, "loans", loan::setMerchant);
     }
 
-    // TODO: probably not required as this operation not supported
     public boolean removeLoan(Loan loan) {
-        throw new RuntimeException("Merchant::removeLoan not implemented yet");
+        return removeFromCollection(this.loans, loan, "loans", loan::setMerchant);
     }
 }

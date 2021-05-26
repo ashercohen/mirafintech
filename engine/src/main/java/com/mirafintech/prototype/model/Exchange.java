@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "EXCHANGE")
 @Getter
 @Setter
-//@ToString
+@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Exchange extends EntityBase<Exchange> {

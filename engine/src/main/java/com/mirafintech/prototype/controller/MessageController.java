@@ -21,9 +21,6 @@ import java.util.Optional;
 public class MessageController {
 
     @Autowired
-    private TranchesService tranchesService;
-
-    @Autowired
     private LoansService loansService;
 
     @Autowired
@@ -49,13 +46,9 @@ public class MessageController {
             return ResponseEntity.badRequest().build();
         }
         this.timeService.setTime(loan.getTimestamp());
-        // persist loan
-        Loan persistedLoan = this.loansService.addLoan(loan);
+        Loan savedLoan = this.loansService.addLoan(loan);
 
-        // allocate to tranche
-        Tranche tranche = tranchesService.allocateLoanToTranche(persistedLoan);
-
-        return ResponseEntity.of(Optional.ofNullable(persistedLoan));
+        return ResponseEntity.of(Optional.ofNullable(savedLoan));
     }
 
     @Transactional(readOnly = false)

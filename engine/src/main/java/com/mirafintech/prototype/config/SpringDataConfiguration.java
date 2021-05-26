@@ -1,6 +1,5 @@
 package com.mirafintech.prototype.config;
 
-import org.hsqldb.jdbc.JDBCDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,8 +20,6 @@ public class SpringDataConfiguration {
 
     private static final DatabaseConfiguration DATABASE_CONFIGURATION;
 
-    private static boolean USE_POSTGRES = false;
-
     static {
         DATABASE_CONFIGURATION = new DatabaseConfiguration();
     }
@@ -30,19 +27,12 @@ public class SpringDataConfiguration {
     @Bean
     public DataSource getDataSource() {
 
-        if (USE_POSTGRES) {
-            PGSimpleDataSource dataSource = new PGSimpleDataSource();
-            dataSource.setURL(DATABASE_CONFIGURATION.getDatabaseURL());
-            dataSource.setUser(DATABASE_CONFIGURATION.getUserName());
-            dataSource.setPassword(DATABASE_CONFIGURATION.getPassword());
-            return dataSource;
-        } else {
-            JDBCDataSource dataSource = new JDBCDataSource();
-            dataSource.setUrl("jdbc:hsqldb:mem:test");
-            dataSource.setUser("sa");
-            dataSource.setPassword("");
-            return dataSource;
-        }
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setURL(DATABASE_CONFIGURATION.getDatabaseURL());
+        dataSource.setUser(DATABASE_CONFIGURATION.getUserName());
+        dataSource.setPassword(DATABASE_CONFIGURATION.getPassword());
+
+        return dataSource;
     }
 
     @Bean
@@ -58,14 +48,8 @@ public class SpringDataConfiguration {
          * https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/#configuration-misc-properties
          */
         jpaProperties.put("hibernate.hbm2ddl.auto", "create");
+        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
         jpaProperties.put("hibernate.show_sql", "true");
-
-        if (USE_POSTGRES) {
-            jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
-        } else {
-            jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-            jpaProperties.put("spring.datasource.driver-class-name", "org.hsqldb.jdbc.JDBCDriver");
-        }
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setDataSource(getDataSource());
