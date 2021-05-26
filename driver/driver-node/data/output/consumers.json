@@ -1,0 +1,902 @@
+[
+  {
+    "id": 1,
+    "limitBal": 20000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 24,
+    "initialCreditScore": 9
+  },
+  {
+    "id": 2,
+    "limitBal": 120000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 26,
+    "initialCreditScore": 29
+  },
+  {
+    "id": 3,
+    "limitBal": 90000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 34,
+    "initialCreditScore": 11
+  },
+  {
+    "id": 4,
+    "limitBal": 50000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 37,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 5,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 57,
+    "initialCreditScore": 54
+  },
+  {
+    "id": 6,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 37,
+    "initialCreditScore": 3
+  },
+  {
+    "id": 7,
+    "limitBal": 500000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 7
+  },
+  {
+    "id": 8,
+    "limitBal": 100000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 23,
+    "initialCreditScore": 36
+  },
+  {
+    "id": 9,
+    "limitBal": 140000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 1,
+    "age": 28,
+    "initialCreditScore": 10
+  },
+  {
+    "id": 10,
+    "limitBal": 20000,
+    "sex": 1,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 35,
+    "initialCreditScore": 52
+  },
+  {
+    "id": 11,
+    "limitBal": 200000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 34,
+    "initialCreditScore": 19
+  },
+  {
+    "id": 12,
+    "limitBal": 260000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 51,
+    "initialCreditScore": 75
+  },
+  {
+    "id": 13,
+    "limitBal": 630000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 41,
+    "initialCreditScore": 57
+  },
+  {
+    "id": 14,
+    "limitBal": 70000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 30,
+    "initialCreditScore": 3
+  },
+  {
+    "id": 15,
+    "limitBal": 250000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 16,
+    "limitBal": 50000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 3,
+    "age": 23,
+    "initialCreditScore": 3
+  },
+  {
+    "id": 17,
+    "limitBal": 20000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 24,
+    "initialCreditScore": 6
+  },
+  {
+    "id": 18,
+    "limitBal": 320000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 49,
+    "initialCreditScore": 37
+  },
+  {
+    "id": 19,
+    "limitBal": 360000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 49,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 20,
+    "limitBal": 180000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 21,
+    "limitBal": 130000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 39,
+    "initialCreditScore": 34
+  },
+  {
+    "id": 22,
+    "limitBal": 120000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 39,
+    "initialCreditScore": 83
+  },
+  {
+    "id": 23,
+    "limitBal": 70000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 26,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 24,
+    "limitBal": 450000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 40,
+    "initialCreditScore": 84
+  },
+  {
+    "id": 25,
+    "limitBal": 90000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 23,
+    "initialCreditScore": 51
+  },
+  {
+    "id": 26,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 23,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 27,
+    "limitBal": 60000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 27,
+    "initialCreditScore": -635
+  },
+  {
+    "id": 28,
+    "limitBal": 50000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 30,
+    "initialCreditScore": 6
+  },
+  {
+    "id": 29,
+    "limitBal": 50000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 1,
+    "age": 47,
+    "initialCreditScore": 98
+  },
+  {
+    "id": 30,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 26,
+    "initialCreditScore": 7
+  },
+  {
+    "id": 31,
+    "limitBal": 230000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 27,
+    "initialCreditScore": 86
+  },
+  {
+    "id": 32,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 33,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 33,
+    "limitBal": 100000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 32,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 34,
+    "limitBal": 500000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 54,
+    "initialCreditScore": 126
+  },
+  {
+    "id": 35,
+    "limitBal": 500000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 58,
+    "initialCreditScore": 78
+  },
+  {
+    "id": 36,
+    "limitBal": 160000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 30,
+    "initialCreditScore": 9
+  },
+  {
+    "id": 37,
+    "limitBal": 280000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 40,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 38,
+    "limitBal": 60000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 22,
+    "initialCreditScore": 165
+  },
+  {
+    "id": 39,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 25,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 40,
+    "limitBal": 280000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 31,
+    "initialCreditScore": 72
+  },
+  {
+    "id": 41,
+    "limitBal": 360000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 33,
+    "initialCreditScore": 15
+  },
+  {
+    "id": 42,
+    "limitBal": 70000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 25,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 43,
+    "limitBal": 10000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 22,
+    "initialCreditScore": 32
+  },
+  {
+    "id": 44,
+    "limitBal": 140000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 37,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 45,
+    "limitBal": 40000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 30,
+    "initialCreditScore": 9
+  },
+  {
+    "id": 46,
+    "limitBal": 210000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 47,
+    "limitBal": 20000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 22,
+    "initialCreditScore": 25
+  },
+  {
+    "id": 48,
+    "limitBal": 150000,
+    "sex": 2,
+    "edu": 5,
+    "maritalStatus": 2,
+    "age": 46,
+    "initialCreditScore": 22
+  },
+  {
+    "id": 49,
+    "limitBal": 380000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 32,
+    "initialCreditScore": 81
+  },
+  {
+    "id": 50,
+    "limitBal": 20000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 24,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 51,
+    "limitBal": 70000,
+    "sex": 1,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 42,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 52,
+    "limitBal": 100000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 3,
+    "age": 43,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 53,
+    "limitBal": 310000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 49,
+    "initialCreditScore": 70
+  },
+  {
+    "id": 54,
+    "limitBal": 180000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 25,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 55,
+    "limitBal": 150000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 7
+  },
+  {
+    "id": 56,
+    "limitBal": 500000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 45,
+    "initialCreditScore": 77
+  },
+  {
+    "id": 57,
+    "limitBal": 180000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 1,
+    "age": 34,
+    "initialCreditScore": 53
+  },
+  {
+    "id": 58,
+    "limitBal": 180000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 34,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 59,
+    "limitBal": 200000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 34,
+    "initialCreditScore": 28
+  },
+  {
+    "id": 60,
+    "limitBal": 400000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 29,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 61,
+    "limitBal": 500000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 1,
+    "age": 28,
+    "initialCreditScore": 8
+  },
+  {
+    "id": 62,
+    "limitBal": 70000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 39,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 63,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 64,
+    "limitBal": 50000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 46,
+    "initialCreditScore": 2
+  },
+  {
+    "id": 65,
+    "limitBal": 130000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 51,
+    "initialCreditScore": 96
+  },
+  {
+    "id": 66,
+    "limitBal": 200000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 57,
+    "initialCreditScore": 2
+  },
+  {
+    "id": 67,
+    "limitBal": 10000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 56,
+    "initialCreditScore": 13
+  },
+  {
+    "id": 68,
+    "limitBal": 210000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 30,
+    "initialCreditScore": 107
+  },
+  {
+    "id": 69,
+    "limitBal": 130000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 524
+  },
+  {
+    "id": 70,
+    "limitBal": 20000,
+    "sex": 1,
+    "edu": 5,
+    "maritalStatus": 2,
+    "age": 22,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 71,
+    "limitBal": 80000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 31,
+    "initialCreditScore": 83
+  },
+  {
+    "id": 72,
+    "limitBal": 320000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 29,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 73,
+    "limitBal": 200000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 32,
+    "initialCreditScore": 74
+  },
+  {
+    "id": 74,
+    "limitBal": 290000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 37,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 75,
+    "limitBal": 340000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 32,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 76,
+    "limitBal": 20000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 24,
+    "initialCreditScore": 6
+  },
+  {
+    "id": 77,
+    "limitBal": 50000,
+    "sex": 1,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 25,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 78,
+    "limitBal": 300000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 45,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 79,
+    "limitBal": 30000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 22,
+    "initialCreditScore": 6
+  },
+  {
+    "id": 80,
+    "limitBal": 240000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 44,
+    "initialCreditScore": 100
+  },
+  {
+    "id": 81,
+    "limitBal": 470000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 3,
+    "age": 33,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 82,
+    "limitBal": 360000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 26,
+    "initialCreditScore": 55
+  },
+  {
+    "id": 83,
+    "limitBal": 60000,
+    "sex": 1,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 30,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 84,
+    "limitBal": 400000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 44,
+    "initialCreditScore": 3
+  },
+  {
+    "id": 85,
+    "limitBal": 50000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 49,
+    "initialCreditScore": 3
+  },
+  {
+    "id": 86,
+    "limitBal": 160000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 33,
+    "initialCreditScore": 15
+  },
+  {
+    "id": 87,
+    "limitBal": 360000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 45,
+    "initialCreditScore": 67
+  },
+  {
+    "id": 88,
+    "limitBal": 160000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 32,
+    "initialCreditScore": 26
+  },
+  {
+    "id": 89,
+    "limitBal": 130000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 35,
+    "initialCreditScore": 25
+  },
+  {
+    "id": 90,
+    "limitBal": 20000,
+    "sex": 1,
+    "edu": 3,
+    "maritalStatus": 2,
+    "age": 44,
+    "initialCreditScore": 10
+  },
+  {
+    "id": 91,
+    "limitBal": 200000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 53,
+    "initialCreditScore": 4
+  },
+  {
+    "id": 92,
+    "limitBal": 280000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 39,
+    "initialCreditScore": 26
+  },
+  {
+    "id": 93,
+    "limitBal": 100000,
+    "sex": 2,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 27,
+    "initialCreditScore": 213
+  },
+  {
+    "id": 94,
+    "limitBal": 160000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 37,
+    "initialCreditScore": 265
+  },
+  {
+    "id": 95,
+    "limitBal": 60000,
+    "sex": 2,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 23,
+    "initialCreditScore": 3
+  },
+  {
+    "id": 96,
+    "limitBal": 90000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 2,
+    "age": 35,
+    "initialCreditScore": 3
+  },
+  {
+    "id": 97,
+    "limitBal": 360000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 1,
+    "age": 43,
+    "initialCreditScore": 206
+  },
+  {
+    "id": 98,
+    "limitBal": 150000,
+    "sex": 1,
+    "edu": 1,
+    "maritalStatus": 2,
+    "age": 27,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 99,
+    "limitBal": 50000,
+    "sex": 2,
+    "edu": 3,
+    "maritalStatus": 1,
+    "age": 22,
+    "initialCreditScore": 5
+  },
+  {
+    "id": 100,
+    "limitBal": 20000,
+    "sex": 1,
+    "edu": 2,
+    "maritalStatus": 1,
+    "age": 38,
+    "initialCreditScore": 6
+  }
+]

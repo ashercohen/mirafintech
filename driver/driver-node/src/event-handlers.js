@@ -1,6 +1,7 @@
-"use strict";
+'use strict';
+const { Constants, Logger } = require('./utils/');
 
-const logger = require("./utils/Logger");
+const logger = new Logger(Constants.LOG_FILE, false);
 
 /**
  * exceptionHandler
@@ -8,7 +9,7 @@ const logger = require("./utils/Logger");
  */
 const exceptionHandler = (error) => {
     // NOTE: add any other error handling required here
-    logger.fatal({ error });
+    logger.error({ error });
     process.exit(1);
 };
 
@@ -43,9 +44,9 @@ const processWarningHandler = ({ name, message, stack }) => {
  * @param {*} process 
  */
 const bindAllHandlers = (process) => {
-    process.on("uncaughtException", exceptionHandler);
-    process.on("unhandledRejection", unhandledRejectionHandler);
-    process.on("warning", processWarningHandler);
+    process.on('uncaughtException', exceptionHandler());
+    process.on('unhandledRejection', unhandledRejectionHandler());
+    process.on('warning', processWarningHandler());
 };
 
 module.exports = {

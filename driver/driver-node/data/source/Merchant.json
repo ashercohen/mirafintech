@@ -1,0 +1,34 @@
+[
+    {
+        "id": 500000001,
+        "name": "Amazon.com"
+    },
+    {
+        "id": 500000002,
+        "name": "Amazon.ca"
+    },
+    {
+        "id": 500000003,
+        "name": "Walmart"
+    },
+    {
+        "id": 500000004,
+        "name": "Sofi"
+    },
+    {
+        "id": 500000005,
+        "name": "Shopify"
+    },
+    {
+        "id": 500000006,
+        "name": "Affirm"
+    },
+    {
+        "id": 500000007,
+        "name": "Klarna"
+    },
+    {
+        "id": 500000008,
+        "name": "PayBill"
+    }
+]
