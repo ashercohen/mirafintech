@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Table(name = "PAYMENT_ALLOCATION")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentAllocation extends EntityBase<PaymentAllocation> {

@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.Objects;
 @Table(name = "LOAN")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Loan extends EntityBase<Loan> {
@@ -30,6 +31,7 @@ public class Loan extends EntityBase<Loan> {
     private LocalDateTime timestamp;
 
     //TODO: verify bi-di association
+    @JsonIgnore // TODO: revisit this
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Consumer consumer;
 
@@ -50,15 +52,18 @@ public class Loan extends EntityBase<Loan> {
 //    private String status;
 //    private BigDecimal fraudScore; // TODO: rethink on this. fraud or risk? how do we maintain history of the loan risk (keep list and get latest)
 
+    @JsonIgnore // TODO: revisit this
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Merchant merchant;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true) //TODO: make many2many as a loan might move between tranches
     private Tranche tranche; //TODO: add support for tranche history
 
+    @JsonIgnore // TODO: revisit this
     @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
 
+    @JsonIgnore // TODO: revisit this
     @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Charge> charges = new ArrayList<>();
 

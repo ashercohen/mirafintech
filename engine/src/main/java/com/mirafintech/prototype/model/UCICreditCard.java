@@ -14,7 +14,7 @@ import java.util.List;
 @Table(name = "UCI_CREDIT_CARD")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UCICreditCard implements Serializable {

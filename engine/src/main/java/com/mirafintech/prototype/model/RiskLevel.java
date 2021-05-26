@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "RISK_LEVEL")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RiskLevel {

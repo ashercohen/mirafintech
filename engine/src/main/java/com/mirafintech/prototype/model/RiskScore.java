@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = "RISK_SCORE")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RiskScore extends EntityBase<RiskScore> {

@@ -18,7 +18,7 @@ import java.util.Objects;
 @Table(name = "TRANCHE")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tranche extends EntityBase<Tranche> {

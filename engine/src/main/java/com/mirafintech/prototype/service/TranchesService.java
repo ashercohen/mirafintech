@@ -28,7 +28,8 @@ public class TranchesService {
     private List<Tranche> tranches = new ArrayList<>();
 
     public Tranche allocateLoanToTranche(Loan loan) {
-        throw new RuntimeException("allocateLoanToTranche not implemented yet");
+        return null;
+//        throw new RuntimeException("allocateLoanToTranche not implemented yet");
     }
 
     public int initializeTranches(List<ConfigurationDto.TrancheConfig> trancheConfigs) {

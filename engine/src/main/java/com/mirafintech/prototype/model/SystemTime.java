@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "SYSTEM_TIME")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SystemTime {
