@@ -34,4 +34,8 @@ public class RiskLevel {
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
     }
+
+    public boolean contains(RiskScore riskScore) {
+        return this.lowerBound.getValue() <= riskScore.getValue() && riskScore.getValue() < this.upperBound.getValue();
+    }
 }

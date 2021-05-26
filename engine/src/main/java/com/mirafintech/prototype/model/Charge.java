@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Table(name = "CHARGE")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Charge extends EntityBase<Charge> {
@@ -23,7 +23,7 @@ public class Charge extends EntityBase<Charge> {
 
     // TODO: this association should be bi-directional - fix!!!
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "loan_fk")
+    @JoinColumn(name = "loan_fk") //TODO: probably wrong. make bi-di
     private Loan loan;
 
     private Integer timestamp;

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "TIMED_CREDIT_SCORE")
 @Getter
 //@Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TimedCreditScore {
