@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 
-abstract class EntityBase<T extends EntityBase<?>> {
+public abstract class EntityBase<T extends EntityBase<?>> {
 
     protected static <P extends EntityBase<P>, E extends EntityBase<E>>
         boolean addToCollection(Collection<E> collection, E element, P parent, String name, Consumer<P> setter) {
