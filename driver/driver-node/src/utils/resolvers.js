@@ -66,11 +66,11 @@ const getTransactionDates = () => {
 const resolveConfigData = startDate => {
     return {
         initTimestamp: startDate,
-        trancheConfigs: {
+        trancheConfigs: [{
             lowerBoundRiskScore: 0,
             upperBoundRiskScore: 100,
             initialValue: 0
-        }
+        }]
     }
 };
 

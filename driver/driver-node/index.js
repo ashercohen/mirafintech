@@ -19,7 +19,7 @@ const logger = new Logger(LOG_FILE, false);
 // bindAllHandlers(process);
 
 //TODO: pass this filename as a parameter from Docker run command
-const csvFilePath  = './data/source/UCI_Credit_Card.100.csv';
+const csvFilePath  = './data/source/UCI_Credit_Card.csv';
 
 /**
  * Take a source dataset file as input and generates transactions based on the config provided
@@ -63,7 +63,8 @@ const setTrancheEngineConfig = async date => {
         data: resolveConfigData(date)
     };
 
-    // await axios(options);
+    const result = await axios(options);
+    console.log(`${JSON.stringify(result)}`);
     console.log('Server config set successfully!');
 };
 
@@ -78,7 +79,7 @@ const sendMerchants = async () => {
             method: HTTP_METHODS.POST,
             data: merchant
         };
-        // await axios(options);
+        await axios(options);
         console.log(`merchant ${merchant.id}`);
         await sleep(20);
     }
@@ -97,7 +98,7 @@ const sendConsumers = async () => {
             method: HTTP_METHODS.POST,
             data: consumer
         };
-        // await axios(options);
+        await axios(options);
         console.log(`consumer ${consumer.id}`);
         await sleep(20);
     }
@@ -117,7 +118,7 @@ const sendLoans = async () => {
             method: HTTP_METHODS.POST,
             data: loan
         };
-        // await axios(options);
+        await axios(options);
         console.log(`loan ${loan.timestamp} ${loan.id} ${loan.consumerId} ${loan.amount}`);
         await sleep(20);
     }
@@ -126,12 +127,12 @@ const sendLoans = async () => {
 
 const runSimulation = async () => {
     console.log('Starting simulation...');
-    await generateTransactionsFromFile(csvFilePath);
-    await setEngineTime(START_DATE);
+    // await generateTransactionsFromFile(csvFilePath);
+    // await setEngineTime(START_DATE);
     await setTrancheEngineConfig(START_DATE);
-    await sendMerchants();
-    await sendConsumers();
-    await sendLoans();
+    // await sendMerchants();
+    // await sendConsumers();
+    // await sendLoans();
 
     console.log('Simulation successfully completed!');
 };
