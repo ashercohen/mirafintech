@@ -12,10 +12,10 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "EXCHANGES")
+@Table(name = "EXCHANGE")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Exchange extends EntityBase<Exchange> {

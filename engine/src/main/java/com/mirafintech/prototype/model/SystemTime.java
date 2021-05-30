@@ -11,10 +11,10 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "SYSTEMTIME")
+@Table(name = "SYSTEM_TIME")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SystemTime {

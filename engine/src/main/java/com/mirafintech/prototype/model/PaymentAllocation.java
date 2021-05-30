@@ -10,10 +10,10 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "PAYMENT_ALLOCATIONS")
+@Table(name = "PAYMENT_ALLOCATION")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentAllocation extends EntityBase<PaymentAllocation> {

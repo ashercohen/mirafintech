@@ -26,8 +26,8 @@ public class ConfigurationDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TrancheConfig {
+        private int lowerBoundRiskScore; // inclusive
+        private int upperBoundRiskScore; // exclusive
         private int initialValue; // USD
-        private int lowerBoundRiskLevel; // inclusive
-        private int upperBoundRiskLevel; // exclusive
     }
 }

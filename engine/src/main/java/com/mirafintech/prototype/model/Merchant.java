@@ -7,15 +7,16 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Entity
-@Table(name = "MERCHANTS")
+@Table(name = "MERCHANT")
 @Getter
 @Setter
-@ToString
+//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Merchant extends EntityBase<Merchant> {
@@ -23,8 +24,23 @@ public class Merchant extends EntityBase<Merchant> {
     @Id
     private Long id;
 
+    private String name;
+
+    private LocalDateTime since;
+
     @OneToMany(mappedBy = "merchant", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Loan> loans = new ArrayList<>();
+
+    private Merchant(Long id, String name, LocalDateTime since, List<Loan> loans) {
+        this.id = id;
+        this.name = name;
+        this.since = since;
+        this.loans = loans == null ? new ArrayList<>() : loans;
+    }
+
+    public Merchant(Long id, String name, LocalDateTime since) {
+        this(id, name, since, null);
+    }
 
     public boolean addLoan(Loan loan) {
         return addToCollection(this.loans, loan, this, "loans", loan::setMerchant);

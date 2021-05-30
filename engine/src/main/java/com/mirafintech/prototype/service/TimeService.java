@@ -25,6 +25,12 @@ public class TimeService {
 
         SystemTime systemTime = new SystemTime(newDateTime);
         Optional<LocalDateTime> currentTime = getCurrentDateTimeInternal();
+        currentTime.ifPresent(current -> {
+            if (current.isAfter(newDateTime)) {
+                throw new IllegalArgumentException("new time is before current time");
+            }
+        });
+
         currentTime.ifPresent((current) -> advanceMultipleDays(current, newDateTime));
 
         // TODO: should this be persisted here or in event handler?
