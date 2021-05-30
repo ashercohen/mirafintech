@@ -91,7 +91,7 @@ const resolveConsumerRisk = (obj) => {
     
     const totalPayment = getPaymentsArray(obj).reduce(addReducer, 0);
 
-    return Math.round((totalPayment / totalLoan) * 100) || 0;
+    return totalLoan ? 0 : Math.round((totalPayment / totalLoan) * 100) || 0;
 };
 
 const resolveConsumer = (obj, risk) => {

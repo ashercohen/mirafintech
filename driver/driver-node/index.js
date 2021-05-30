@@ -20,7 +20,7 @@ const logger = new Logger(LOG_FILE, false);
 // bindAllHandlers(process);
 
 //TODO: pass this filename as a parameter from Docker run command
-const csvFilePath  = './data/source/UCI_Credit_Card.csv';
+const csvFilePath  = './data/source/UCI_Credit_Card.100.csv';
 
 /**
  * Take a source dataset file as input and generates transactions based on the config provided
@@ -159,7 +159,7 @@ const sendLoans = async () => {
 
 const runSimulation = async () => {
     console.log('Starting simulation...');
-    // await generateTransactionsFromFile(csvFilePath);
+    await generateTransactionsFromFile(csvFilePath);
     // await setEngineTime(START_DATE);
     await setTrancheEngineConfig(START_DATE);
     await sendMerchants();
