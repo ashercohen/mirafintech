@@ -9,7 +9,7 @@ const logger = new Logger(Constants.LOG_FILE, false);
  */
 const exceptionHandler = (error) => {
     // NOTE: add any other error handling required here
-    logger.error({ error });
+    console.log({ error });
     process.exit(1);
 };
 
@@ -19,7 +19,7 @@ const exceptionHandler = (error) => {
  * @param {*} reason 
  */
 const unhandledRejectionHandler = ({ message, stack }) => {
-    logger.warn({
+    console.log({
         isUnhandledRejection: true,
         message,
         stack
@@ -31,7 +31,7 @@ const unhandledRejectionHandler = ({ message, stack }) => {
  * @param {Object} warning - the node warning object
  */
 const processWarningHandler = ({ name, message, stack }) => {
-    logger.warn({
+    console.log({
         isProcessWarning: true,
         name,
         message,

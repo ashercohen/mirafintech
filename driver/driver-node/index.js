@@ -19,7 +19,7 @@ const logger = new Logger(LOG_FILE, false);
 // bindAllHandlers(process);
 
 //TODO: pass this filename as a parameter from Docker run command
-const csvFilePath  = './data/source/UCI_Credit_Card.csv';
+const csvFilePath  = './data/source/UCI_Credit_Card.100.csv';
 
 /**
  * Take a source dataset file as input and generates transactions based on the config provided
@@ -27,18 +27,21 @@ const csvFilePath  = './data/source/UCI_Credit_Card.csv';
  * @param {Object} config  - configuration object provided to txn generation process
  */
 const generateTransactionsFromFile = async (file) => {
-    logger.info(`Starting the transaction generation process using file: ${file}`);
-
+    await sleep(2000);
+    console.log(`Starting the transaction generation process using file: ${file}`);
+    await sleep(2000);
     try {
         await streamFileAndGenerateData(file);
-        logger.info('Process complete!');
+        console.log('Process complete!');
     } catch (error) {
         logger.error(`Error in generating transactions: ${error}`);
     }
 };
 
 const setEngineTime = async time => {
-    logger.info('Setting server time...');
+    await sleep(2000);
+    console.log('Setting server time...');
+    await sleep(2000);
     const options = {
         url: `${config.get('trancheCompiler').url}/set/time`,
         method: HTTP_METHODS.POST,
@@ -46,84 +49,91 @@ const setEngineTime = async time => {
         data: START_DATE
     };
 
-    await axios(options);
-    logger.info('Server time set successfully!');
+    // await axios(options);
+    console.log('Server time set successfully!');
 };
 
 const setTrancheEngineConfig = async date => {
-    logger.info('Setting server config...');
+    await sleep(2000);
+    console.log('Setting server config...');
+    await sleep(2000);
     const options = {
         url: `${config.get('trancheCompiler').url}/set/config`,
         method: HTTP_METHODS.POST,
         data: resolveConfigData(date)
     };
 
-    await axios(options);
-    logger.info('Server config set successfully!');
+    // await axios(options);
+    console.log('Server config set successfully!');
 };
 
 const sendMerchants = async () => {
     const merchants = require('./data/source/Merchant.json');
-    logger.info('Sending merchant records...');
-    const options = {
-        url: `${config.get('trancheCompiler').url}/merchants/${id}`,
-        method: HTTP_METHODS.POST,
-    };
-
+    await sleep(2000);
+    console.log('Sending merchant records...');
+    await sleep(2000);
     for(const merchant of merchants) {
-        options.data = merchant;
-        await axios(options);
+        const options = {
+            url: `${config.get('trancheCompiler').url}/merchants/${merchant.id}`,
+            method: HTTP_METHODS.POST,
+            data: merchant
+        };
+        // await axios(options);
+        console.log(`merchant ${merchant.id}`);
         await sleep(20);
     }
 
-    logger.info('Merchant records sent successfully!');
+    console.log('Merchant records sent successfully!');
 };
 
 const sendConsumers = async () => {
     const consumers = require('./data/output/consumers.json');
-    logger.info('Sending consumer records...');
-    const options = {
-        url: `${config.get('trancheCompiler').url}/consumers/${id}`,
-        method: HTTP_METHODS.POST,
-    };
-
+    await sleep(2000);
+    console.log('Sending consumer records...');
+    await sleep(2000);
     for(const consumer of consumers) {
-        options.data = consumer;
-        await axios(options);
+        const options = {
+            url: `${config.get('trancheCompiler').url}/consumers/${consumer.id}`,
+            method: HTTP_METHODS.POST,
+            data: consumer
+        };
+        // await axios(options);
+        console.log(`consumer ${consumer.id}`);
         await sleep(20);
     }
 
-    logger.info('Consumer records sent successfully!');
+    console.log('Consumer records sent successfully!');
 };
 
 const sendLoans = async () => {
     const loans = require('./data/output/loans.json');
-    logger.info('Sending loan records...');
-    const options = {
-        url: `${config.get('trancheCompiler').url}/loans/${id}`,
-        method: HTTP_METHODS.POST,
-        data: 'date'
-    };
+    await sleep(2000);
+    console.log('Sending loan records...');
+    await sleep(2000);
 
     for(const loan of loans) {
-        options.data = loan;
-        await axios(options);
+        const options = {
+            url: `${config.get('trancheCompiler').url}/loans/${loan.id}`,
+            method: HTTP_METHODS.POST,
+            data: loan
+        };
+        // await axios(options);
+        console.log(`loan ${loan.timestamp} ${loan.id} ${loan.consumerId} ${loan.amount}`);
         await sleep(20);
     }
-    logger.info('Loan records sent successfully!');
+    console.log('Loan records sent successfully!');
 };
 
 const runSimulation = async () => {
-    logger.info('Starting simulation...');
-    
+    console.log('Starting simulation...');
     await generateTransactionsFromFile(csvFilePath);
     await setEngineTime(START_DATE);
     await setTrancheEngineConfig(START_DATE);
-    await sendMerchants(merchants);
-    await sendConsumers(consumers);
-    await sendLoans(loans);
+    await sendMerchants();
+    await sendConsumers();
+    await sendLoans();
 
-    logger.info('Starting completed!');
+    console.log('Simulation successfully completed!');
 };
 
 runSimulation();
