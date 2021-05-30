@@ -18,9 +18,11 @@ const {
 
 const merchants = require('../../data/source/Merchant.json');
 
-const reducer = (accumulator, currentValue) => accumulator + currentValue;
+const TRANSACTION_COUNT_PER_MONTH = 5;
 
-const getLoanArray = obj => [obj.BILL_AMT1, obj.BILL_AMT2, obj.BILL_AMT3, obj.BILL_AMT4, obj.BILL_AMT5, obj.BILL_AMT6];
+const addReducer = (accumulator, currentValue) => accumulator + currentValue;
+
+const getBillArray = obj => [obj.BILL_AMT1, obj.BILL_AMT2, obj.BILL_AMT3, obj.BILL_AMT4, obj.BILL_AMT5, obj.BILL_AMT6];
 const getPaymentsArray = obj => [obj.PAY_AMT1, obj.PAY_AMT2, obj.PAY_AMT3, obj.PAY_AMT4, obj.PAY_AMT5, obj.PAY_AMT6];
 const getConsumerId = obj => obj.ID;
 
@@ -50,6 +52,17 @@ const getCustomDateRange = (start, end, duration, arr = [DURATION_MAP[duration](
     return getCustomDateRange(next, end, duration, arr.concat(next));
 }
 
+const getTransactionDates = () => {
+    const START_DATE = getStartDate();
+    const monthsArray = getCustomDateRange(START_DATE, addMonths(START_DATE, 5), 'months');
+    const dateArray = [];
+    monthsArray.forEach(month => {
+        dateArray.push(getCustomDateRange(month, addDays(month, TRANSACTION_COUNT_PER_MONTH - 1), 'days'));
+    });
+
+    return dateArray;
+}
+
 const resolveConfigData = startDate => {
     return {
         initTimestamp: startDate,
@@ -62,9 +75,9 @@ const resolveConfigData = startDate => {
 };
 
 const resolveConsumerRisk = (obj) => {
-    const totalLoan = getLoanArray(obj).reduce(reducer, 0);
+    const totalLoan = getBillArray(obj).reduce(addReducer, 0);
     
-    const totalPayment = getPaymentsArray(obj).reduce(reducer, 0);
+    const totalPayment = getPaymentsArray(obj).reduce(addReducer, 0);
 
     return Math.round((totalPayment / totalLoan) * 100);
 };
@@ -81,21 +94,15 @@ const resolveConsumer = (obj, risk) => {
     }
 };
 
-const resolveConsumerLoan = (obj) => {
-    const TRANSACTION_COUNT = 5;
-    const START_DATE = getStartDate();
-    const monthsArray = getCustomDateRange(START_DATE, addMonths(START_DATE, 5), 'months');
-    const dateArray = [];
-    monthsArray.forEach(month => {
-        dateArray.push(...getCustomDateRange(month, addDays(month, TRANSACTION_COUNT - 1), 'days'));
-    });
+const resolveConsumerLoan = (obj, dateArray) => {
+    const billArray = getBillArray(obj);
     const loans = [];
     const len = merchants.length;
 
-    getLoanArray(obj).forEach(loan => {
-        if(loan !== 0) {
-            const loanAmount = Math.round(loan/TRANSACTION_COUNT);
-            dateArray.forEach(timestamp => {
+    billArray.forEach((bill, index) => {
+        dateArray[index].forEach(timestamp => {
+            if(bill !== 0) {
+                const loanAmount = Math.round((bill/TRANSACTION_COUNT_PER_MONTH + Number.EPSILON) * 100) / 100;
                 loans.push({
                     timestamp,
                     id: faker.datatype.number(ID_MIN,ID_MAX),
@@ -103,18 +110,19 @@ const resolveConsumerLoan = (obj) => {
                     amount: loanAmount,
                     merchantId: merchants[Math.floor(Math.random() * len)].id
                 });
-            });
-        }
+            }
+        })
     });
-    
+
     return loans;
 };
 
 module.exports = { 
-    reducer,
+    addReducer,
     resolveConsumer,
     resolveConfigData,
     resolveConsumerLoan,
     resolveConsumerRisk,
-    getStartDate
+    getStartDate,
+    getTransactionDates
 }

@@ -8,11 +8,9 @@ const { getStartDate, resolveConfigData } = require('./src/utils/resolvers');
 const streamFileAndGenerateData = require('./src/stream-and-generate');
 const { HTTP_METHODS, LOG_FOLDER, LOG_FILE } = Constants;
 
-const merchants = require('./data/source/Merchant.json');
-const consumers = require('./data/output/consumers.json');
-const loans = require('./data/output/loans.json');
-
 const START_DATE = getStartDate();
+
+const sleep = ms => new Promise(res => setTimeout(res, ms))
 
 Files.createDirectory(LOG_FOLDER);
 const logger = new Logger(LOG_FILE, false);
@@ -21,7 +19,7 @@ const logger = new Logger(LOG_FILE, false);
 // bindAllHandlers(process);
 
 //TODO: pass this filename as a parameter from Docker run command
-const csvFilePath  = './data/source/UCI_Credit_Card.100.csv';
+const csvFilePath  = './data/source/UCI_Credit_Card.csv';
 
 /**
  * Take a source dataset file as input and generates transactions based on the config provided
@@ -64,7 +62,8 @@ const setTrancheEngineConfig = async date => {
     logger.info('Server config set successfully!');
 };
 
-const sendMerchants = async merchants => {
+const sendMerchants = async () => {
+    const merchants = require('./data/source/Merchant.json');
     logger.info('Sending merchant records...');
     const options = {
         url: `${config.get('trancheCompiler').url}/merchants/${id}`,
@@ -74,12 +73,14 @@ const sendMerchants = async merchants => {
     for(const merchant of merchants) {
         options.data = merchant;
         await axios(options);
+        await sleep(20);
     }
 
     logger.info('Merchant records sent successfully!');
 };
 
-const sendConsumers = async consumers => {
+const sendConsumers = async () => {
+    const consumers = require('./data/output/consumers.json');
     logger.info('Sending consumer records...');
     const options = {
         url: `${config.get('trancheCompiler').url}/consumers/${id}`,
@@ -89,12 +90,14 @@ const sendConsumers = async consumers => {
     for(const consumer of consumers) {
         options.data = consumer;
         await axios(options);
+        await sleep(20);
     }
 
     logger.info('Consumer records sent successfully!');
 };
 
-const sendLoans = async loans => {
+const sendLoans = async () => {
+    const loans = require('./data/output/loans.json');
     logger.info('Sending loan records...');
     const options = {
         url: `${config.get('trancheCompiler').url}/loans/${id}`,
@@ -105,6 +108,7 @@ const sendLoans = async loans => {
     for(const loan of loans) {
         options.data = loan;
         await axios(options);
+        await sleep(20);
     }
     logger.info('Loan records sent successfully!');
 };

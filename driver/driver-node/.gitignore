@@ -36,4 +36,9 @@ hs_err_pid*
 #npm_node_modules_folder
 *node_modules/*
 
+#Generated data files
+*data/output/*
+*data/input/*
 
+#log files
+*logs/*
