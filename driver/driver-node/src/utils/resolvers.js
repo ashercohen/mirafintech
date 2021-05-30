@@ -66,11 +66,23 @@ const getTransactionDates = () => {
 const resolveConfigData = startDate => {
     return {
         initTimestamp: startDate,
-        trancheConfigs: [{
-            lowerBoundRiskScore: 0,
-            upperBoundRiskScore: 100,
-            initialValue: 0
-        }]
+        trancheConfigs: [
+            {
+                lowerBoundRiskScore: 0,
+                upperBoundRiskScore: 25,
+                initialValue: 1000000
+            }, 
+            {
+                lowerBoundRiskScore: 25,
+                upperBoundRiskScore: 50,
+                initialValue: 2000000
+            },
+            {
+                lowerBoundRiskScore: 50,
+                upperBoundRiskScore: 100,
+                initialValue: 5000000
+            }
+        ]
     }
 };
 
@@ -79,18 +91,18 @@ const resolveConsumerRisk = (obj) => {
     
     const totalPayment = getPaymentsArray(obj).reduce(addReducer, 0);
 
-    return Math.round((totalPayment / totalLoan) * 100);
+    return Math.round((totalPayment / totalLoan) * 100) || 0;
 };
 
 const resolveConsumer = (obj, risk) => {
     return {
         id: obj.ID,
-        limitBal: obj.LIMIT_BAL,
+        limitBalance: obj.LIMIT_BAL,
         sex: obj.SEX,
-        edu: obj.EDUCATION,
-        maritalStatus: obj.MARRIAGE,
+        education: obj.EDUCATION,
+        martialStatus: obj.MARRIAGE,
         age: obj.AGE,
-        initialCreditScore: risk || 100
+        initialCreditScore: risk || 0
     }
 };
 
