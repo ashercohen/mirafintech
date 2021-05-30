@@ -37,8 +37,7 @@ hs_err_pid*
 *node_modules/*
 
 #Generated data files
-*data/output/*
-*data/input/*
+*data/*
 
 #log files
 *logs/*
