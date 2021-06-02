@@ -1,10 +1,10 @@
 package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -18,7 +18,6 @@ import java.util.Objects;
 @Table(name = "TRANCHE")
 @Getter
 @Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tranche extends EntityBase<Tranche> {
@@ -35,21 +34,16 @@ public class Tranche extends EntityBase<Tranche> {
 
     private LocalDateTime creationDate;
 
-
     // TODO: add history of currentDebt (rename for a better name - balance?)
     //  in addition, we should record any operation that changed the balance (type: withdrawal, deposit; which loan, timestamp, etc)
-    private BigDecimal currentDebt;
+    private BigDecimal currentBalance;
 
-    // TODO: annotated as ManyToOne since multiple Tranches might point to the same RiskLevel object - verify correctness
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "risklevel_fk")
     private RiskLevel riskLevel;
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<Loan> loans = new ArrayList<>();
 
     // TODO:
     //  for each loan in the list, we need to mark it as "in" / "not in" the tranche
@@ -61,13 +55,28 @@ public class Tranche extends EntityBase<Tranche> {
     //  we can have a list of an entities each of them contains one loan and additional information like the
     //  flag "is in tranche" as well as "timestamp inserted/removed to/from tranche"
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    // TODO: add support for history ("DatedLoan")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+    @JoinColumn(name = "tranche_fk")
+    @Getter(value = AccessLevel.PRIVATE)
+    private List<Loan> loans = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Exchange exchange;
+
+    @OneToMany(mappedBy = "tranche", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TrancheEvent> eventLog = new ArrayList<>();
+    // TODO: addTrancheEvent() + removeTrancheEvent()
+
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "tranche", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
+//    // TODO: addPaymentAllocation() + removePaymentAllocation()
 
     private Tranche(Long id,
                     BigDecimal initialValue,
                     LocalDateTime creationDate,
-                    BigDecimal currentDebt,
+                    BigDecimal currentBalance,
                     RiskLevel riskLevel,
                     Status status,
                     List<Loan> loans,
@@ -75,7 +84,7 @@ public class Tranche extends EntityBase<Tranche> {
         this.id = id;
         this.initialValue = initialValue;
         this.creationDate = creationDate;
-        this.currentDebt = currentDebt;
+        this.currentBalance = currentBalance;
         this.riskLevel = riskLevel;
         this.status = status;
         this.loans = loans == null ? new ArrayList<>() : loans;
@@ -98,12 +107,35 @@ public class Tranche extends EntityBase<Tranche> {
                 null);
     }
 
-    public boolean addLoan(Loan loan) {
-        return addToCollection(this.loans, loan, this, "loan", loan::setTranche);
+    public BigDecimal currentBalance() {
+        // TODO: once currentBalance supports history update impl
+        return this.currentBalance;
+    }
+
+    public boolean addLoan(Loan loan, LocalDateTime timestamp) {
+        boolean loanAdded = this.loans.add(loan);
+        boolean trancheSetAtLoan = loan.setCurrentTranche(this, timestamp);
+
+        return loanAdded && trancheSetAtLoan;
     }
 
     public boolean removeLoan(Loan loan) {
-        return removeFromCollection(this.loans, loan, "loan", loan::setTranche);
+
+//        return removeFromCollection(this.loans, loan, "loan", loan::setTranche);
+        /**
+         * TODO:
+         *  - make sure Loan's identity is well defined (remove() relies on it)
+         *  - do we need to update the association from the other side?
+         */
+        return this.loans.remove(loan);
+    }
+
+    public boolean addTrancheEvent(TrancheEvent event) {
+        return addToCollection(this.eventLog, event, this, "event", event::setTranche);
+    }
+
+    public boolean removeTrancheEvent(TrancheEvent event) {
+        throw new RuntimeException("Tranche::removeTrancheEvent operation not supported");
     }
 
     @Override

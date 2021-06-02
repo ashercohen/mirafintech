@@ -24,9 +24,6 @@ public class LoansService {
     private TimeService timeService;
 
     @Autowired
-    private TranchesService tranchesService;
-
-    @Autowired
     private RiskService riskService;
 
     public Loan addLoan(LoanDto loanDto) {
@@ -42,8 +39,7 @@ public class LoansService {
         TimedRiskScore currentRiskScore = this.riskService.evaluateRiskScore(consumer);
 
         Loan loan = new Loan(timeService.getCurrentDateTime(), consumer, loanDto.getAmount(), currentRiskScore, merchant);
-        Loan persistedLoan = this.loanRepository.saveAndFlush(loan); // TODO: check if we need to use repository if we're inside a transaction
-        Tranche tranche = tranchesService.allocateLoanToTranche(persistedLoan);
+        Loan persistedLoan = this.loanRepository.save(loan);// this.loanRepository.saveAndFlush(loan); // TODO: check if we need to use repository if we're inside a transaction
 
         return persistedLoan;
     }

@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +11,12 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "TIMED_RISK_SCORE")
+@Table(name = "DATED_TRANCHE")
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TimedRiskScore extends EntityBase<TimedRiskScore> {
+public class DatedTranche {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,17 +24,18 @@ public class TimedRiskScore extends EntityBase<TimedRiskScore> {
 
     private LocalDateTime timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
-    @JoinColumn(name = "riskscore_fk")
-    private RiskScore riskScore;
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, optional = false, orphanRemoval = false)
+    @JoinColumn(name = "tranche_fk")
+    private Tranche tranche;
 
-    private TimedRiskScore(Long id, LocalDateTime timestamp, RiskScore riskScore) {
+    private DatedTranche(Long id, LocalDateTime timestamp, Tranche tranche) {
         this.id = id;
         this.timestamp = timestamp;
-        this.riskScore = riskScore;
+        this.tranche = tranche;
     }
 
-    public TimedRiskScore(LocalDateTime timestamp, RiskScore riskScore) {
-        this(null, timestamp, riskScore);
+    public DatedTranche(LocalDateTime timestamp, Tranche tranche) {
+        this(null, timestamp, tranche);
     }
 }

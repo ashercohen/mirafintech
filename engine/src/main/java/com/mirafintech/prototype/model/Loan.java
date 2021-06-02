@@ -2,15 +2,16 @@ package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,10 +20,9 @@ import java.util.Objects;
 @Table(name = "LOAN")
 @Getter
 @Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Loan extends EntityBase<Loan> {
+public class Loan extends EntityBase<Loan> /*implements Comparable<Loan>, Comparator<Loan>*/ {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,8 +30,8 @@ public class Loan extends EntityBase<Loan> {
 
     private LocalDateTime timestamp;
 
-    //TODO: verify bi-di association
-    @JsonIgnore // TODO: revisit this
+    @JsonIgnore
+    @Setter(value = AccessLevel.PRIVATE)
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Consumer consumer;
 
@@ -41,31 +41,38 @@ public class Loan extends EntityBase<Loan> {
      * maintains the history of (timed) risk levels associated with this loan
      * to get current risk level use 'currentRiskLevel()'
      */
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = false)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "loan_fk")
+    @Getter(value = AccessLevel.PRIVATE)
     private List<TimedRiskScore> timedRiskScores;
+    // TODO: addXXX() + removeXXX() ????
 
-//    @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)
-//    private List<RiskLevel> riskLevels;
-
-//    private String type;
-//    private String status;
-//    private BigDecimal fraudScore; // TODO: rethink on this. fraud or risk? how do we maintain history of the loan risk (keep list and get latest)
-
-    @JsonIgnore // TODO: revisit this
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnore
+    @Setter(value = AccessLevel.PRIVATE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Merchant merchant;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true) //TODO: make many2many as a loan might move between tranches
-    private Tranche tranche; //TODO: add support for tranche history
+    /**
+     * maintains the history of (dated) tranches associated with this loan
+     * to get current tranche this loan belongs to use 'currentTranche()'
+     */
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "loan_fk")
+    @Getter(value = AccessLevel.PRIVATE)
+    private List<DatedTranche> trancheHistory = new ArrayList<>();
+    // TODO: addXXX() + removeXXX() ????
 
-    @JsonIgnore // TODO: revisit this
-    @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
+    // TODO: addPaymentAllocation() + removePaymentAllocation()
 
-    @JsonIgnore // TODO: revisit this
-    @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Charge> charges = new ArrayList<>();
+    // TODO: addCharge() + removeCharge()
 
     private Loan(Long id,
                  LocalDateTime timestamp,
@@ -73,7 +80,7 @@ public class Loan extends EntityBase<Loan> {
                  BigDecimal amount,
                  List<TimedRiskScore> timedRiskScores,
                  Merchant merchant,
-                 Tranche tranche,
+                 List<DatedTranche> trancheHistory,
                  List<PaymentAllocation> paymentAllocations,
                  List<Charge> charges) {
         this.id = id;
@@ -82,7 +89,7 @@ public class Loan extends EntityBase<Loan> {
         this.amount = amount;
         this.timedRiskScores = timedRiskScores == null ? new ArrayList<>() : timedRiskScores;
         this.merchant = merchant;
-        this.tranche = tranche; //TODO: add support for tranche history
+        this.trancheHistory = trancheHistory == null ? new ArrayList<>() : trancheHistory;
         this.paymentAllocations = paymentAllocations;
         this.charges = charges;
     }
@@ -93,6 +100,30 @@ public class Loan extends EntityBase<Loan> {
                 TimedRiskScore timedRiskScore,
                 Merchant merchant) {
         this(null, timestamp, consumer, amount, new ArrayList<>(List.of(timedRiskScore)), merchant, null, null, null);
+    }
+
+    public TimedRiskScore currentRiskScore() {
+        return this.timedRiskScores.stream()
+                .max(Comparator.comparing(TimedRiskScore::getTimestamp).reversed())
+                .orElseThrow(() -> new RuntimeException("could not find current risk score: loan id=" + this.id));
+    }
+
+    public List<TimedRiskScore> riskScoreHistory() {
+        return this.timedRiskScores.stream().sorted(Comparator.comparing(TimedRiskScore::getTimestamp).reversed()).toList();
+    }
+
+    public boolean setCurrentTranche(Tranche tranche, LocalDateTime timestamp) { //TODO: check if opposite direction assignment is needed
+        return this.trancheHistory.add(new DatedTranche(timestamp, tranche));
+    }
+
+    public DatedTranche currentTranche() {
+        return this.trancheHistory.stream()
+                .max(Comparator.comparing(DatedTranche::getTimestamp))
+                .orElseThrow(() -> new RuntimeException("could not find current tranche: loan id=" + this.id));
+    }
+
+    public List<DatedTranche> trancheHistory() {
+        return this.trancheHistory.stream().sorted(Comparator.comparing(DatedTranche::getTimestamp).reversed()).toList();
     }
 
     @Override
