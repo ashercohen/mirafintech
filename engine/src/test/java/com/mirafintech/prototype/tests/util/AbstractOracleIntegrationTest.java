@@ -7,7 +7,7 @@ import com.mirafintech.prototype.tests.util.providers.Database;
  *
 
  */
-public abstract class AbstractOracleIntegrationTest extends com.mirafintech.prototype.tests.util.AbstractTest {
+public abstract class AbstractOracleIntegrationTest extends AbstractTest {
 
     @Override
     protected Database database() {
