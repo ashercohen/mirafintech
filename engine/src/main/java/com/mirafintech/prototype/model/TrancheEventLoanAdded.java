@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-//@DiscriminatorValue(value = "<>")
+//@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TrancheEventLoanAdded extends TrancheEvent {
 
@@ -17,10 +17,10 @@ public class TrancheEventLoanAdded extends TrancheEvent {
     @JoinColumn(name = "tranche_event_fk") // TODO: maybe need to rename to "loan_added__tranche_event_fk"
     private Loan loan;
 
-    @Column(name = "loan_added__tranche_balance_before")
+    @Column(name = "loan_added__balance_before")
     private BigDecimal trancheBalanceBefore;
 
-    @Column(name = "loan_added__tranche_balance_after")
+    @Column(name = "loan_added__balance_after")
     private BigDecimal trancheBalanceAfter;
 
     /**
