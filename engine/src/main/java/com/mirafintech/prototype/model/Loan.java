@@ -22,55 +22,54 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Loan extends EntityBase<Loan> /*implements Comparable<Loan>, Comparator<Loan>*/ {
+public class Loan extends EntityBase<Loan> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private LocalDateTime timestamp;
 
+    private BigDecimal amount;
+
     @JsonIgnore
     @Setter(value = AccessLevel.PRIVATE)
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {}, optional = false)
     private Consumer consumer;
 
-    private BigDecimal amount;
+    @JsonIgnore
+    @Setter(value = AccessLevel.PRIVATE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {}, optional = false)
+    private Merchant merchant;
 
     /**
      * maintains the history of (timed) risk levels associated with this loan
      * to get current risk level use 'currentRiskLevel()'
      */
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "loan_fk")
     @Getter(value = AccessLevel.PRIVATE)
-    private List<TimedRiskScore> timedRiskScores;
+    private List<DatedRiskScore> datedRiskScores;
     // TODO: addXXX() + removeXXX() ????
-
-    @JsonIgnore
-    @Setter(value = AccessLevel.PRIVATE)
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-    private Merchant merchant;
 
     /**
      * maintains the history of (dated) tranches associated with this loan
      * to get current tranche this loan belongs to use 'currentTranche()'
      */
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "loan_fk")
     @Getter(value = AccessLevel.PRIVATE)
     private List<DatedTranche> trancheHistory = new ArrayList<>();
     // TODO: addXXX() + removeXXX() ????
 
     @JsonIgnore
-    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "loan", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
     private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
     // TODO: addPaymentAllocation() + removePaymentAllocation()
 
     @JsonIgnore
-    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Charge> charges = new ArrayList<>();
     // TODO: addCharge() + removeCharge()
 
@@ -78,7 +77,7 @@ public class Loan extends EntityBase<Loan> /*implements Comparable<Loan>, Compar
                  LocalDateTime timestamp,
                  Consumer consumer,
                  BigDecimal amount,
-                 List<TimedRiskScore> timedRiskScores,
+                 List<DatedRiskScore> datedRiskScores,
                  Merchant merchant,
                  List<DatedTranche> trancheHistory,
                  List<PaymentAllocation> paymentAllocations,
@@ -87,29 +86,30 @@ public class Loan extends EntityBase<Loan> /*implements Comparable<Loan>, Compar
         this.timestamp = timestamp;
         this.consumer = consumer;
         this.amount = amount;
-        this.timedRiskScores = timedRiskScores == null ? new ArrayList<>() : timedRiskScores;
+        this.datedRiskScores = datedRiskScores == null ? new ArrayList<>() : datedRiskScores;
         this.merchant = merchant;
         this.trancheHistory = trancheHistory == null ? new ArrayList<>() : trancheHistory;
         this.paymentAllocations = paymentAllocations;
         this.charges = charges;
     }
 
-    public Loan(LocalDateTime timestamp,
+    public Loan(long id,
+                LocalDateTime timestamp,
                 Consumer consumer,
                 BigDecimal amount,
-                TimedRiskScore timedRiskScore,
+                DatedRiskScore datedRiskScore,
                 Merchant merchant) {
-        this(null, timestamp, consumer, amount, new ArrayList<>(List.of(timedRiskScore)), merchant, null, null, null);
+        this(id, timestamp, consumer, amount, new ArrayList<>(List.of(datedRiskScore)), merchant, null, null, null);
     }
 
-    public TimedRiskScore currentRiskScore() {
-        return this.timedRiskScores.stream()
-                .max(Comparator.comparing(TimedRiskScore::getTimestamp).reversed())
+    public DatedRiskScore currentRiskScore() {
+        return this.datedRiskScores.stream()
+                .max(Comparator.comparing(DatedRiskScore::getTimestamp).reversed())
                 .orElseThrow(() -> new RuntimeException("could not find current risk score: loan id=" + this.id));
     }
 
-    public List<TimedRiskScore> riskScoreHistory() {
-        return this.timedRiskScores.stream().sorted(Comparator.comparing(TimedRiskScore::getTimestamp).reversed()).toList();
+    public List<DatedRiskScore> riskScoreHistory() {
+        return this.datedRiskScores.stream().sorted(Comparator.comparing(DatedRiskScore::getTimestamp).reversed()).toList();
     }
 
     public boolean setCurrentTranche(Tranche tranche, LocalDateTime timestamp) { //TODO: check if opposite direction assignment is needed

@@ -25,7 +25,7 @@ public class OneToManyUniTest extends AbstractTest {
     protected Class<?>[] entities() {
         return new Class<?>[]{
                 Consumer.class,
-                TimedCreditScore.class
+                DatedCreditScore.class
         };
     }
 
@@ -40,9 +40,9 @@ public class OneToManyUniTest extends AbstractTest {
         doInJPA(entityManager -> {
             Consumer consumer = new Consumer(1L, 1000);
             LocalDateTime now = LocalDateTime.now();
-            consumer.addTimedCreditScore(new TimedCreditScore(50, now));
-            consumer.addTimedCreditScore(new TimedCreditScore(75, now.plusDays(1)));
-            consumer.addTimedCreditScore(new TimedCreditScore(100, now.plusDays(2)));
+            consumer.addTimedCreditScore(new DatedCreditScore(50, now));
+            consumer.addTimedCreditScore(new DatedCreditScore(75, now.plusDays(1)));
+            consumer.addTimedCreditScore(new DatedCreditScore(100, now.plusDays(2)));
             entityManager.persist(consumer);
         });
     }
@@ -55,7 +55,7 @@ public class OneToManyUniTest extends AbstractTest {
                     .setParameter("id", 1L)
                     .getSingleResult();
             assertNotNull(consumer);
-            assertEquals(3, consumer.getTimedCreditScores().size());
+            assertEquals(3, consumer.getDatedCreditScores().size());
         });
     }
 
@@ -64,13 +64,13 @@ public class OneToManyUniTest extends AbstractTest {
 
         doInJPA(entityManager -> {
             Consumer consumer = entityManager.find(Consumer.class, 1L);
-            consumer.addTimedCreditScore(new TimedCreditScore(99, LocalDateTime.now().plusDays(3)));
+            consumer.addTimedCreditScore(new DatedCreditScore(99, LocalDateTime.now().plusDays(3)));
             /**
              * not required to persist the consumer after adding a new TCS
              */
 //            entityManager.persist(consumer);
             Consumer consumer1 = entityManager.find(Consumer.class, 1L);
-            assertEquals(4, consumer1.getTimedCreditScores().size());
+            assertEquals(4, consumer1.getDatedCreditScores().size());
         });
     }
 
@@ -92,13 +92,13 @@ public class OneToManyUniTest extends AbstractTest {
             /**
              * List<TimedCreditScore> (= association target) is not accessed - table not queried
              */
-            List<TimedCreditScore> timedCreditScoreList = consumer.getTimedCreditScores();
+            List<DatedCreditScore> datedCreditScoreList = consumer.getDatedCreditScores();
             assertEquals(1, QueryCountHolder.getGrandTotal().getSelect());
 
             /**
              * once the association target is accessed - TCS table is queried
              */
-            TimedCreditScore timedCreditScore = timedCreditScoreList.get(0);
+            DatedCreditScore datedCreditScore = datedCreditScoreList.get(0);
             assertEquals(2, QueryCountHolder.getGrandTotal().getSelect());
         });
     }
@@ -109,11 +109,11 @@ public class OneToManyUniTest extends AbstractTest {
         doInJPA(entityManager -> {
             Consumer consumer = entityManager.find(Consumer.class, 1L);
             entityManager.remove(consumer);
-            List<TimedCreditScore> timedCreditScoreList =
-                    entityManager.createQuery("select t from TimedCreditScore t", TimedCreditScore.class)
+            List<DatedCreditScore> datedCreditScoreList =
+                    entityManager.createQuery("select t from DatedCreditScore t", DatedCreditScore.class)
                             .getResultList();
 
-            assertEquals(0, timedCreditScoreList.size());
+            assertEquals(0, datedCreditScoreList.size());
         });
     }
 
@@ -134,32 +134,32 @@ public class OneToManyUniTest extends AbstractTest {
 
         @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
         @JoinColumn(name = "consumer_fk")
-        private List<TimedCreditScore> timedCreditScores = new ArrayList<>();
+        private List<DatedCreditScore> datedCreditScores = new ArrayList<>();
 
-        private Consumer(Long id, Integer limitBalance, LocalDateTime addedAt, List<TimedCreditScore> timedCreditScores) {
+        private Consumer(Long id, Integer limitBalance, LocalDateTime addedAt, List<DatedCreditScore> datedCreditScores) {
             this.id = id;
             this.limitBalance = limitBalance;
             this.addedAt = addedAt;
-            this.timedCreditScores = timedCreditScores == null ? new ArrayList<>() : timedCreditScores;
+            this.datedCreditScores = datedCreditScores == null ? new ArrayList<>() : datedCreditScores;
         }
 
         public Consumer(Long id, Integer limitBalance) {
             this(id, limitBalance, LocalDateTime.now(), null);
         }
 
-        public boolean addTimedCreditScore(TimedCreditScore timedCreditScore) {
-            return Optional.ofNullable(timedCreditScore)
-                    .map(score -> this.timedCreditScores.add(score))
+        public boolean addTimedCreditScore(DatedCreditScore datedCreditScore) {
+            return Optional.ofNullable(datedCreditScore)
+                    .map(score -> this.datedCreditScores.add(score))
                     .orElseThrow(() -> new IllegalArgumentException("timedCreditScore is null"));
         }
     }
 
-    @Entity(name = "TimedCreditScore")
-    @Table(name = "TIMED_CREDIT_SCORE")
+    @Entity(name = "DatedCreditScore")
+    @Table(name = "DATED_CREDIT_SCORE")
     @Getter
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class TimedCreditScore extends EntityBase<TimedCreditScore> {
+    public static class DatedCreditScore extends EntityBase<DatedCreditScore> {
 
         @JsonIgnore
         @Id
@@ -169,13 +169,13 @@ public class OneToManyUniTest extends AbstractTest {
         private int value;
         private LocalDateTime timestamp;
 
-        private TimedCreditScore(Long id, int value, LocalDateTime timestamp) {
+        private DatedCreditScore(Long id, int value, LocalDateTime timestamp) {
             this.id = id;
             this.value = value;
             this.timestamp = timestamp;
         }
 
-        public TimedCreditScore(int value, LocalDateTime timestamp) {
+        public DatedCreditScore(int value, LocalDateTime timestamp) {
             this(null, value, timestamp);
         }
     }

@@ -23,7 +23,7 @@ public class PaymentAllocation extends EntityBase<PaymentAllocation> {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Payment payment;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH, optional = false)
     private Loan loan;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

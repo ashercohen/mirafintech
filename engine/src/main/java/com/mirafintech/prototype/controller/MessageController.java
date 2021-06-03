@@ -50,14 +50,20 @@ public class MessageController {
         }
         this.timeService.setTime(loan.getTimestamp());
         // persist loan
-        Loan persistedLoan = this.loansService.addLoan(loan);
+        Loan persistedLoan = this.loansService.processLoan(loan);
 
         // allocate to tranche
         Tranche tranche = tranchesService.allocateLoanToTranche(persistedLoan);
 
-        // TODO: persist loan and tranche
+        // TODO: update consumer balance
 
         return ResponseEntity.of(Optional.ofNullable(persistedLoan));
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(path = {"loans/{id}"}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Loan> getLoan(@PathVariable long id) {
+        return ResponseEntity.of(this.loansService.findById(id));
     }
 
     @Transactional(readOnly = false)

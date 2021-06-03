@@ -100,7 +100,7 @@ public class Tranche extends EntityBase<Tranche> {
                 null,
                 initialValue,
                 timestamp,
-                BigDecimal.ZERO,
+                initialValue,
                 new RiskLevel(riskLevelId, lowerBound, upperBound),
                 Status.ACTIVE,
                 null,

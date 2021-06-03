@@ -25,8 +25,8 @@ public class DatedTranche {
     private LocalDateTime timestamp;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, optional = false, orphanRemoval = false)
-    @JoinColumn(name = "tranche_fk")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
+    @JoinColumn(name = "tranche_fk_many_to_one")
     private Tranche tranche;
 
     private DatedTranche(Long id, LocalDateTime timestamp, Tranche tranche) {
