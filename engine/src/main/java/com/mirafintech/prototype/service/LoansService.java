@@ -6,6 +6,10 @@ import com.mirafintech.prototype.repository.ConsumerRepository;
 import com.mirafintech.prototype.repository.LoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 
 @Service
@@ -24,12 +28,18 @@ public class LoansService {
     private TimeService timeService;
 
     @Autowired
-    private TranchesService tranchesService;
-
-    @Autowired
     private RiskService riskService;
 
-    public Loan addLoan(LoanDto loanDto) {
+    /**
+     * create a Loan entity and persist in the db
+     * balance(s) updates etc are not performed here
+     */
+    @Transactional(readOnly = false, propagation = Propagation.MANDATORY)
+    public Loan processLoan(LoanDto loanDto) {
+
+        if (this.loanRepository.findById(loanDto.getId()).isPresent()) {
+            throw new IllegalArgumentException("loan already exists: id=" + loanDto.getId());
+        }
 
         Consumer consumer = this.consumerRepository
                 .findById(loanDto.getConsumerId())
@@ -39,13 +49,20 @@ public class LoansService {
                 .findMerchant(loanDto.getMerchantId())
                 .orElseThrow(() -> new RuntimeException("merchant not found: id=" + loanDto.getMerchantId()));
 
-        TimedRiskScore currentRiskScore = this.riskService.evaluateRiskScore(consumer);
+        Loan loan = new Loan(
+                loanDto.getId(),
+                timeService.getCurrentDateTime(),
+                consumer,
+                loanDto.getAmount(),
+                this.riskService.evaluateRiskScore(consumer),
+                merchant
+        );
 
-        Loan loan = new Loan(timeService.getCurrentDateTime(), consumer, loanDto.getAmount(), currentRiskScore, merchant);
-        Loan persistedLoan = this.loanRepository.saveAndFlush(loan); // TODO: check if we need to use repository if we're inside a transaction
-        Tranche tranche = tranchesService.allocateLoanToTranche(persistedLoan);
+        return this.loanRepository.save(loan);
+    }
 
-        return persistedLoan;
+    public Optional<Loan> findById(long id) {
+        return this.loanRepository.findById(id);
     }
 
 }

@@ -5,7 +5,6 @@ import com.mirafintech.prototype.dto.ConsumerDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,7 +18,6 @@ import java.util.Optional;
 @Table(name = "CONSUMER")
 @Getter
 @Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Consumer extends EntityBase<Consumer> {
@@ -39,15 +37,18 @@ public class Consumer extends EntityBase<Consumer> {
 
     private LocalDateTime addedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "timedcreditscore_fk")
-    private List<TimedCreditScore> timedCreditScores = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+    @JoinColumn(name = "consumer_fk")
+    private List<DatedCreditScore> datedCreditScores = new ArrayList<>();
+    // TODO: addTimedCreditScore() + removeTimedCreditScore() - see test for example
 
-    @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Loan> loans = new ArrayList<>();
+    // TODO: addLoan() + removeLoan()
 
-    @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Payment> payments = new ArrayList<>();
+    // TODO: addPayment() + removePayment()
 
     private Consumer(Long id,
                      Integer limitBalance,
@@ -56,7 +57,7 @@ public class Consumer extends EntityBase<Consumer> {
                      Integer martialStatus,
                      Integer age,
                      LocalDateTime addedAt,
-                     List<TimedCreditScore> timedCreditScores,
+                     List<DatedCreditScore> datedCreditScores,
                      List<Loan> loans,
                      List<Payment> payments) {
         this.id = id;
@@ -66,12 +67,12 @@ public class Consumer extends EntityBase<Consumer> {
         this.martialStatus = martialStatus;
         this.age = age;
         this.addedAt = addedAt;
-        this.timedCreditScores = timedCreditScores == null ? new ArrayList<>() : timedCreditScores;
+        this.datedCreditScores = datedCreditScores == null ? new ArrayList<>() : datedCreditScores;
         this.loans = loans == null ? new ArrayList<>() : loans;
         this.payments = payments == null ? new ArrayList<>() : payments;
     }
 
-    public Consumer(ConsumerDto dto, TimedCreditScore creditScore, LocalDateTime timestamp) {
+    public Consumer(ConsumerDto dto, DatedCreditScore creditScore, LocalDateTime timestamp) {
         this(dto.getId(),
              dto.getLimitBalance(),
              dto.getEducation(),
@@ -84,25 +85,17 @@ public class Consumer extends EntityBase<Consumer> {
              null);
     }
 
-    public TimedCreditScore currentCreditScore() {
-        return this.timedCreditScores
+    public DatedCreditScore currentCreditScore() {
+        return this.datedCreditScores
                 .stream()
-                .max(Comparator.comparing(TimedCreditScore::getTimestamp))
+                .max(Comparator.comparing(DatedCreditScore::getTimestamp))
                 .orElseThrow(() -> new RuntimeException("consumer does not have credit score: id=" + this.id));
     }
 
-    public Optional<TimedCreditScore> creditScoreAt(LocalDateTime localDateTime) {
-        return this.timedCreditScores
+    public Optional<DatedCreditScore> creditScoreAt(LocalDateTime localDateTime) {
+        return this.datedCreditScores
                 .stream()
                 .filter(score -> score.getTimestamp().equals(localDateTime))
                 .findAny(); // TODO: assuming user has max one score at specified time
-    }
-
-    public boolean addLoan(Loan loan) {
-        return addToCollection(this.loans, loan, this, "loan", loan::setConsumer);
-    }
-
-    public boolean removeLoan(Loan loan) {
-        return removeFromCollection(this.loans, loan, "loan", loan::setConsumer);
     }
 }

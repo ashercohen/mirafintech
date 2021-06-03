@@ -9,36 +9,32 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "TIMED_CREDIT_SCORE")
+@Table(name = "DATED_CREDIT_SCORE")
 @Getter
-//@Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TimedCreditScore {
+public class DatedCreditScore {
 
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-//    @Setter(value = AccessLevel.PRIVATE)
     private int value;
 
-//    @Setter(value = AccessLevel.PRIVATE)
     private LocalDateTime timestamp;
 
-    private TimedCreditScore(Long id, int value, LocalDateTime timestamp) {
+    private DatedCreditScore(Long id, int value, LocalDateTime timestamp) {
         this.id = id;
         this.value = value;
         this.timestamp = timestamp;
     }
 
-    public TimedCreditScore(int value, LocalDateTime timestamp) {
+    public DatedCreditScore(int value, LocalDateTime timestamp) {
         this(null, value, timestamp);
     }
 
-    public TimedCreditScore withTimestamp(LocalDateTime newTimestamp) {
-        return new TimedCreditScore(null, this.value, newTimestamp);
+    public DatedCreditScore withTimestamp(LocalDateTime newTimestamp) {
+        return new DatedCreditScore(null, this.value, newTimestamp);
     }
 }

@@ -21,7 +21,7 @@ public class SpringDataConfiguration {
 
     private static final DatabaseConfiguration DATABASE_CONFIGURATION;
 
-    private static boolean USE_POSTGRES = false;
+    private static boolean USE_POSTGRES = true;
 
     static {
         DATABASE_CONFIGURATION = new DatabaseConfiguration();

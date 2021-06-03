@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.List;
 @Table(name = "EXCHANGE")
 @Getter
 @Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Exchange extends EntityBase<Exchange> {
@@ -25,14 +23,13 @@ public class Exchange extends EntityBase<Exchange> {
 
     private String name;
 
-    @OneToMany(mappedBy = "exchange", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "exchange", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tranche> tranches = new ArrayList<>();
+    // TODO: addTranche() + removeTranche()
 
-    public boolean addTranche(Tranche tranche) {
-        return addToCollection(this.tranches, tranche, this, "tranche", tranche::setExchange);
-    }
-
-    public boolean removeTrance(Tranche tranche) {
-        return removeFromCollection(this.tranches, tranche, "tranche", tranche::setExchange);
+    private Exchange(Long id, String name, List<Tranche> tranches) {
+        this.id = id;
+        this.name = name;
+        this.tranches = tranches;
     }
 }
