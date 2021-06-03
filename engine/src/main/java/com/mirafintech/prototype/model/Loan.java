@@ -32,7 +32,7 @@ public class Loan extends EntityBase<Loan> {
     private BigDecimal amount;
 
     @JsonIgnore
-    @Setter(value = AccessLevel.PRIVATE)
+    @Setter(value = AccessLevel.PROTECTED)
     @ManyToOne(fetch = FetchType.LAZY, cascade = {}, optional = false)
     private Consumer consumer;
 
