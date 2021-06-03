@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Entity
@@ -37,6 +35,8 @@ public class Consumer extends EntityBase<Consumer> {
 
     private LocalDateTime addedAt;
 
+    private BigDecimal currentBalance = BigDecimal.ZERO;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "consumer_fk")
     private List<DatedCreditScore> datedCreditScores = new ArrayList<>();
@@ -44,11 +44,14 @@ public class Consumer extends EntityBase<Consumer> {
 
     @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Loan> loans = new ArrayList<>();
-    // TODO: addLoan() + removeLoan()
 
     @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Payment> payments = new ArrayList<>();
     // TODO: addPayment() + removePayment()
+
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConsumerEvent> eventLog = new ArrayList<>();
+    // TODO: add removeXXXEvent() ???
 
     private Consumer(Long id,
                      Integer limitBalance,
@@ -57,6 +60,7 @@ public class Consumer extends EntityBase<Consumer> {
                      Integer martialStatus,
                      Integer age,
                      LocalDateTime addedAt,
+                     BigDecimal currentBalance,
                      List<DatedCreditScore> datedCreditScores,
                      List<Loan> loans,
                      List<Payment> payments) {
@@ -67,6 +71,7 @@ public class Consumer extends EntityBase<Consumer> {
         this.martialStatus = martialStatus;
         this.age = age;
         this.addedAt = addedAt;
+        this.currentBalance = currentBalance;
         this.datedCreditScores = datedCreditScores == null ? new ArrayList<>() : datedCreditScores;
         this.loans = loans == null ? new ArrayList<>() : loans;
         this.payments = payments == null ? new ArrayList<>() : payments;
@@ -80,6 +85,7 @@ public class Consumer extends EntityBase<Consumer> {
              dto.getMartialStatus(),
              dto.getAge(),
              timestamp,
+             BigDecimal.ZERO,
              new ArrayList<>(List.of(creditScore)),
              null,
              null);
@@ -97,5 +103,30 @@ public class Consumer extends EntityBase<Consumer> {
                 .stream()
                 .filter(score -> score.getTimestamp().equals(localDateTime))
                 .findAny(); // TODO: assuming user has max one score at specified time
+    }
+
+    public boolean addConsumerEvent(ConsumerEvent event) {
+        return addToCollection(this.eventLog, event, this, "event", event::setConsumer);
+    }
+
+    public boolean addLoan(Loan loan) {
+        return addToCollection(this.loans, loan, this, "loan", loan::setConsumer);
+    }
+
+    public boolean hasLoan(Loan loan) {
+        return this.loans.stream().anyMatch(l -> l.getId().longValue() == loan.getId().longValue());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Consumer that = (Consumer) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -36,4 +36,8 @@ public class MerchantService {
 
         return this.repository.saveAndFlush(merchant);
     }
+
+    public Optional<Merchant> findById(long id) {
+        return this.repository.findById(id);
+    }
 }

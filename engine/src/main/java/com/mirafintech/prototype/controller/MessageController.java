@@ -48,6 +48,7 @@ public class MessageController {
         if (loan.getId() != id) {
             return ResponseEntity.badRequest().build();
         }
+
         this.timeService.setTime(loan.getTimestamp());
         // persist loan
         Loan persistedLoan = this.loansService.processLoan(loan);
@@ -56,6 +57,7 @@ public class MessageController {
         Tranche tranche = tranchesService.allocateLoanToTranche(persistedLoan);
 
         // TODO: update consumer balance
+        Consumer consumer = this.consumersService.addLoan(loan.getConsumerId(), persistedLoan);
 
         return ResponseEntity.of(Optional.ofNullable(persistedLoan));
     }
@@ -78,6 +80,12 @@ public class MessageController {
         return ResponseEntity.of(Optional.ofNullable(savedEntity));
     }
 
+    @Transactional(readOnly = true)
+    @RequestMapping(path = {"consumers/{id}"}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Consumer> getConsumer(@PathVariable long id) {
+        return ResponseEntity.of(this.consumersService.findById(id));
+    }
+
     @Transactional(readOnly = false)
     @RequestMapping(path = {"merchants/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Merchant> addMerchant(@RequestBody MerchantDto merchant, @PathVariable long id) {
@@ -88,6 +96,12 @@ public class MessageController {
         Merchant savedEntity = this.merchantService.addMerchant(merchant);
 
         return ResponseEntity.of(Optional.ofNullable(savedEntity));
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(path = {"merchants/{id}"}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Merchant> getMerchant(@PathVariable long id) {
+        return ResponseEntity.of(this.merchantService.findById(id));
     }
 
     @Transactional(readOnly = false)
@@ -108,6 +122,18 @@ public class MessageController {
         int numTranches = this.configurationService.apply(configuration);
 
         return ResponseEntity.ok().body(String.format("initialized %d tranches", numTranches));
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(path = {"set/time"}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<LocalDateTime> getTime() {
+        return ResponseEntity.ok(this.timeService.getCurrentDateTime());
+    }
+
+    @Transactional(readOnly = true)
+    @RequestMapping(path = {"tranches/{id}"}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Tranche> getTranche(@PathVariable long id) {
+        return ResponseEntity.of(this.tranchesService.findById(id));
     }
 
     /**

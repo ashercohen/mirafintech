@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 
@@ -152,8 +153,12 @@ public class TranchesService {
          * - balance history - TODO: should we update this as part of the action history (OR it will be calculated on demand by a method? -- NO!!!)
          */
 
-        TrancheEvent event = TrancheEventLoanAdded.createTrancheEventLoanAdded(loan, tranche, timestamp, "tranche_service");
+        TrancheEvent event = TrancheEventLoanAdded.create(loan, tranche, timestamp, "tranche_service");
 
         return tranche.addLoan(loan, timestamp); // also calls loan.setTranche(tranche);
+    }
+
+    public Optional<Tranche> findById(long id) {
+        return this.repository.findById(id);
     }
 }

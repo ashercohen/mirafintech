@@ -6,6 +6,8 @@ import com.mirafintech.prototype.repository.SystemTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -21,6 +23,7 @@ public class TimeService {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED) // Support current transaction, create a new one if none exists
     public SystemTime setTime(LocalDateTime newDateTime) {
 
         SystemTime systemTime = new SystemTime(newDateTime);
@@ -33,7 +36,6 @@ public class TimeService {
 
         currentTime.ifPresent((current) -> advanceMultipleDays(current, newDateTime));
 
-        // TODO: should this be persisted here or in event handler?
         return repository.saveAndFlush(systemTime);
     }
 

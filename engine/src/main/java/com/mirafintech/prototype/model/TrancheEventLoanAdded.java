@@ -26,7 +26,7 @@ public class TrancheEventLoanAdded extends TrancheEvent {
     /**
      * create and handle/apply event on tranche
      */
-    public static TrancheEventLoanAdded createTrancheEventLoanAdded(Loan loan, Tranche tranche, LocalDateTime timestamp, String cause) {
+    public static TrancheEventLoanAdded create(Loan loan, Tranche tranche, LocalDateTime timestamp, String cause) {
 
         TrancheEventLoanAdded event = new TrancheEventLoanAdded(loan, tranche, timestamp, cause);
         tranche.addTrancheEvent(event);
