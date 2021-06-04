@@ -161,4 +161,8 @@ public class TranchesService {
     public Optional<Tranche> findById(long id) {
         return this.repository.findById(id);
     }
+
+    public List<Tranche> findAll() {
+        return this.repository.findAll();
+    }
 }

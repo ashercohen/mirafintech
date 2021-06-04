@@ -5,10 +5,12 @@ import com.mirafintech.prototype.model.*;
 import com.mirafintech.prototype.repository.ConsumerRepository;
 import com.mirafintech.prototype.repository.LoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -63,6 +65,10 @@ public class LoansService {
 
     public Optional<Loan> findById(long id) {
         return this.loanRepository.findById(id);
+    }
+
+    public List<Loan> findAll() {
+        return this.loanRepository.findAll(Sort.by(Sort.Order.by("timestamp")).descending());
     }
 
 }

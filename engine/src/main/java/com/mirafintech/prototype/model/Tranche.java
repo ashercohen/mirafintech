@@ -1,7 +1,7 @@
 package com.mirafintech.prototype.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,6 +38,7 @@ public class Tranche extends EntityBase<Tranche> {
     //  in addition, we should record any operation that changed the balance (type: withdrawal, deposit; which loan, timestamp, etc)
     private BigDecimal currentBalance;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "risklevel_fk")
     private RiskLevel riskLevel;
@@ -58,7 +59,6 @@ public class Tranche extends EntityBase<Tranche> {
     // TODO: add support for history ("DatedLoan")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "tranche_fk")
-    @Getter(value = AccessLevel.PRIVATE)
     private List<Loan> loans = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
@@ -136,6 +136,15 @@ public class Tranche extends EntityBase<Tranche> {
 
     public boolean removeTrancheEvent(TrancheEvent event) {
         throw new RuntimeException("Tranche::removeTrancheEvent operation not supported");
+    }
+
+    /**
+     * formatted view of the riskLevel
+     * used for json serialization only
+     * name format is also a hack
+     */
+    public String get_riskLevel() {
+        return this.riskLevel.toString();
     }
 
     @Override
