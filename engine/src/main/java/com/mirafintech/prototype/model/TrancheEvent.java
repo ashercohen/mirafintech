@@ -2,6 +2,7 @@ package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 //@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
 public abstract class TrancheEvent extends EntityBase<TrancheEvent> {
 
     /**

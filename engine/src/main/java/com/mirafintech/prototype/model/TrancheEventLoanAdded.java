@@ -1,6 +1,7 @@
 package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Getter
 public class TrancheEventLoanAdded extends TrancheEvent {
 
     // TODO: check if optional=false work with inheritance hierarchy (we're using SINGLE_TABLE @nonNull isn't supported)
