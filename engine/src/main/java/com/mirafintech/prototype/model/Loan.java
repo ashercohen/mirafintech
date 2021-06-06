@@ -2,15 +2,16 @@ package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,80 +20,110 @@ import java.util.Objects;
 @Table(name = "LOAN")
 @Getter
 @Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Loan extends EntityBase<Loan> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private LocalDateTime timestamp;
 
-    //TODO: verify bi-di association
-    @JsonIgnore // TODO: revisit this
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    private BigDecimal amount;
+
+    @JsonIgnore
+    @Setter(value = AccessLevel.PROTECTED)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {}, optional = false)
     private Consumer consumer;
 
-    private BigDecimal amount;
+    @JsonIgnore
+    @Setter(value = AccessLevel.PRIVATE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {}, optional = false)
+    private Merchant merchant;
 
     /**
      * maintains the history of (timed) risk levels associated with this loan
      * to get current risk level use 'currentRiskLevel()'
      */
-    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = false)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "loan_fk")
-    private List<TimedRiskScore> timedRiskScores;
+    @Getter(value = AccessLevel.PRIVATE)
+    private List<DatedRiskScore> datedRiskScores;
+    // TODO: addXXX() + removeXXX() ????
 
-//    @OneToMany(mappedBy = "tranche", cascade = {CascadeType.ALL}, orphanRemoval = true)
-//    private List<RiskLevel> riskLevels;
+    /**
+     * maintains the history of (dated) tranches associated with this loan
+     * to get current tranche this loan belongs to use 'currentTranche()'
+     */
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+    @JoinColumn(name = "loan_fk")
+    @Getter(value = AccessLevel.PRIVATE)
+    private List<DatedTranche> trancheHistory = new ArrayList<>();
+    // TODO: addXXX() + removeXXX() ????
 
-//    private String type;
-//    private String status;
-//    private BigDecimal fraudScore; // TODO: rethink on this. fraud or risk? how do we maintain history of the loan risk (keep list and get latest)
-
-    @JsonIgnore // TODO: revisit this
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Merchant merchant;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = true) //TODO: make many2many as a loan might move between tranches
-    private Tranche tranche; //TODO: add support for tranche history
-
-    @JsonIgnore // TODO: revisit this
-    @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "loan", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
     private List<PaymentAllocation> paymentAllocations = new ArrayList<>();
+    // TODO: addPaymentAllocation() + removePaymentAllocation()
 
-    @JsonIgnore // TODO: revisit this
-    @OneToMany(mappedBy = "loan", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "loan", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Charge> charges = new ArrayList<>();
+    // TODO: addCharge() + removeCharge()
 
     private Loan(Long id,
                  LocalDateTime timestamp,
                  Consumer consumer,
                  BigDecimal amount,
-                 List<TimedRiskScore> timedRiskScores,
+                 List<DatedRiskScore> datedRiskScores,
                  Merchant merchant,
-                 Tranche tranche,
+                 List<DatedTranche> trancheHistory,
                  List<PaymentAllocation> paymentAllocations,
                  List<Charge> charges) {
         this.id = id;
         this.timestamp = timestamp;
         this.consumer = consumer;
         this.amount = amount;
-        this.timedRiskScores = timedRiskScores == null ? new ArrayList<>() : timedRiskScores;
+        this.datedRiskScores = datedRiskScores == null ? new ArrayList<>() : datedRiskScores;
         this.merchant = merchant;
-        this.tranche = tranche; //TODO: add support for tranche history
+        this.trancheHistory = trancheHistory == null ? new ArrayList<>() : trancheHistory;
         this.paymentAllocations = paymentAllocations;
         this.charges = charges;
     }
 
-    public Loan(LocalDateTime timestamp,
+    public Loan(long id,
+                LocalDateTime timestamp,
                 Consumer consumer,
                 BigDecimal amount,
-                TimedRiskScore timedRiskScore,
+                DatedRiskScore datedRiskScore,
                 Merchant merchant) {
-        this(null, timestamp, consumer, amount, new ArrayList<>(List.of(timedRiskScore)), merchant, null, null, null);
+        this(id, timestamp, consumer, amount, new ArrayList<>(List.of(datedRiskScore)), merchant, null, null, null);
+    }
+
+    public DatedRiskScore currentRiskScore() {
+        return this.datedRiskScores.stream()
+                .max(Comparator.comparing(DatedRiskScore::getTimestamp).reversed())
+                .orElseThrow(() -> new RuntimeException("could not find current risk score: loan id=" + this.id));
+    }
+
+    public List<DatedRiskScore> riskScoreHistory() {
+        return this.datedRiskScores.stream().sorted(Comparator.comparing(DatedRiskScore::getTimestamp).reversed()).toList();
+    }
+
+    public boolean setCurrentTranche(Tranche tranche, LocalDateTime timestamp) { //TODO: check if opposite direction assignment is needed
+        return this.trancheHistory.add(new DatedTranche(timestamp, tranche));
+    }
+
+    public DatedTranche currentTranche() {
+        return this.trancheHistory.stream()
+                .max(Comparator.comparing(DatedTranche::getTimestamp))
+                .orElseThrow(() -> new RuntimeException("could not find current tranche: loan id=" + this.id));
+    }
+
+    public List<DatedTranche> trancheHistory() {
+        return this.trancheHistory.stream().sorted(Comparator.comparing(DatedTranche::getTimestamp).reversed()).toList();
     }
 
     @Override

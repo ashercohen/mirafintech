@@ -5,21 +5,17 @@ import com.mirafintech.prototype.dto.ConsumerDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Entity
 @Table(name = "CONSUMER")
 @Getter
 @Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Consumer extends EntityBase<Consumer> {
@@ -39,15 +35,23 @@ public class Consumer extends EntityBase<Consumer> {
 
     private LocalDateTime addedAt;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "timedcreditscore_fk")
-    private List<TimedCreditScore> timedCreditScores = new ArrayList<>();
+    private BigDecimal currentBalance = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+    @JoinColumn(name = "consumer_fk")
+    private List<DatedCreditScore> datedCreditScores = new ArrayList<>();
+    // TODO: addTimedCreditScore() + removeTimedCreditScore() - see test for example
+
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Loan> loans = new ArrayList<>();
 
-    @OneToMany(mappedBy = "consumer", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Payment> payments = new ArrayList<>();
+    // TODO: addPayment() + removePayment()
+
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ConsumerEvent> eventLog = new ArrayList<>();
+    // TODO: add removeXXXEvent() ???
 
     private Consumer(Long id,
                      Integer limitBalance,
@@ -56,7 +60,8 @@ public class Consumer extends EntityBase<Consumer> {
                      Integer martialStatus,
                      Integer age,
                      LocalDateTime addedAt,
-                     List<TimedCreditScore> timedCreditScores,
+                     BigDecimal currentBalance,
+                     List<DatedCreditScore> datedCreditScores,
                      List<Loan> loans,
                      List<Payment> payments) {
         this.id = id;
@@ -66,12 +71,13 @@ public class Consumer extends EntityBase<Consumer> {
         this.martialStatus = martialStatus;
         this.age = age;
         this.addedAt = addedAt;
-        this.timedCreditScores = timedCreditScores == null ? new ArrayList<>() : timedCreditScores;
+        this.currentBalance = currentBalance;
+        this.datedCreditScores = datedCreditScores == null ? new ArrayList<>() : datedCreditScores;
         this.loans = loans == null ? new ArrayList<>() : loans;
         this.payments = payments == null ? new ArrayList<>() : payments;
     }
 
-    public Consumer(ConsumerDto dto, TimedCreditScore creditScore, LocalDateTime timestamp) {
+    public Consumer(ConsumerDto dto, DatedCreditScore creditScore, LocalDateTime timestamp) {
         this(dto.getId(),
              dto.getLimitBalance(),
              dto.getEducation(),
@@ -79,30 +85,48 @@ public class Consumer extends EntityBase<Consumer> {
              dto.getMartialStatus(),
              dto.getAge(),
              timestamp,
+             BigDecimal.ZERO,
              new ArrayList<>(List.of(creditScore)),
              null,
              null);
     }
 
-    public TimedCreditScore currentCreditScore() {
-        return this.timedCreditScores
+    public DatedCreditScore currentCreditScore() {
+        return this.datedCreditScores
                 .stream()
-                .max(Comparator.comparing(TimedCreditScore::getTimestamp))
+                .max(Comparator.comparing(DatedCreditScore::getTimestamp))
                 .orElseThrow(() -> new RuntimeException("consumer does not have credit score: id=" + this.id));
     }
 
-    public Optional<TimedCreditScore> creditScoreAt(LocalDateTime localDateTime) {
-        return this.timedCreditScores
+    public Optional<DatedCreditScore> creditScoreAt(LocalDateTime localDateTime) {
+        return this.datedCreditScores
                 .stream()
                 .filter(score -> score.getTimestamp().equals(localDateTime))
                 .findAny(); // TODO: assuming user has max one score at specified time
+    }
+
+    public boolean addConsumerEvent(ConsumerEvent event) {
+        return addToCollection(this.eventLog, event, this, "event", event::setConsumer);
     }
 
     public boolean addLoan(Loan loan) {
         return addToCollection(this.loans, loan, this, "loan", loan::setConsumer);
     }
 
-    public boolean removeLoan(Loan loan) {
-        return removeFromCollection(this.loans, loan, "loan", loan::setConsumer);
+    public boolean hasLoan(Loan loan) {
+        return this.loans.stream().anyMatch(l -> l.getId().longValue() == loan.getId().longValue());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Consumer that = (Consumer) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -13,13 +13,14 @@ import javax.persistence.*;
 @Table(name = "RISK_SCORE")
 @Getter
 @Setter
-//@ToString
+@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RiskScore extends EntityBase<RiskScore> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @ToString.Exclude
     private Long id;
 
     private int value; // [0..100]

@@ -1,9 +1,7 @@
-package com.mirafintech.prototype.tests.datamodel;
+package com.mirafintech.prototype.tests.association;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.EntityBase;
-import com.mirafintech.prototype.tests.association.BidirectionalOneToManyTest;
 import com.mirafintech.prototype.tests.util.AbstractTest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +18,8 @@ import java.util.Objects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class OneToOneUni extends AbstractTest {
+
+public class OneToOneUniTest extends AbstractTest {
 
     @Override
     protected Class<?>[] entities() {
@@ -33,13 +32,12 @@ public class OneToOneUni extends AbstractTest {
     @Override
     public void destroy() {
         // comment this line in order not to drop the tables
-//        super.destroy();
+        super.destroy();
     }
 
     @Override
     protected void afterInit() {
         doInJPA(entityManager -> {
-
             LocalDateTime timestamp = LocalDateTime.now();
             Tranche tranche = Tranche.createEmptyTranche(new BigDecimal(1000000), timestamp);
             entityManager.persist(tranche);
@@ -52,62 +50,61 @@ public class OneToOneUni extends AbstractTest {
     public void testLifecycle() {
         final Tranche[] pt = new Tranche[1];
         doInJPA(entityManager -> {
-            final Tranche persistedTranche = entityManager.createQuery(
-                    """
-                            select t \
-                            from Tranche t
-                            where t.id = :id 
-                            """, Tranche.class)
-                    .setParameter("id", 1L)
-                    .getSingleResult();
+            final Tranche persistedTranche =
+                    entityManager.createQuery("select t from Tranche t where t.id = :id ", Tranche.class)
+                            .setParameter("id", 1L)
+                            .getSingleResult();
             assertNotNull(persistedTranche);
             pt[0] = persistedTranche;
         });
 
-       doInJPA(entityManager -> {
-
-           List<DatedTranche> datedTranches = entityManager.createQuery(
-                   """
-                           select dt 
-                           from DatedTranche dt
-                           """, DatedTranche.class)
-                   .getResultList();
-           assertEquals(1, datedTranches.size());
-           Long id = datedTranches.get(0).getTranche().getId();
-           assertEquals(pt[0].getId(), id);
-
-       });
+        doInJPA(entityManager -> {
+            List<DatedTranche> datedTranches =
+                    entityManager.createQuery("select dt from DatedTranche dt", DatedTranche.class)
+                            .getResultList();
+            assertEquals(1, datedTranches.size());
+            Long id = datedTranches.get(0).getTranche().getId();
+            assertEquals(pt[0].getId(), id);
+        });
     }
 
     @Test
     public void testRemove() {
         doInJPA(entityManager -> {
-            BidirectionalOneToManyTest.Post post = entityManager.find(BidirectionalOneToManyTest.Post.class, 1L);
-            BidirectionalOneToManyTest.PostComment comment = post.getComments().get(0);
 
-            post.removeComment(comment);
+            // TODO: implement remove test: see BidirectionalOneToManyTest for example
+            DatedTranche datedTranche = entityManager.createQuery("select dt from DatedTranche dt", DatedTranche.class).getSingleResult();
+            Tranche tranche = entityManager.find(Tranche.class, 1L);
+        });
+    }
+
+    @Test
+    public void testLazyFetch() {
+        QueryCountHolder.clear();
+
+        doInJPA(entityManager -> {
+            DatedTranche datedTranche = entityManager.createQuery("select dt from DatedTranche dt", DatedTranche.class).getSingleResult();
+            /**
+             * lazy association => tranche table is not queried
+             */
+            assertEquals(1, QueryCountHolder.getGrandTotal().getSelect());
+
+            /**
+             * tranche entity (= association target) is not accessed - table not queried
+             */
+            Tranche tranche = datedTranche.getTranche();
+            assertEquals(1, QueryCountHolder.getGrandTotal().getSelect());
+
+            /**
+             * once the association target is accessed - tranche table is queried
+             */
+            Tranche.Status trancheStatus = tranche.getStatus();
+            assertEquals(2, QueryCountHolder.getGrandTotal().getSelect());
         });
     }
 
     @Test
     public void testOrphanRemoval() {
-        QueryCountHolder.clear();
-
-        doInJPA(entityManager -> {
-            BidirectionalOneToManyTest.Post post = entityManager.find(BidirectionalOneToManyTest.Post.class, 1L);
-            assertEquals(1, QueryCountHolder.getGrandTotal().getSelect());
-
-            post.getComments().remove(0);
-            assertEquals(2, QueryCountHolder.getGrandTotal().getSelect());
-        });
-
-        assertEquals(1, QueryCountHolder.getGrandTotal().getDelete());
-
-        doInJPA(entityManager -> {
-            BidirectionalOneToManyTest.Post post = entityManager.find(BidirectionalOneToManyTest.Post.class, 1L);
-
-            assertEquals(1, post.getComments().size());
-        });
     }
 
     @Entity(name = "DatedTranche")
@@ -125,8 +122,7 @@ public class OneToOneUni extends AbstractTest {
 
         private LocalDateTime timestamp;
 
-        @JsonIgnore
-        @OneToOne//(fetch = FetchType.LAZY)
+        @OneToOne(fetch = FetchType.LAZY, optional = false, orphanRemoval = false)
         @JoinColumn(name = "tranche_fk")
         private Tranche tranche;
 

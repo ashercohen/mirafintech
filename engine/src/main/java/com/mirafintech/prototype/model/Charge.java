@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,7 +12,6 @@ import java.math.BigDecimal;
 @Table(name = "CHARGE")
 @Getter
 @Setter
-//@ToString
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Charge extends EntityBase<Charge> {
@@ -21,9 +19,7 @@ public class Charge extends EntityBase<Charge> {
     @Id
     private Long id;
 
-    // TODO: this association should be bi-directional - fix!!!
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "loan_fk")
     private Loan loan;
 
     private Integer timestamp;
@@ -31,4 +27,12 @@ public class Charge extends EntityBase<Charge> {
     private BigDecimal interest;
 
     private BigDecimal fee;
+
+    private Charge(Long id, Loan loan, Integer timestamp, BigDecimal interest, BigDecimal fee) {
+        this.id = id;
+        this.loan = loan;
+        this.timestamp = timestamp;
+        this.interest = interest;
+        this.fee = fee;
+    }
 }
