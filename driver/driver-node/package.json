@@ -22,7 +22,7 @@
     "faker": "^5.5.3",
     "lodash": "*",
     "log4js": "^6.3.0",
-    "performance-now": "^2.1.0"
+    "minimist": "^1.2.5"
   },
   "devDependencies": {
     "eslint": "^7.26.0"

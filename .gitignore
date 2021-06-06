@@ -9,8 +9,15 @@ local_do_not_commit/
 */target/
 .DS_Store
 
-# Log file
+# Log files
 *.log
+*.tlog
+
+#properties
+*.properties
+
+#scripts
+*.script
 
 # BlueJ files
 *.ctxt

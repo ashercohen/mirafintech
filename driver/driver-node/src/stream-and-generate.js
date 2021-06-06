@@ -1,24 +1,29 @@
 'use strict';
 
 const fs = require('fs');
-const path = require('path');
-const _ = require('lodash');
 const es = require('event-stream');
 const csvtojson = require('csvtojson');
-const { getTransactionDates, resolveConsumer, resolveConsumerLoan, resolveConsumerRisk } = require('./utils/resolvers');
+const { 
+    resolveConsumer, 
+    getTransactionDates, 
+    resolveConsumerLoan, 
+    resolveConsumerRisk,
+    resolveLoanOutputFileName,
+    resolveConsumerOutputFileName
+} = require('./utils/resolvers');
 
-const streamFileAndGenerateData = file => {
+const streamFileAndGenerateData = filePath => {
     let totalRecordsProcessed = 0;
     const consumers = [];
     const consumerLoans = [];
     //TODO: Payments - need to merge with loans file with a transaction type
     // const payments = [];
 
-    //Date distribution setup
+    //Date distribution setup for transactions
     const dateArray = getTransactionDates();
 
     const stream = fs
-        .createReadStream(file)
+        .createReadStream(filePath)
         .pipe(csvtojson({
             downstreamFormat: 'line',
             checkType: true
@@ -33,25 +38,23 @@ const streamFileAndGenerateData = file => {
             
             consumers.push(consumer);
             consumerLoans.push(...loan);
-            // consumerRisks.push(risk);  //debugging only
         })
         .on('error', function(err) {
             console.log('Error while reading file.', err);
         })
         .on('end', function() {
-            const writeConsumer = fs.createWriteStream(`./data/output/consumers.json`);
-            const writeConsumerLoans = fs.createWriteStream(`./data/output/loans.json`);
-            // const writeRisk = fs.createWriteStream(`./data/output/${path.basename(file, path.extname(path.resolve(file)))+'_risk.json'}`);  //debugging only
+            const writeConsumer = fs.createWriteStream(`./data/output/${resolveConsumerOutputFileName(filePath)}`);
+            const writeConsumerLoans = fs.createWriteStream(`./data/output/${resolveLoanOutputFileName(filePath)}`);
 
             consumerLoans.sort((a, b) => a.timestamp - b.timestamp);
 
             writeConsumer.write(JSON.stringify(consumers, undefined, 2));
             writeConsumerLoans.write(JSON.stringify(consumerLoans, undefined, 2));
-            // writeRisk.write(JSON.stringify(consumerRisks, undefined, 2));  //debugging only
 
             console.log(`Total records processed: ${totalRecordsProcessed}`);
             console.log(`Total consumers added: ${consumers.length}`);
             console.log(`Total loans added: ${consumerLoans.length}`);
+            console.log('Generation process complete!');
         })
     )
 };
