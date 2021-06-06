@@ -1,5 +1,30 @@
 # Driver
 
+## Running the simulation driver
+### $ Setting up the project
+    
+    $ brew install node@12
+    $ brew install yarn
+    $ yarn
+    
+### $ Input
+Input to the simulation driver will be the `UCI_Credit_card.csv` file.
+### $ Simulation process
+Navigate to the driver-node folder in the workspace
+
+    $ cd {pwd}/driver/driver-node
+    $ node index.js -f <filepath>
+Following steps happen during the simulation process:
+1. Firstly, the data from the source CSV file is streamed and transformed
+   by the driver, into separate json files.
+2. The configuration for the Trance Engine is initialized.
+3. Then, each of the Merchants, Consumers, Loans and Payments records
+   are ingested into the Tranche Engine.
+
+Note: To stop the process mid-way, press cmd+C.
+### $ Output
+1. JSON files for Consumers, Loans and Payments.
+2. All entities being synced to Tranche Engine.
 ## Purpose - drive the simulation
 1. go through the dataset and call the various engine's endpoint .
 2. control the time: engine's "virtual" time via time update messages.

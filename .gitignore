@@ -9,8 +9,15 @@ local_do_not_commit/
 */target/
 .DS_Store
 
-# Log file
+# Log files
 *.log
+*.tlog
+
+#properties
+*.properties
+
+#scripts
+*.script
 
 # BlueJ files
 *.ctxt
@@ -35,5 +42,8 @@ hs_err_pid*
 
 #npm_node_modules_folder
 *node_modules/*
+
+#data files
+*driver-node/data/*.csv
 
 

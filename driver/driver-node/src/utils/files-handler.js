@@ -41,16 +41,22 @@ const createNewFile = (filePath, data = "") => {
  * @param {string} filePath - full file name
  * @return {boolean}
  */
-const fileExist = (filePath) => {
+const fileExist = filePath => {
     return fs.existsSync(filePath);
 };
+
+const writeDataToFile = (filePath, data) => {
+    if(!data) return;
+
+    fs.appendFileSync(filePath, data);
+}
 
 /**
  * Get file age in ms.
  * @param {string} filePath - full file name.
  * @return {number}
  */
-const getFileAge = (filePath) => {
+const getFileAge = filePath => {
     const cTime = new Date().getTime();
     const stats = fs.statSync(filePath);
 
@@ -62,4 +68,5 @@ module.exports = {
     fileExist,
     createNewFile,
     getFileAge,
+    writeDataToFile
 };
