@@ -35,6 +35,7 @@ const streamFileAndGenerateData = filePath => {
             const risk = resolveConsumerRisk(obj);
             const consumer = resolveConsumer(obj, risk);
             const loan = resolveConsumerLoan(obj, dateArray);
+            const payment = resolveConsumerPayment(obj);
             
             consumers.push(consumer);
             consumerLoans.push(...loan);

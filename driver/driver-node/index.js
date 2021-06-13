@@ -118,7 +118,7 @@ const sendMerchants = async () => {
  * the processing the input file records.
  */
 const sendConsumers = async () => {
-    const consumers = require(`./data/output/${resolveConsumerOutputFileName(filePath)}`);
+    const consumers = require(`./data/output/${resolveConsumerOutputFileName(csvFilePath)}`);
     await sleep(USER_WAIT);
     console.log('Sending consumer records...');
     await sleep(USER_WAIT);
@@ -144,7 +144,7 @@ const sendConsumers = async () => {
  * the processing the input file records.
  */
 const sendLoans = async () => {
-    const loans = require(`./data/output/${resolveLoanOutputFileName(filePath)}`);
+    const loans = require(`./data/output/${resolveLoanOutputFileName(csvFilePath)}`);
     await sleep(USER_WAIT);
     console.log('Sending loan records...');
     await sleep(USER_WAIT);

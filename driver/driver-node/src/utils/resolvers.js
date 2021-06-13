@@ -178,7 +178,7 @@ const resolveConsumerLoan = (obj, dateArray) => {
                 const loanAmount = Math.round((bill/TRANSACTION_COUNT_PER_MONTH + Number.EPSILON) * 100) / 100;
                 loans.push({
                     timestamp,
-                    id: faker.datatype.number(ID_MIN,ID_MAX),
+                    id: faker.datatype.number(ID_MIN, ID_MAX),
                     consumerId: getConsumerId(obj),
                     amount: loanAmount,
                     merchantId: merchants[Math.floor(Math.random() * len)].id
@@ -190,13 +190,23 @@ const resolveConsumerLoan = (obj, dateArray) => {
     return loans;
 };
 
+const resolveConsumerPayment = (obj) => {
+    const paymentArray = getPaymentsArray(obj);
+    return {
+        id: faker.datatype.number(ID_MIN, ID_MAX),
+        timestamp: '',
+        consumerId: getConsumerId(obj),
+        amount: ''
+    }
+}
+
 module.exports = { 
     addReducer,
+    getStartDate,
     resolveConsumer,
     resolveConfigData,
     resolveConsumerLoan,
     resolveConsumerRisk,
-    getStartDate,
     getTransactionDates,
     resolveLoanOutputFileName,
     resolveConsumerOutputFileName    
