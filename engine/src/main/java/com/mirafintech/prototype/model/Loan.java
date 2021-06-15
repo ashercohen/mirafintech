@@ -27,6 +27,8 @@ public class Loan extends EntityBase<Loan> {
     @Id
     private Long id;
 
+    private Long externalId;
+
     private LocalDateTime timestamp;
 
     private BigDecimal amount;
@@ -73,33 +75,36 @@ public class Loan extends EntityBase<Loan> {
     private List<Charge> charges = new ArrayList<>();
     // TODO: addCharge() + removeCharge()
 
+
     private Loan(Long id,
+                 Long externalId,
                  LocalDateTime timestamp,
-                 Consumer consumer,
                  BigDecimal amount,
-                 List<DatedRiskScore> datedRiskScores,
+                 Consumer consumer,
                  Merchant merchant,
+                 List<DatedRiskScore> datedRiskScores,
                  List<DatedTranche> trancheHistory,
                  List<PaymentAllocation> paymentAllocations,
                  List<Charge> charges) {
         this.id = id;
+        this.externalId = externalId;
         this.timestamp = timestamp;
-        this.consumer = consumer;
         this.amount = amount;
-        this.datedRiskScores = datedRiskScores == null ? new ArrayList<>() : datedRiskScores;
+        this.consumer = consumer;
         this.merchant = merchant;
+        this.datedRiskScores = datedRiskScores == null ? new ArrayList<>() : datedRiskScores;
         this.trancheHistory = trancheHistory == null ? new ArrayList<>() : trancheHistory;
-        this.paymentAllocations = paymentAllocations;
-        this.charges = charges;
+        this.paymentAllocations = paymentAllocations == null ? new ArrayList<>() : paymentAllocations;
+        this.charges = charges == null ? new ArrayList<>() : charges;
     }
 
-    public Loan(long id,
+    public Loan(long externalId,
                 LocalDateTime timestamp,
                 Consumer consumer,
                 BigDecimal amount,
                 DatedRiskScore datedRiskScore,
                 Merchant merchant) {
-        this(id, timestamp, consumer, amount, new ArrayList<>(List.of(datedRiskScore)), merchant, null, null, null);
+        this(null, externalId, timestamp, amount, consumer, merchant, new ArrayList<>(List.of(datedRiskScore)), null, null, null);
     }
 
     public DatedRiskScore currentRiskScore() {
