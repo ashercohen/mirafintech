@@ -7,7 +7,7 @@ const {
     addDays, addMonths, startOfDay,
     startOfHour, startOfYear, startOfToday,
     startOfMonth, startOfMinute, startOfSecond,
-    lastDayOfMonth, formatISO
+    lastDayOfMonth, formatISO, format
 } = require('date-fns');
 
 const merchants = require('../../data/source/Merchant.json');
@@ -31,8 +31,9 @@ const getBillArray = obj => [obj.BILL_AMT1, obj.BILL_AMT2, obj.BILL_AMT3, obj.BI
 const getPaymentsArray = obj => [obj.PAY_AMT1, obj.PAY_AMT2, obj.PAY_AMT3, obj.PAY_AMT4, obj.PAY_AMT5, obj.PAY_AMT6];
 const getConsumerId = obj => obj.ID;
 
-const getStartDate = () => startOfYear(startOfToday());
-const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const getISOStartDate = () => startOfYear(startOfToday());
+const getServerStartDate = () => format(startOfYear(startOfToday()), "yyyy-MM-dd'T'HH:mm:ss");
+const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 const resolveFileName = file => path.basename(file, path.extname(path.resolve(file)));
 const resolveConsumerOutputFileName = file => resolveFileName(file) +'_consumers.json';
 const resolveTransactionOutputFileName = file => resolveFileName(file) +'_transactions.json';
@@ -62,28 +63,12 @@ const getCustomDateRange = (start, end, duration, arr = [DURATION_MAP[duration](
     return getCustomDateRange(next, end, duration, arr.concat(next));
 };
 
-/**
- * Get an array of dates to use for transaction allocation
- * @returns an array with dates added for the time spanning the duration provided
- */
-const getTransactionDates = () => {
-    const START_DATE = getStartDate();
-    const monthsArray = getCustomDateRange(START_DATE, addMonths(START_DATE, 5), 'months');
-    const dateArray = [];
-    monthsArray.forEach(month => {
-        dateArray.push(getCustomDateRange(month, addDays(month, TRANSACTION_COUNT_PER_MONTH - 1), 'days'));
-    });
-
-    return dateArray;
-};
-
-const getRandomDate = (start, end) => formatISO(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+const getRandomDate = (start, end) => format(start.getTime() + Math.random() * (end.getTime() - start.getTime()), "yyyy-MM-dd'T'HH:mm:ss");
 
 const getRandomDatesArray = (start, end, numOfDays) => {
     const dateArray = [];
     while(numOfDays) {
-        const date = getRandomDate(start, end);
-        dateArray.push(date);
+        dateArray.push(getRandomDate(start, end));
 
         numOfDays--;
     }
@@ -97,7 +82,11 @@ const getRandomDatesInAMonth = (start, numOfDays) => {
     return getRandomDatesArray(start, end, numOfDays);
 };
 
-const getRandomDatesAcrossMonths = (numOfMonths, start = getStartDate()) => {
+/**
+ * Get an array of dates to use for loan transaction allocation
+ * @returns an array with dates added for the time spanning the duration provided
+ */
+const getRandomDatesAcrossMonths = (numOfMonths, start = getISOStartDate()) => {
     const dateArray = [];
     while(numOfMonths) {
         dateArray.push(getRandomDatesInAMonth(start, TRANSACTION_COUNT_PER_MONTH));
@@ -109,7 +98,11 @@ const getRandomDatesAcrossMonths = (numOfMonths, start = getStartDate()) => {
     return dateArray;
 };
 
-const getRandomPaymentDates = (numOfMonths, start = getStartDate()) => {
+/**
+ * Get an array of dates to use for payments transaction allocation
+ * @returns an array with dates added for the time spanning the duration provided
+ */
+const getRandomPaymentDates = (numOfMonths, start = getISOStartDate()) => {
     const dateArray = [];
     while(numOfMonths) {
         const end = lastDayOfMonth(start);
@@ -265,13 +258,12 @@ const resolveConsumerPayment = (obj) => {
 
 module.exports = { 
     addReducer,
-    getStartDate,
     resolveConsumer,
     resolveConfigData,
     resolveConsumerLoan,
     resolveConsumerRisk,
     resolveConsumerPayment,
-    getTransactionDates,
+    getServerStartDate,
     getRandomPaymentDates,
     getRandomDatesAcrossMonths,
     resolveConsumerOutputFileName, 

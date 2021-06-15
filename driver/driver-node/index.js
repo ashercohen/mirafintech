@@ -12,17 +12,16 @@ const { Constants, Files, Logger } = require('./src/utils/');
 const { HTTP_METHODS, LOG_FOLDER, LOG_FILE } = Constants;
 const streamFileAndGenerateData = require('./src/stream-and-generate');
 const { 
-    getStartDate, 
+    getServerStartDate, 
     resolveConfigData,
     resolveConsumerOutputFileName,
     resolveTransactionOutputFileName
 } = require('./src/utils/resolvers');
 
-const START_DATE = getStartDate();
-const SLEEP_TIMER = 2;
+const START_DATE = getServerStartDate();
 const USER_WAIT = 2000;
 
-const sleep = ms => new Promise(res => setTimeout(res, ms))
+const sleep = ms => new Promise(res => setTimeout(res, ms));
 
 Files.createDirectory(LOG_FOLDER);
 const logger = new Logger(LOG_FILE, false);
@@ -39,7 +38,6 @@ console.log(csvFilePath);
  * @param {Object} config  - configuration object provided to txn generation process
  */
 const generateTransactionsFromFile = async (file) => {
-    // await sleep(USER_WAIT);
     console.log(`Starting the transaction generation process using file: ${file}`);
     try {
         await streamFileAndGenerateData(file);
@@ -106,7 +104,6 @@ const sendMerchants = async () => {
         const result = await axios(options);
         
         console.log(result.data);
-        await sleep(SLEEP_TIMER);
     }
 
     console.log('Merchant records sent successfully!');
@@ -132,7 +129,6 @@ const sendConsumers = async () => {
         const result = await axios(options);
         
         console.log(result.data);
-        await sleep(SLEEP_TIMER);
     }
 
     console.log('Consumer records sent successfully!');
@@ -146,7 +142,7 @@ const sendConsumers = async () => {
 const sendTransactions = async () => {
     const transactions = require(`./data/output/${resolveTransactionOutputFileName(csvFilePath)}`);
     await sleep(USER_WAIT);
-    console.log('Sending loan records...');
+    console.log('Sending transaction records...');
     await sleep(USER_WAIT);
 
     for(const transaction of transactions) {
@@ -161,10 +157,9 @@ const sendTransactions = async () => {
         const result = await axios(options);
         
         console.log(result.data);
-        await sleep(SLEEP_TIMER);
     }
 
-    console.log('Loan records sent successfully!');
+    console.log('Transaction records sent successfully!');
 };
 
 /**
@@ -175,12 +170,12 @@ const runSimulation = async csvFilePath => {
     console.log('Starting simulation...');
 
     await generateTransactionsFromFile(csvFilePath);
-    // await setTrancheEngineConfig(START_DATE);
-    // await sendMerchants();
-    // await sendConsumers();
-    // await sendTransactions();
+    await setTrancheEngineConfig(START_DATE);
+    await sendMerchants();
+    await sendConsumers();
+    await sendTransactions();
 
-    console.log('Simulation successfully completed!');
+    await console.log('Simulation successfully completed!');
 };
 
 runSimulation(csvFilePath);
