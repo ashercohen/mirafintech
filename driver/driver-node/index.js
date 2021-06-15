@@ -12,17 +12,16 @@ const { Constants, Files, Logger } = require('./src/utils/');
 const { HTTP_METHODS, LOG_FOLDER, LOG_FILE } = Constants;
 const streamFileAndGenerateData = require('./src/stream-and-generate');
 const { 
-    getStartDate, 
+    getServerStartDate, 
     resolveConfigData,
-    resolveLoanOutputFileName,
-    resolveConsumerOutputFileName
+    resolveConsumerOutputFileName,
+    resolveTransactionOutputFileName
 } = require('./src/utils/resolvers');
 
-const START_DATE = getStartDate();
-const SLEEP_TIMER = 2;
+const START_DATE = getServerStartDate();
 const USER_WAIT = 2000;
 
-const sleep = ms => new Promise(res => setTimeout(res, ms))
+const sleep = ms => new Promise(res => setTimeout(res, ms));
 
 Files.createDirectory(LOG_FOLDER);
 const logger = new Logger(LOG_FILE, false);
@@ -39,7 +38,6 @@ console.log(csvFilePath);
  * @param {Object} config  - configuration object provided to txn generation process
  */
 const generateTransactionsFromFile = async (file) => {
-    await sleep(USER_WAIT);
     console.log(`Starting the transaction generation process using file: ${file}`);
     try {
         await streamFileAndGenerateData(file);
@@ -106,7 +104,6 @@ const sendMerchants = async () => {
         const result = await axios(options);
         
         console.log(result.data);
-        await sleep(SLEEP_TIMER);
     }
 
     console.log('Merchant records sent successfully!');
@@ -118,7 +115,7 @@ const sendMerchants = async () => {
  * the processing the input file records.
  */
 const sendConsumers = async () => {
-    const consumers = require(`./data/output/${resolveConsumerOutputFileName(filePath)}`);
+    const consumers = require(`./data/output/${resolveConsumerOutputFileName(csvFilePath)}`);
     await sleep(USER_WAIT);
     console.log('Sending consumer records...');
     await sleep(USER_WAIT);
@@ -132,36 +129,37 @@ const sendConsumers = async () => {
         const result = await axios(options);
         
         console.log(result.data);
-        await sleep(SLEEP_TIMER);
     }
 
     console.log('Consumer records sent successfully!');
 };
 
 /**
- * Use the Loans.json file and POST the records to the Tranche engine.
- * Loans.json file is added to the "wdir/data/output/" folder after
+ * Use the _transactions.json file and POST the records to the Tranche engine.
+ * _transactions.json file is added to the "wdir/data/output/" folder after
  * the processing the input file records.
  */
-const sendLoans = async () => {
-    const loans = require(`./data/output/${resolveLoanOutputFileName(filePath)}`);
+const sendTransactions = async () => {
+    const transactions = require(`./data/output/${resolveTransactionOutputFileName(csvFilePath)}`);
     await sleep(USER_WAIT);
-    console.log('Sending loan records...');
+    console.log('Sending transaction records...');
     await sleep(USER_WAIT);
 
-    for(const loan of loans) {
+    for(const transaction of transactions) {
+        const url = `${config.get('trancheCompiler').url}/${transaction.type}/${transaction.id}`;
+        delete transaction.type;
         const options = {
-            url: `${config.get('trancheCompiler').url}/loans/${loan.id}`,
+            url,
             method: HTTP_METHODS.POST,
-            data: loan
+            data: transaction
         };
+        
         const result = await axios(options);
         
         console.log(result.data);
-        await sleep(SLEEP_TIMER);
     }
 
-    console.log('Loan records sent successfully!');
+    console.log('Transaction records sent successfully!');
 };
 
 /**
@@ -175,9 +173,9 @@ const runSimulation = async csvFilePath => {
     await setTrancheEngineConfig(START_DATE);
     await sendMerchants();
     await sendConsumers();
-    await sendLoans();
+    await sendTransactions();
 
-    console.log('Simulation successfully completed!');
+    await console.log('Simulation successfully completed!');
 };
 
 runSimulation(csvFilePath);
