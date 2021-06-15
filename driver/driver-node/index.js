@@ -14,8 +14,8 @@ const streamFileAndGenerateData = require('./src/stream-and-generate');
 const { 
     getStartDate, 
     resolveConfigData,
-    resolveLoanOutputFileName,
-    resolveConsumerOutputFileName
+    resolveConsumerOutputFileName,
+    resolveTransactionOutputFileName
 } = require('./src/utils/resolvers');
 
 const START_DATE = getStartDate();
@@ -39,7 +39,7 @@ console.log(csvFilePath);
  * @param {Object} config  - configuration object provided to txn generation process
  */
 const generateTransactionsFromFile = async (file) => {
-    await sleep(USER_WAIT);
+    // await sleep(USER_WAIT);
     console.log(`Starting the transaction generation process using file: ${file}`);
     try {
         await streamFileAndGenerateData(file);
@@ -139,22 +139,25 @@ const sendConsumers = async () => {
 };
 
 /**
- * Use the Loans.json file and POST the records to the Tranche engine.
- * Loans.json file is added to the "wdir/data/output/" folder after
+ * Use the _transactions.json file and POST the records to the Tranche engine.
+ * _transactions.json file is added to the "wdir/data/output/" folder after
  * the processing the input file records.
  */
-const sendLoans = async () => {
-    const loans = require(`./data/output/${resolveLoanOutputFileName(csvFilePath)}`);
+const sendTransactions = async () => {
+    const transactions = require(`./data/output/${resolveTransactionOutputFileName(csvFilePath)}`);
     await sleep(USER_WAIT);
     console.log('Sending loan records...');
     await sleep(USER_WAIT);
 
-    for(const loan of loans) {
+    for(const transaction of transactions) {
+        const url = `${config.get('trancheCompiler').url}/${transaction.type}/${transaction.id}`;
+        delete transaction.type;
         const options = {
-            url: `${config.get('trancheCompiler').url}/loans/${loan.id}`,
+            url,
             method: HTTP_METHODS.POST,
-            data: loan
+            data: transaction
         };
+        
         const result = await axios(options);
         
         console.log(result.data);
@@ -172,10 +175,10 @@ const runSimulation = async csvFilePath => {
     console.log('Starting simulation...');
 
     await generateTransactionsFromFile(csvFilePath);
-    await setTrancheEngineConfig(START_DATE);
-    await sendMerchants();
-    await sendConsumers();
-    await sendLoans();
+    // await setTrancheEngineConfig(START_DATE);
+    // await sendMerchants();
+    // await sendConsumers();
+    // await sendTransactions();
 
     console.log('Simulation successfully completed!');
 };

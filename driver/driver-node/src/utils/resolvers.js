@@ -6,13 +6,15 @@ const {
     add, isDate, isAfter,
     addDays, addMonths, startOfDay,
     startOfHour, startOfYear, startOfToday,
-    startOfMonth, startOfMinute, startOfSecond
+    startOfMonth, startOfMinute, startOfSecond,
+    lastDayOfMonth, formatISO
 } = require('date-fns');
 
 const merchants = require('../../data/source/Merchant.json');
 
 const ID_MAX = 2000000000;
 const ID_MIN = 1000000000;
+const getID = () => faker.datatype.number(ID_MIN, ID_MAX);
 const TRANSACTION_COUNT_PER_MONTH = 5;
 const DURATION_MAP = {
     seconds: startOfSecond,
@@ -21,7 +23,7 @@ const DURATION_MAP = {
     days: startOfDay,
     months: startOfMonth,
     years: startOfYear
-}
+};
 
 const addReducer = (accumulator, currentValue) => accumulator + currentValue;
 
@@ -30,30 +32,35 @@ const getPaymentsArray = obj => [obj.PAY_AMT1, obj.PAY_AMT2, obj.PAY_AMT3, obj.P
 const getConsumerId = obj => obj.ID;
 
 const getStartDate = () => startOfYear(startOfToday());
-
+const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const resolveFileName = file => path.basename(file, path.extname(path.resolve(file)));
-const resolveConsumerOutputFileName = file => resolveFileName(file) +'_consumers.json'
-const resolveLoanOutputFileName = file => resolveFileName(file) +'_loans.json'
+const resolveConsumerOutputFileName = file => resolveFileName(file) +'_consumers.json';
+const resolveTransactionOutputFileName = file => resolveFileName(file) +'_transactions.json';
 
 /**
- * Get a custom date range array based on beloe params
- * @param {*} start      - starting time of the range
- * @param {*} end        - engine time of the range
- * @param {*} duration   - unit of duration i.e days, months, etc.
- * @param {*} arr        - accumulating array
+ * Get a custom date range array based on below params
+ * @param {ISODate} start      - starting time of the range
+ * @param {ISODate} end        - end time of the range
+ * @param {String} duration   - unit of duration i.e days, months, etc.
+ * @param {Array} arr        - accumulating array
  * @returns 
  */
 const getCustomDateRange = (start, end, duration, arr = [DURATION_MAP[duration](start)]) => {
     if(!isDate(start) || !isDate(end)) throw new Error('start/end must be a date');
     
-    if(isAfter(start, end)) throw new Error('start must precede end')
+    if(isAfter(start, end)) throw new Error('start must precede end');
 
-    const next = DURATION_MAP[duration](add(start, { [duration]: 1 }));
+    const next = DURATION_MAP[duration](add(start, {
+        [duration]: 1, 
+        hours: getRandomNumber(0, 24), 
+        minutes: getRandomNumber(0, 60),
+        seconds: getRandomNumber(0, 60)
+    }));
 
     if(isAfter(next, end)) return arr;
 
     return getCustomDateRange(next, end, duration, arr.concat(next));
-}
+};
 
 /**
  * Get an array of dates to use for transaction allocation
@@ -68,7 +75,52 @@ const getTransactionDates = () => {
     });
 
     return dateArray;
-}
+};
+
+const getRandomDate = (start, end) => formatISO(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+
+const getRandomDatesArray = (start, end, numOfDays) => {
+    const dateArray = [];
+    while(numOfDays) {
+        const date = getRandomDate(start, end);
+        dateArray.push(date);
+
+        numOfDays--;
+    }
+
+    return dateArray;
+};
+
+const getRandomDatesInAMonth = (start, numOfDays) => {
+    const end = lastDayOfMonth(start);
+    
+    return getRandomDatesArray(start, end, numOfDays);
+};
+
+const getRandomDatesAcrossMonths = (numOfMonths, start = getStartDate()) => {
+    const dateArray = [];
+    while(numOfMonths) {
+        dateArray.push(getRandomDatesInAMonth(start, TRANSACTION_COUNT_PER_MONTH));
+        start = addDays(lastDayOfMonth(start), 1);
+
+        numOfMonths--;
+    }
+
+    return dateArray;
+};
+
+const getRandomPaymentDates = (numOfMonths, start = getStartDate()) => {
+    const dateArray = [];
+    while(numOfMonths) {
+        const end = lastDayOfMonth(start);
+        dateArray.push(getRandomDate(start, end));
+        start = addDays(end, 1);
+
+        numOfMonths--;
+    }
+
+    return dateArray;
+};
 
 /**
  * 
@@ -105,7 +157,7 @@ const resolveConfigData = startDate => {
                 initialValue: 5000000
             }
         ]
-    }
+    };
 };
 
 /**
@@ -148,7 +200,7 @@ const resolveConsumer = (obj, risk) => {
         martialStatus: obj.MARRIAGE,
         age: obj.AGE,
         initialCreditScore: risk || 0
-    }
+    };
 };
 
 /**
@@ -167,7 +219,8 @@ const resolveConsumer = (obj, risk) => {
  * @param {Array<String>} dateArray
  * @returns {Loan}
  */
-const resolveConsumerLoan = (obj, dateArray) => {
+const resolveConsumerLoan = (obj) => {
+    const dateArray = getRandomDatesAcrossMonths(6);
     const billArray = getBillArray(obj);
     const loans = [];
     const len = merchants.length;
@@ -177,28 +230,38 @@ const resolveConsumerLoan = (obj, dateArray) => {
             if(bill !== 0) {
                 const loanAmount = Math.round((bill/TRANSACTION_COUNT_PER_MONTH + Number.EPSILON) * 100) / 100;
                 loans.push({
+                    type: 'loans',
                     timestamp,
-                    id: faker.datatype.number(ID_MIN, ID_MAX),
+                    id: getID(),
                     consumerId: getConsumerId(obj),
                     amount: loanAmount,
                     merchantId: merchants[Math.floor(Math.random() * len)].id
                 });
             }
-        })
+        });
     });
 
     return loans;
 };
 
 const resolveConsumerPayment = (obj) => {
-    const paymentArray = getPaymentsArray(obj);
-    return {
-        id: faker.datatype.number(ID_MIN, ID_MAX),
-        timestamp: '',
-        consumerId: getConsumerId(obj),
-        amount: ''
+    const consumerId = getConsumerId(obj);
+    const payments = getPaymentsArray(obj);
+    const dateArray = getRandomPaymentDates(6);
+    const paymentObj = [];
+
+    for(let i = 0; i < payments.length; i++) {
+        paymentObj.push({
+            type: 'payments',
+            id: getID(),
+            timestamp: dateArray[i],
+            consumerId,
+            amount: payments[i]
+        });
     }
-}
+
+    return paymentObj;
+};
 
 module.exports = { 
     addReducer,
@@ -207,7 +270,10 @@ module.exports = {
     resolveConfigData,
     resolveConsumerLoan,
     resolveConsumerRisk,
+    resolveConsumerPayment,
     getTransactionDates,
-    resolveLoanOutputFileName,
-    resolveConsumerOutputFileName    
-}
+    getRandomPaymentDates,
+    getRandomDatesAcrossMonths,
+    resolveConsumerOutputFileName, 
+    resolveTransactionOutputFileName
+};

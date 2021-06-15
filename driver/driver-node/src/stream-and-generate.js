@@ -3,61 +3,58 @@
 const fs = require('fs');
 const es = require('event-stream');
 const csvtojson = require('csvtojson');
-const { 
-    resolveConsumer, 
-    getTransactionDates, 
-    resolveConsumerLoan, 
+const {
+    resolveConsumer,
+    resolveConsumerLoan,
     resolveConsumerRisk,
-    resolveLoanOutputFileName,
-    resolveConsumerOutputFileName
+    resolveConsumerPayment,
+    resolveConsumerOutputFileName,
+    resolveTransactionOutputFileName,
 } = require('./utils/resolvers');
 
 const streamFileAndGenerateData = filePath => {
     let totalRecordsProcessed = 0;
     const consumers = [];
-    const consumerLoans = [];
+    const consumerTransactions = [];
     //TODO: Payments - need to merge with loans file with a transaction type
     // const payments = [];
 
-    //Date distribution setup for transactions
-    const dateArray = getTransactionDates();
-
-    const stream = fs
-        .createReadStream(filePath)
+    const stream = fs.createReadStream(filePath);
+    stream
         .pipe(csvtojson({
             downstreamFormat: 'line',
             checkType: true
         }))
         .pipe(es.parse())
-        .pipe(es.mapSync(function(obj) {
+        .pipe(es.mapSync(function (obj) {
             totalRecordsProcessed++;
 
             const risk = resolveConsumerRisk(obj);
             const consumer = resolveConsumer(obj, risk);
-            const loan = resolveConsumerLoan(obj, dateArray);
+            const loan = resolveConsumerLoan(obj);
             const payment = resolveConsumerPayment(obj);
-            
+
             consumers.push(consumer);
-            consumerLoans.push(...loan);
+            consumerTransactions.push(...loan);
+            consumerTransactions.push(...payment);
         })
-        .on('error', function(err) {
-            console.log('Error while reading file.', err);
-        })
-        .on('end', function() {
-            const writeConsumer = fs.createWriteStream(`./data/output/${resolveConsumerOutputFileName(filePath)}`);
-            const writeConsumerLoans = fs.createWriteStream(`./data/output/${resolveLoanOutputFileName(filePath)}`);
+            .on('error', function (err) {
+                console.log('Error while reading file.', err);
+            })
+            .on('end', function () {
+                const writeConsumer = fs.createWriteStream(`./data/output/${resolveConsumerOutputFileName(filePath)}`);
+                const writeConsumerTransactions = fs.createWriteStream(`./data/output/${resolveTransactionOutputFileName(filePath)}`);
+                consumerTransactions.sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
 
-            consumerLoans.sort((a, b) => a.timestamp - b.timestamp);
+                writeConsumer.write(JSON.stringify(consumers, undefined, 2));
+                writeConsumerTransactions.write(JSON.stringify(consumerTransactions, undefined, 2));
 
-            writeConsumer.write(JSON.stringify(consumers, undefined, 2));
-            writeConsumerLoans.write(JSON.stringify(consumerLoans, undefined, 2));
-
-            console.log(`Total records processed: ${totalRecordsProcessed}`);
-            console.log(`Total consumers added: ${consumers.length}`);
-            console.log(`Total loans added: ${consumerLoans.length}`);
-            console.log('Generation process complete!');
-        })
-    )
+                console.log(`Total records processed: ${totalRecordsProcessed}`);
+                console.log(`Total consumers added: ${consumers.length}`);
+                console.log(`Total transactions added: ${consumerTransactions.length}`);
+                console.log('Generation process complete!');
+            })
+        );
 };
 
 // streamFileAndGenerateData('../data/source/UCI_Credit_Card.100.csv');
