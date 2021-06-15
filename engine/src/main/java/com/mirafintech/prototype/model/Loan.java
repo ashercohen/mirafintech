@@ -25,6 +25,7 @@ import java.util.Objects;
 public class Loan extends EntityBase<Loan> {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private Long externalId;
