@@ -32,7 +32,7 @@ const getPaymentsArray = obj => [obj.PAY_AMT1, obj.PAY_AMT2, obj.PAY_AMT3, obj.P
 const getConsumerId = obj => obj.ID;
 
 const getISOStartDate = () => startOfYear(startOfToday());
-const getServerStartDate = () => format(startOfYear(startOfToday()), "yyyy-MM-dd'T'HH:mm:ss");
+const getServerStartDate = () => format(startOfYear(startOfToday()), 'yyyy-MM-dd\'T\'HH:mm:ss');
 const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
 const resolveFileName = file => path.basename(file, path.extname(path.resolve(file)));
 const resolveConsumerOutputFileName = file => resolveFileName(file) +'_consumers.json';
@@ -63,7 +63,7 @@ const getCustomDateRange = (start, end, duration, arr = [DURATION_MAP[duration](
     return getCustomDateRange(next, end, duration, arr.concat(next));
 };
 
-const getRandomDate = (start, end) => format(start.getTime() + Math.random() * (end.getTime() - start.getTime()), "yyyy-MM-dd'T'HH:mm:ss");
+const getRandomDate = (start, end) => format(start.getTime() + Math.random() * (end.getTime() - start.getTime()), 'yyyy-MM-dd\'T\'HH:mm:ss');
 
 const getRandomDatesArray = (start, end, numOfDays) => {
     const dateArray = [];
@@ -160,6 +160,9 @@ const resolveConfigData = startDate => {
  */
 const resolveConsumerRisk = (obj) => {
     const totalLoan = getBillArray(obj).reduce(addReducer, 0);
+
+    if (totalLoan === 0 )
+        return 0;
     
     const totalPayment = getPaymentsArray(obj).reduce(addReducer, 0);
 
