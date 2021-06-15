@@ -39,10 +39,6 @@ public class LoansService {
     @Transactional(readOnly = false, propagation = Propagation.MANDATORY)
     public Loan processLoan(LoanDto loanDto) {
 
-        if (this.loanRepository.findById(loanDto.getId()).isPresent()) {
-            throw new IllegalArgumentException("loan already exists: id=" + loanDto.getId());
-        }
-
         Consumer consumer = this.consumerRepository
                 .findById(loanDto.getConsumerId())
                 .orElseThrow(() -> new IllegalArgumentException("consumer not found: id=" + loanDto.getConsumerId()));
