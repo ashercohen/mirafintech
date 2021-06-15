@@ -10,7 +10,7 @@ default branch: *main*  (the "master" has retired)
 info: https://openjdk.java.net/projects/jdk/16/ \
 binaries: https://jdk.java.net/16/
 
-### maven 3.8.1 (or higher)
+### maven 3.8.1 (or higher) - on Mac - do NOT use brew
 info: https://maven.apache.org/download.cgi
 
 ### IDE IntellijIDEA 2021.1
