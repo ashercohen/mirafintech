@@ -2,7 +2,7 @@ package com.mirafintech.prototype.tests.association;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.EntityBase;
+import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.tests.util.AbstractTest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -123,7 +123,7 @@ public class OneToManyUniTest extends AbstractTest {
     @Setter
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class Consumer extends EntityBase<Consumer> {
+    public static class Consumer implements OneToManyEntityAssociation {
 
         @Id
         private Long id;
@@ -159,7 +159,7 @@ public class OneToManyUniTest extends AbstractTest {
     @Getter
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class DatedCreditScore extends EntityBase<DatedCreditScore> {
+    public static class DatedCreditScore implements OneToManyEntityAssociation {
 
         @JsonIgnore
         @Id

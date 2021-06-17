@@ -1,14 +1,15 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.dto.ConsumerDto;
-import com.mirafintech.prototype.model.Consumer;
-import com.mirafintech.prototype.model.ConsumerEventLoanAdded;
-import com.mirafintech.prototype.model.Loan;
+import com.mirafintech.prototype.model.consumer.Consumer;
+import com.mirafintech.prototype.model.consumer.event.ConsumerEventLoanAdded;
+import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.repository.ConsumerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -23,6 +24,8 @@ public class ConsumersService {
 
     @Autowired
     private RiskService riskService;
+
+    private static List<Integer> availableBillingCycleStartDays = List.of(1, 8, 15, 22);
 
     public Consumer addLoan(long consumerId, Loan loan) {
 
@@ -47,7 +50,9 @@ public class ConsumersService {
         Consumer consumer = new Consumer(
                 consumerDto,
                 this.riskService.evaluateConsumerCreditScore(consumerDto),
-                this.timeService.getCurrentDateTime());
+                allocateBillingCycleStartDayOfMonth(consumerDto.getId()),
+                this.timeService.getCurrentDateTime()
+        );
 
         // persist consumer
         return this.repository.saveAndFlush(consumer);
@@ -55,5 +60,11 @@ public class ConsumersService {
 
     public Optional<Consumer> findById(long id) {
         return this.repository.findById(id);
+    }
+
+    private static int allocateBillingCycleStartDayOfMonth(long consumerId) {
+
+        int idx = (int)consumerId % availableBillingCycleStartDays.size();
+        return availableBillingCycleStartDays.get(idx);
     }
 }

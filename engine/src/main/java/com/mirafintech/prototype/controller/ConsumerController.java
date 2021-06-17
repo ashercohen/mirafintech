@@ -1,7 +1,7 @@
 package com.mirafintech.prototype.controller;
 
 import com.mirafintech.prototype.dto.ConsumerDto;
-import com.mirafintech.prototype.model.Consumer;
+import com.mirafintech.prototype.model.consumer.Consumer;
 import com.mirafintech.prototype.service.ConsumersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

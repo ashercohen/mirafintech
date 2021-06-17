@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +21,10 @@ public class ConfigurationDto {
 
     private LocalDateTime initTimestamp;
 
+    private String paymentAllocationPolicy;
+
+    private BigDecimal miraInterest; // interest, on top of tranche interest, the consumer is charge by. decimal fraction (see example below)
+
     private List<TrancheConfig> trancheConfigs;
 
     @Data
@@ -29,5 +34,6 @@ public class ConfigurationDto {
         private int lowerBoundRiskScore; // inclusive
         private int upperBoundRiskScore; // exclusive
         private int initialValue; // USD
+        private BigDecimal interest; // in fraction for example: for 12.5% interest this value is 0.125
     }
 }

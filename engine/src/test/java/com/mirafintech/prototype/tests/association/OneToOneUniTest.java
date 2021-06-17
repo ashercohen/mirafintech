@@ -1,7 +1,7 @@
 package com.mirafintech.prototype.tests.association;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.EntityBase;
+import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.tests.util.AbstractTest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -144,7 +144,7 @@ public class OneToOneUniTest extends AbstractTest {
     //@ToString
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class Tranche extends EntityBase<Tranche> {
+    public static class Tranche implements OneToManyEntityAssociation {
 
         enum Status {
             ACTIVE, NOT_ACTIVE
