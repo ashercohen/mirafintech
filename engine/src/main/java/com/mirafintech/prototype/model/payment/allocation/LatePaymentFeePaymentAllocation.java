@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model.payment.allocation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.charge.LatePaymentFee;
 import com.mirafintech.prototype.model.consumer.Consumer;
@@ -18,12 +19,9 @@ import java.time.LocalDateTime;
 @Getter
 public class LatePaymentFeePaymentAllocation extends ConsumerPaymentAllocation {
 
-//    // 1 <--> 1 bi-di "child" side
-//    @OneToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "late_payment_fee_fk")
-//    @Setter
     // n <--> 1 bi-di "child" side
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @JsonIgnore
     @Setter
     private LatePaymentFee latePaymentFee;
 

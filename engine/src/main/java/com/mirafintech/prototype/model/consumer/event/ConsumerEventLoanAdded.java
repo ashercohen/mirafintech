@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model.consumer.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.consumer.Consumer;
 import com.mirafintech.prototype.model.loan.Loan;
@@ -15,10 +16,10 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConsumerEventLoanAdded extends ConsumerEvent {
 
-    // when serializing to json the loan appears twice: here and in loans list of the consumer
     // uni-directional many-to-one:  ConsumerEventLoanAdded n --> 1 ConsumerEvent
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
     @JoinColumn(name = "loan_fk")
+    @JsonIgnore
     private Loan loan;
 
     @Column(name = "loan_added__balance_before")
@@ -41,7 +42,7 @@ public class ConsumerEventLoanAdded extends ConsumerEvent {
     }
 
     private ConsumerEventLoanAdded(Loan loan, Consumer consumer, LocalDateTime timestamp, String cause) {
-        super(timestamp, consumer, cause, ConsumerEventType.LOAN_ADDED);
+        super(timestamp, consumer, cause);
         this.loan = loan;
     }
 

@@ -32,24 +32,24 @@ public abstract class ConsumerEvent implements OneToManyEntityAssociation {
 
     protected String cause; // origin/trigger // TODO: the originator of the event, "who did it, when, why"
 
-    @Enumerated(EnumType.STRING)
-    protected ConsumerEventType type;
-
     protected ConsumerEvent() {
     }
 
-    private ConsumerEvent(Long id, LocalDateTime timestamp, Consumer consumer, String cause, ConsumerEventType type) {
+    private ConsumerEvent(Long id, LocalDateTime timestamp, Consumer consumer, String cause) {
         this.id = id;
         this.timestamp = timestamp;
         this.consumer = consumer;
         this.cause = cause;
-        this.type = type;
     }
 
-    protected ConsumerEvent(LocalDateTime timestamp, Consumer consumer, String cause, ConsumerEventType type) {
-        this(null, timestamp, consumer, cause, type);
+    protected ConsumerEvent(LocalDateTime timestamp, Consumer consumer, String cause) {
+        this(null, timestamp, consumer, cause);
     }
 
     // TODO: maybe make protected - probably move from here as this is a model
     public abstract void handle();
+
+    public String getType() {
+        return this.getClass().getSimpleName();
+    }
 }
