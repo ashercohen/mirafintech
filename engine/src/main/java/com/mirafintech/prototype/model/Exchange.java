@@ -1,6 +1,7 @@
 package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mirafintech.prototype.model.tranche.Tranche;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Exchange extends EntityBase<Exchange> {
+public class Exchange implements OneToManyEntityAssociation {
 
     @Id
     private Long id;

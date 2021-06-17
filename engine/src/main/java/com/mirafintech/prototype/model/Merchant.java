@@ -1,6 +1,7 @@
 package com.mirafintech.prototype.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mirafintech.prototype.model.loan.Loan;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.Optional;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Merchant extends EntityBase<Merchant> {
+public class Merchant implements OneToManyEntityAssociation {
 
     @Id
     private Long id;
@@ -55,5 +56,9 @@ public class Merchant extends EntityBase<Merchant> {
     // TODO: probably not required as this operation not supported
     public boolean removeLoan(Loan loan) {
         throw new RuntimeException("Merchant::removeLoan not implemented yet");
+    }
+
+    public List<Long> getLoanIds() {
+        return this.loans.stream().map(Loan::getId).toList();
     }
 }
