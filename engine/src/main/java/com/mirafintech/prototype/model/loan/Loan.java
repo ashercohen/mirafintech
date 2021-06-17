@@ -43,7 +43,10 @@ public class Loan implements OneToManyEntityAssociation, Payee {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    private Long externalId;
 
     private LocalDateTime creationDate;
 
@@ -97,6 +100,7 @@ public class Loan implements OneToManyEntityAssociation, Payee {
     }
 
     private Loan(Long id,
+                 Long externalId,
                  LocalDateTime creationDate,
                  Consumer consumer,
                  BigDecimal amount,
@@ -109,6 +113,7 @@ public class Loan implements OneToManyEntityAssociation, Payee {
                  List<LoanCharge<? extends LoanPaymentAllocation>> loanCharges,
                  List<LoanEvent> eventLog) {
         this.id = id;
+        this.externalId = externalId;
         this.creationDate = creationDate;
         this.consumer = consumer;
         this.amount = amount;
@@ -122,13 +127,13 @@ public class Loan implements OneToManyEntityAssociation, Payee {
         this.eventLog = createIfNull(eventLog);
     }
 
-    public Loan(long id,
+    public Loan(long externalId,
                 LocalDateTime creationDate,
                 Consumer consumer,
                 BigDecimal amount,
                 DatedRiskScore datedRiskScore,
                 Merchant merchant) {
-        this(id,creationDate, consumer, amount, Status.ACTIVE, merchant,
+        this(null, externalId,creationDate, consumer, amount, Status.ACTIVE, merchant,
                 new ArrayList<>(List.of(new DatedBalance(creationDate, amount))),
                 new ArrayList<>(List.of(datedRiskScore)), null, null, null, null);
     }
