@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model.consumer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.dto.ConsumerDto;
 import com.mirafintech.prototype.model.OneToManyEntityAssociation;
@@ -7,9 +8,13 @@ import com.mirafintech.prototype.model.Payee;
 import com.mirafintech.prototype.model.charge.ConsumerCharge;
 import com.mirafintech.prototype.model.charge.LatePaymentFee;
 import com.mirafintech.prototype.model.consumer.event.ConsumerEvent;
+import com.mirafintech.prototype.model.consumer.event.LoanAddedConsumerEvent;
+import com.mirafintech.prototype.model.consumer.event.PaymentAllocationAddedConsumerEvent;
 import com.mirafintech.prototype.model.credit.DatedCreditScore;
 import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.model.payment.Payment;
+import com.mirafintech.prototype.model.payment.PaymentDetails;
+import com.mirafintech.prototype.model.payment.allocation.ConsumerPaymentAllocation;
 import com.mirafintech.prototype.model.payment.allocation.PaymentAllocation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,27 +51,31 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
 
     private LocalDateTime addedAt;
 
-    private BigDecimal balance = BigDecimal.ZERO;
+    /**
+     * consumer balance is not maintained neither as a single value nor as a 'balanceHistory' (like with Loan)
+     * instead, it is calculated on demand - see getBalance() below
+     */
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "consumer_fk")
     private List<DatedCreditScore> datedCreditScores = new ArrayList<>();
-    // TODO: addTimedCreditScore() + removeTimedCreditScore() - see test for example
 
     @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
+    @JsonIgnore
     private List<Loan> loans = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Payment> payments = new ArrayList<>();
-    // TODO: addPayment() + removePayment()
+
+    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = false)
+    private List<ConsumerCharge<? extends ConsumerPaymentAllocation>> charges = new ArrayList<>();
+
+    @OneToMany(mappedBy = "consumer", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
+    private List<ConsumerPaymentAllocation> consumerPaymentAllocations = new ArrayList<>();
 
     @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConsumerEvent> eventLog = new ArrayList<>();
-    // TODO: add removeXXXEvent() ???
-
-    @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<ConsumerCharge> charges = new ArrayList<>();
-    // TODO: addXXXt() + removeXXX()
 
     private Consumer(Long id,
                      Integer limitBalance,
@@ -76,12 +85,11 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
                      Integer age,
                      Integer billingCycleStartDay,
                      LocalDateTime addedAt,
-                     BigDecimal balance,
                      List<DatedCreditScore> datedCreditScores,
                      List<Loan> loans,
                      List<Payment> payments,
-                     List<ConsumerEvent> eventLog,
-                     List<ConsumerCharge> charges) {
+                     List<ConsumerCharge<? extends ConsumerPaymentAllocation>> charges,
+                     List<ConsumerEvent> eventLog) {
         this.id = id;
         this.limitBalance = limitBalance;
         this.education = education;
@@ -90,12 +98,11 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
         this.age = age;
         this.billingCycleStartDay = billingCycleStartDay;
         this.addedAt = addedAt;
-        this.balance = balance;
         this.datedCreditScores = createIfNull(datedCreditScores);
         this.loans = createIfNull(loans);
         this.payments = createIfNull(payments);
-        this.eventLog = createIfNull(eventLog);
         this.charges = createIfNull(charges);
+        this.eventLog = createIfNull(eventLog);
     }
 
     public Consumer(ConsumerDto dto, DatedCreditScore creditScore, Integer billingCycleStartDay, LocalDateTime timestamp) {
@@ -107,12 +114,29 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
              dto.getAge(),
              billingCycleStartDay,
              timestamp,
-             BigDecimal.ZERO,
              new ArrayList<>(List.of(creditScore)),
              null,
              null,
              null,
              null);
+    }
+
+    public BigDecimal getBalance() {
+
+        // sum all loans balances
+        BigDecimal loansBalance = this.loans.stream()
+                .map(Loan::currentBalance)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        // sum all pending (not paid) charges balances
+        BigDecimal chargesBalance = this.charges.stream()
+                .filter(ConsumerCharge::isPending)
+                .map(ConsumerCharge::balance)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        return loansBalance.add(chargesBalance).negate();
     }
 
     public DatedCreditScore currentCreditScore() {
@@ -129,6 +153,15 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
                 .findAny(); // TODO: assuming user has max one score at specified time
     }
 
+    public boolean addLoan(Loan loan, LocalDateTime timestamp) {
+        // create event
+        LoanAddedConsumerEvent event = new LoanAddedConsumerEvent(loan, this, timestamp, "loan_added");
+        event.handle();
+        writeToEventLog(event);
+
+        return addToCollection(this.loans, loan, this, "loan", loan::setConsumer);
+    }
+
     public Optional<Payment> latestPayment() {
         // TODO: this should match also the date of the latest corresponding event
         return this.payments.stream().max(Comparator.comparing(Payment::getTimestamp).reversed());
@@ -136,16 +169,31 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
 
     @Override
     public void accept(PaymentAllocation paymentAllocation) {
-        // TODO: implement
-        return;
+
+        if (!(paymentAllocation instanceof ConsumerPaymentAllocation consumerPaymentAllocation)) {
+            throw new IllegalArgumentException("paymentAllocation wrong sub-type. expected: LoanPaymentAllocation actual: " + paymentAllocation.getClass().getSimpleName());
+        }
+
+        addPaymentAllocation(consumerPaymentAllocation);
     }
 
-    public boolean addConsumerEvent(ConsumerEvent event) {
+    private boolean addPaymentAllocation(ConsumerPaymentAllocation paymentAllocation) {
+
+        PaymentAllocationAddedConsumerEvent consumerEvent =
+                new PaymentAllocationAddedConsumerEvent(paymentAllocation.getTimestamp(), this, "payment_received", paymentAllocation);
+        consumerEvent.handle();
+        writeToEventLog(consumerEvent);
+
+        return this.consumerPaymentAllocations.add(paymentAllocation);
+    }
+
+    private boolean writeToEventLog(ConsumerEvent event) {
         return addToCollection(this.eventLog, event, this, "event", event::setConsumer);
     }
 
-    public boolean addLoan(Loan loan) {
-        return addToCollection(this.loans, loan, this, "loan", loan::setConsumer);
+    public boolean isLoanAlreadyExists(Loan loan) {
+        return this.loans.stream()
+                .anyMatch(l -> l.getExternalId().longValue() == loan.getExternalId().longValue());
     }
 
     public boolean hasLoan(Loan loan) {
@@ -158,6 +206,14 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
                 .filter(c -> c instanceof LatePaymentFee)
                 .map(c -> (LatePaymentFee)c)
                 .toList();
+    }
+
+    public List<Long> getLoanIds() {
+        return this.loans.stream().map(Loan::getId).toList();
+    }
+
+    public List<PaymentDetails> getPaymentDetails() {
+        return this.payments.stream().map(Payment::details).toList();
     }
 
     @Override

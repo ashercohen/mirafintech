@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model.charge;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.consumer.Consumer;
 import com.mirafintech.prototype.model.payment.allocation.LatePaymentFeePaymentAllocation;
@@ -29,6 +30,7 @@ public class LatePaymentFee extends ConsumerCharge<LatePaymentFeePaymentAllocati
     // 1 <--> n bi-di "parent" side
     @OneToMany(mappedBy = "latePaymentFee", cascade = CascadeType.ALL, orphanRemoval = false)
     @Getter(AccessLevel.PRIVATE)
+    @JsonIgnore
     private List<LatePaymentFeePaymentAllocation> latePaymentFeePaymentAllocations;
 
     protected LatePaymentFee() {

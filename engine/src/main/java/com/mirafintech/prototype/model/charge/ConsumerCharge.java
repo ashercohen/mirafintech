@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static com.mirafintech.prototype.model.charge.ChargeStatus.*;
@@ -22,6 +23,8 @@ import static com.mirafintech.prototype.model.charge.ChargeStatus.*;
 public abstract class ConsumerCharge<P extends ConsumerPaymentAllocation> extends Charge {
 
     public abstract boolean addPaymentAllocation(P paymentAllocation);
+
+    public abstract BigDecimal balance();
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     @JsonIgnore
