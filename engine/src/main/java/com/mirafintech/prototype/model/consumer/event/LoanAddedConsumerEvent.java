@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConsumerEventLoanAdded extends ConsumerEvent {
+public class LoanAddedConsumerEvent extends ConsumerEvent {
 
     // uni-directional many-to-one:  ConsumerEventLoanAdded n --> 1 ConsumerEvent
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
@@ -28,20 +28,10 @@ public class ConsumerEventLoanAdded extends ConsumerEvent {
     @Column(name = "loan_added__balance_after")
     private BigDecimal consumerBalanceAfter;
 
-
-    public static ConsumerEventLoanAdded create(Loan loan, Consumer consumer, LocalDateTime timestamp, String cause) {
-
-        ConsumerEventLoanAdded event = new ConsumerEventLoanAdded(loan, consumer, timestamp, cause);
-        consumer.addConsumerEvent(event);
-        event.handle();
-
-        return event;
+    protected LoanAddedConsumerEvent() {
     }
 
-    protected ConsumerEventLoanAdded() {
-    }
-
-    private ConsumerEventLoanAdded(Loan loan, Consumer consumer, LocalDateTime timestamp, String cause) {
+    public LoanAddedConsumerEvent(Loan loan, Consumer consumer, LocalDateTime timestamp, String cause) {
         super(timestamp, consumer, cause);
         this.loan = loan;
     }
@@ -49,7 +39,6 @@ public class ConsumerEventLoanAdded extends ConsumerEvent {
     @Override
     public void handle() {
         this.consumerBalanceBefore = this.consumer.getBalance();
-        this.consumerBalanceAfter = this.consumerBalanceBefore.add(this.loan.getAmount());
-        this.consumer.setBalance(this.consumerBalanceAfter);
+        this.consumerBalanceAfter = this.consumerBalanceBefore.subtract(this.loan.getAmount());
     }
 }

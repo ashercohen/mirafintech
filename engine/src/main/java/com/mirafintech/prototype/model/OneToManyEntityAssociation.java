@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-
+// TODO: make static not interface
 public interface OneToManyEntityAssociation {
 
     default <P extends OneToManyEntityAssociation, E extends OneToManyEntityAssociation>

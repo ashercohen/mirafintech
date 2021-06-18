@@ -26,7 +26,7 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
      * TODO: this event can be sub-classes into 3 (same as PA subclassing) and simplify the handle() method
      */
 
-    // uni-directional many-to-one:  LoanEventPaymentAllocationAdded n --> 1 LoanEvent
+    // uni-directional many-to-one:  PaymentAllocationAddedLoanEvent n --> 1 LoanEvent
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
     @JoinColumn(name = "loan_payment_allocation_fk")
     @JsonIgnore
@@ -68,6 +68,8 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
             handle(interestPaymentAllocation);
         } else if (paymentAllocation instanceof PrinciplePaymentAllocation principlePaymentAllocation) {
             handle(principlePaymentAllocation);
+        } else {
+            throw new RuntimeException("unexpected LoanPaymentAllocation sub-type: " + this.paymentAllocation.getClass().getSimpleName());
         }
     }
 
@@ -90,16 +92,16 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
             // partial payment
             loanFee.setStatus(ChargeStatus.PARTIALLY_PAID);
             this.feeBalanceAfter = feeBalanceBefore.subtract(amount);
-
-            // sanity
-            if (this.feeBalanceBefore.subtract(amount).compareTo(loanFee.balance()) != 0) {
-                throw new RuntimeException(
-                        String.format("unexpected loan fee balance: val1=%s val2=%s",
-                                this.feeBalanceBefore.subtract(amount), loanFee.balance()));
-            }
         }
 
         loanFee.addPaymentAllocation(loanFeeAllocation);
+
+        // sanity
+        if (this.feeBalanceBefore.subtract(amount).compareTo(loanFee.balance()) != 0) {
+            throw new RuntimeException(
+                    String.format("unexpected loan fee balance: val1=%s val2=%s",
+                            this.feeBalanceBefore.subtract(amount), loanFee.balance()));
+        }
     }
 
     private void handle(InterestPaymentAllocation interestPaymentAllocation) {

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "CONSUMER_EVENT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(length = 100)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ConsumerEvent implements OneToManyEntityAssociation {

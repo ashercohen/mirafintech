@@ -2,13 +2,12 @@ package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.dto.ConsumerDto;
 import com.mirafintech.prototype.model.consumer.Consumer;
-import com.mirafintech.prototype.model.consumer.event.ConsumerEventLoanAdded;
 import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.repository.ConsumerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,12 +29,17 @@ public class ConsumersService {
     public Consumer addLoan(long consumerId, Loan loan) {
 
         Consumer consumer = findById(consumerId).orElseThrow(() -> new IllegalArgumentException("consumer not found: id=" + consumerId));
-        // ensure consumer has this loan - won't be added again
-        boolean isNewLoan = consumer.addLoan(loan);
 
-        if (isNewLoan) {
-            LocalDateTime timestamp = this.timeService.getCurrentDateTime();
-            ConsumerEventLoanAdded event = ConsumerEventLoanAdded.create(loan, consumer, timestamp, "consumer service");
+        // ensure consumer has this loan
+        if (consumer.isLoanAlreadyExists(loan)) {
+            throw new RuntimeException("consumer already has a loan with externalId=" + loan.getExternalId());
+        }
+
+        boolean added = consumer.addLoan(loan, this.timeService.getCurrentDateTime());
+
+        // sanity - should not get inside
+        if (!added) {
+            throw new RuntimeException("loan weren't added to consumer: externalId=" + loan.getExternalId());
         }
 
         return consumer;
@@ -60,6 +64,17 @@ public class ConsumersService {
 
     public Optional<Consumer> findById(long id) {
         return this.repository.findById(id);
+    }
+
+    public void verifyPaymentApplicable(Consumer consumer, BigDecimal paymentAmount) {
+
+        /**
+         * TODO:
+         *  this might change when we allow a user to keep a positive balance
+         */
+        if (paymentAmount.compareTo(consumer.getBalance().abs()) > 0) {
+            throw new RuntimeException("consumer balance is smaller than payment");
+        }
     }
 
     private static int allocateBillingCycleStartDayOfMonth(long consumerId) {

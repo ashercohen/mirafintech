@@ -149,10 +149,10 @@ public class Loan implements OneToManyEntityAssociation, Payee {
             throw new IllegalArgumentException("illegal deposit amount: " + amount);
         }
 
-        return addBalance(new DatedBalance(timestamp, currentBalance().subtract(amount))).getBalance();
+        return addDatedBalance(new DatedBalance(timestamp, currentBalance().subtract(amount))).getBalance();
     }
 
-    private DatedBalance addBalance(DatedBalance datedBalance) {
+    private DatedBalance addDatedBalance(DatedBalance datedBalance) {
         return this.balanceHistory.add(datedBalance)
                 ? datedBalance
                 : currentDatedBalance();
@@ -180,12 +180,6 @@ public class Loan implements OneToManyEntityAssociation, Payee {
 
     public boolean setCurrentTranche(Tranche tranche, LocalDateTime timestamp) { //TODO: check if opposite direction assignment is needed
         return this.trancheHistory.add(new DatedTranche(timestamp, tranche));
-    }
-
-    private DatedBalance currentDatedBalance() {
-        return this.balanceHistory.stream()
-                .max(Comparator.comparing(DatedBalance::getTimestamp))
-                .orElseThrow(() -> new RuntimeException("empty balance history fir loan id=" + this.id));
     }
 
     public BigDecimal currentBalance() {
@@ -242,9 +236,9 @@ public class Loan implements OneToManyEntityAssociation, Payee {
 
     private boolean addPaymentAllocation(LoanPaymentAllocation paymentAllocation) {
 
-        PaymentAllocationAddedLoanEvent loanEvent = new PaymentAllocationAddedLoanEvent(paymentAllocation, this, paymentAllocation.getTimestamp(), "payment_received");
-        addToEventLog(loanEvent);
-        loanEvent.handle();
+        PaymentAllocationAddedLoanEvent paymentAllocationAddedLoanEvent = new PaymentAllocationAddedLoanEvent(paymentAllocation, this, paymentAllocation.getTimestamp(), "payment_received");
+        addToEventLog(paymentAllocationAddedLoanEvent);
+        paymentAllocationAddedLoanEvent.handle();
 
         return this.loanPaymentAllocations.add(paymentAllocation);
     }
@@ -285,6 +279,12 @@ public class Loan implements OneToManyEntityAssociation, Payee {
 
     public List<String> getRiskScoreSummary() {
         return this.riskScoreHistory.stream().map(DatedRiskScore::toString).toList();
+    }
+
+    private DatedBalance currentDatedBalance() {
+        return this.balanceHistory.stream()
+                .max(Comparator.comparing(DatedBalance::getTimestamp))
+                .orElseThrow(() -> new RuntimeException("empty balance history for loan id=" + this.id));
     }
 
     @Override

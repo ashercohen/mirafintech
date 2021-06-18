@@ -179,8 +179,6 @@ public class DefaultPaymentAllocationPolicy implements PaymentAllocationPolicy {
 
                 BigDecimal allocationAmount = calculateAllocationAmount(budgetBalance, loanFee.balance());
                 LoanFeePaymentAllocation paymentAllocation = new LoanFeePaymentAllocation(timestamp, target.loan(), loanFee, allocationAmount);
-                // TODO: not sure we should add PAs to loanFee here
-//                    loanFee.addPaymentAllocation(paymentAllocation);
                 allocations.add(paymentAllocation);
                 budgetBalance = budgetBalance.subtract(allocationAmount);
             }
@@ -213,8 +211,6 @@ public class DefaultPaymentAllocationPolicy implements PaymentAllocationPolicy {
                 BigDecimal allocationAmount = calculateAllocationAmount(budgetBalance, interestBalance);
                 // TODO: split mira/tranche interest
                 InterestPaymentAllocation paymentAllocation = new InterestPaymentAllocation(timestamp, target.loan(), interestCharge, allocationAmount, BigDecimal.ZERO);
-                // TODO: not sure we should add PAs to loanFee here
-//                   interestCharge.addPaymentAllocation(paymentAllocation);
                 allocations.add(paymentAllocation);
                 budgetBalance = budgetBalance.subtract(allocationAmount);
             }
