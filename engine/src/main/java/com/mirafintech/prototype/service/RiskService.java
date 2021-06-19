@@ -17,7 +17,7 @@ public class RiskService {
 
     public DatedCreditScore evaluateConsumerCreditScore(ConsumerDto consumer) {
         return new DatedCreditScore(
-                consumer.getInitialCreditScore(),
+                consumer.initialCreditScore(),
                 this.timeService.getCurrentDateTime()
         );
     }

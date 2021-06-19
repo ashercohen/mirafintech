@@ -106,12 +106,12 @@ public class Consumer implements OneToManyEntityAssociation, Payee {
     }
 
     public Consumer(ConsumerDto dto, DatedCreditScore creditScore, Integer billingCycleStartDay, LocalDateTime timestamp) {
-        this(dto.getId(),
-             dto.getLimitBalance(),
-             dto.getEducation(),
-             dto.getSex(),
-             dto.getMartialStatus(),
-             dto.getAge(),
+        this(dto.id(),
+             dto.limitBalance(),
+             dto.education(),
+             dto.sex(),
+             dto.martialStatus(),
+             dto.age(),
              billingCycleStartDay,
              timestamp,
              new ArrayList<>(List.of(creditScore)),
