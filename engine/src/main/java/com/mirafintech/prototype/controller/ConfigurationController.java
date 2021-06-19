@@ -31,7 +31,7 @@ public class ConfigurationController implements ErrorHandler {
     @RequestMapping(path = {"/config"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> setConfiguration(@RequestBody ConfigurationDto configuration) {
 
-        this.timeService.setTime(configuration.getInitTimestamp());
+        this.timeService.setTime(configuration.initTimestamp());
         int numTranches = this.configurationService.apply(configuration);
 
         return ResponseEntity.ok().body(String.format("initialized %d tranches", numTranches));

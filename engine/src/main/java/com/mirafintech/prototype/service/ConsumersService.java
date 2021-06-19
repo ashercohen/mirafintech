@@ -26,9 +26,7 @@ public class ConsumersService {
 
     private static List<Integer> availableBillingCycleStartDays = List.of(1, 8, 15, 22);
 
-    public Consumer addLoan(long consumerId, Loan loan) {
-
-        Consumer consumer = findById(consumerId).orElseThrow(() -> new IllegalArgumentException("consumer not found: id=" + consumerId));
+    public Loan addLoan(Consumer consumer, Loan loan) {
 
         // ensure consumer has this loan
         if (consumer.isLoanAlreadyExists(loan)) {
@@ -42,19 +40,19 @@ public class ConsumersService {
             throw new RuntimeException("loan weren't added to consumer: externalId=" + loan.getExternalId());
         }
 
-        return consumer;
+        return loan;
     }
 
     public Consumer addConsumer(ConsumerDto consumerDto) {
 
-        if (this.repository.findById(consumerDto.getId()).isPresent()) {
-            throw new IllegalArgumentException("consumer already exists: id=" + consumerDto.getId());
+        if (this.repository.findById(consumerDto.id()).isPresent()) {
+            throw new IllegalArgumentException("consumer already exists: id=" + consumerDto.id());
         }
 
         Consumer consumer = new Consumer(
                 consumerDto,
                 this.riskService.evaluateConsumerCreditScore(consumerDto),
-                allocateBillingCycleStartDayOfMonth(consumerDto.getId()),
+                allocateBillingCycleStartDayOfMonth(consumerDto.id()),
                 this.timeService.getCurrentDateTime()
         );
 

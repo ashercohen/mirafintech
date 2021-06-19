@@ -55,7 +55,7 @@ public class TranchesService {
     public int initializeTranches(List<ConfigurationDto.TrancheConfig> trancheConfigs) {
 
         LocalDateTime timestamp = timeService.getCurrentDateTime();
-        trancheConfigs.sort(Comparator.comparing(ConfigurationDto.TrancheConfig::getLowerBoundRiskScore));
+        trancheConfigs.sort(Comparator.comparing(ConfigurationDto.TrancheConfig::lowerBoundRiskScore));
 
         List<Tranche> added = IntStream.range(0, trancheConfigs.size())
                 .boxed()
@@ -63,11 +63,11 @@ public class TranchesService {
                     ConfigurationDto.TrancheConfig config = trancheConfigs.get(i);
                     return Tranche.createEmptyTranche(
                             timestamp,
-                            new BigDecimal(config.getInitialValue()),
-                            resolveTrancheInterest(config.getInterest()),
+                            new BigDecimal(config.initialValue()),
+                            resolveTrancheInterest(config.interest()),
                             i,
-                            new RiskScore(config.getLowerBoundRiskScore()),
-                            new RiskScore(config.getUpperBoundRiskScore()));
+                            new RiskScore(config.lowerBoundRiskScore()),
+                            new RiskScore(config.upperBoundRiskScore()));
                 })
                 .map(this::persistTranche)
                 .toList();

@@ -23,7 +23,7 @@ public class ConsumerController implements ErrorHandler {
     @RequestMapping(path = {"/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Consumer> addConsumer(@RequestBody ConsumerDto consumer, @PathVariable long id) {
 
-        if (consumer.getId() != id) {
+        if (consumer.id() != id) {
             return ResponseEntity.badRequest().body(null);
         }
         Consumer savedEntity = this.consumersService.addConsumer(consumer);

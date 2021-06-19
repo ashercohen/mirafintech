@@ -27,10 +27,10 @@ public class ConfigurationService {
 
     public int apply(ConfigurationDto configuration) {
 
-        PaymentAllocationPolicy allocationPolicy = this.paymentAllocationPolicyFactory.create(configuration.getPaymentAllocationPolicy());
+        PaymentAllocationPolicy allocationPolicy = this.paymentAllocationPolicyFactory.create(configuration.paymentAllocationPolicy());
         this.paymentAllocationService.setAllocationPolicy(allocationPolicy);
-        this.miraInterest = configuration.getMiraInterest();
+        this.miraInterest = configuration.miraInterest();
 
-        return tranchesService.initializeTranches(configuration.getTrancheConfigs());
+        return tranchesService.initializeTranches(configuration.trancheConfigs());
     }
 }

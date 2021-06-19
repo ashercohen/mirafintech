@@ -23,7 +23,7 @@ public class MerchantController implements ErrorHandler {
     @RequestMapping(path = {"/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Merchant> addMerchant(@RequestBody MerchantDto merchant, @PathVariable long id) {
 
-        if (merchant.getId() != id) {
+        if (merchant.id() != id) {
             return ResponseEntity.badRequest().body(null);
         }
         Merchant savedEntity = this.merchantService.addMerchant(merchant);

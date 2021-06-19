@@ -58,18 +58,18 @@ public class LoanService {
     public Loan processLoan(LoanDto loanDto) {
 
         Consumer consumer = this.consumerRepository
-                .findById(loanDto.getConsumerId())
-                .orElseThrow(() -> new IllegalArgumentException("consumer not found: id=" + loanDto.getConsumerId()));
+                .findById(loanDto.consumerId())
+                .orElseThrow(() -> new IllegalArgumentException("consumer not found: id=" + loanDto.consumerId()));
 
         Merchant merchant = this.merchantService
-                .findMerchant(loanDto.getMerchantId())
-                .orElseThrow(() -> new RuntimeException("merchant not found: id=" + loanDto.getMerchantId()));
+                .findMerchant(loanDto.merchantId())
+                .orElseThrow(() -> new RuntimeException("merchant not found: id=" + loanDto.merchantId()));
 
         Loan loan = new Loan(
-                loanDto.getId(),
+                loanDto.id(),
                 timeService.getCurrentDateTime(),
                 consumer,
-                loanDto.getAmount(),
+                loanDto.amount(),
                 this.riskService.evaluateRiskScore(consumer),
                 merchant
         );

@@ -38,20 +38,20 @@ public class LoanController implements ErrorHandler {
     @RequestMapping(path = {"/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Loan> addLoan(@RequestBody LoanDto loan, @PathVariable long id) {
 
-        if (loan.getId() != id) {
+        if (loan.id() != id) {
             return ResponseEntity.badRequest().build();
         }
 
-        this.timeService.setTime(loan.getTimestamp());
-
-        // persist loan
+        this.timeService.setTime(loan.timestamp());
         Loan persistedLoan = this.loanService.processLoan(loan);
-
-        // allocate to tranche
         Tranche tranche = tranchesService.allocateLoanToTranche(persistedLoan);
+        Consumer consumer = this.consumersService.findById(loan.consumerId()).orElseThrow(() -> new IllegalArgumentException("consumer not found: id=" + loan.consumerId()));
+        Loan updatedLoan = this.consumersService.addLoan(consumer, persistedLoan);
 
-        // TODO: update consumer balance
-        Consumer consumer = this.consumersService.addLoan(loan.getConsumerId(), persistedLoan);
+        // sanity
+        if (!persistedLoan.equals(updatedLoan)) {
+            throw new RuntimeException("persistedLoan != updatedLoan");
+        }
 
         return ResponseEntity.of(Optional.ofNullable(persistedLoan));
     }
