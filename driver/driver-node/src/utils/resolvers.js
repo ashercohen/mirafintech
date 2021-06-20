@@ -163,9 +163,6 @@ const resolveConsumerRisk = (obj) => {
 
     if (totalLoan === 0 )
         return 0;
-    
-    if (totalLoan === 0 )
-        return 0;
 
     const totalPayment = getPaymentsArray(obj).reduce(addReducer, 0);
 
