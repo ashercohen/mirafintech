@@ -1,10 +1,10 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.dto.ConsumerDto;
-import com.mirafintech.prototype.model.Consumer;
-import com.mirafintech.prototype.model.DatedCreditScore;
-import com.mirafintech.prototype.model.RiskScore;
-import com.mirafintech.prototype.model.DatedRiskScore;
+import com.mirafintech.prototype.model.consumer.Consumer;
+import com.mirafintech.prototype.model.credit.DatedCreditScore;
+import com.mirafintech.prototype.model.risk.RiskScore;
+import com.mirafintech.prototype.model.risk.DatedRiskScore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public class RiskService {
 
     public DatedCreditScore evaluateConsumerCreditScore(ConsumerDto consumer) {
         return new DatedCreditScore(
-                consumer.getInitialCreditScore(),
+                consumer.initialCreditScore(),
                 this.timeService.getCurrentDateTime()
         );
     }

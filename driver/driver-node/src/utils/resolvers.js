@@ -160,6 +160,9 @@ const resolveConfigData = startDate => {
  */
 const resolveConsumerRisk = (obj) => {
     const totalLoan = getBillArray(obj).reduce(addReducer, 0);
+
+    if (totalLoan === 0 )
+        return 0;
     
     if (totalLoan === 0 )
         return 0;

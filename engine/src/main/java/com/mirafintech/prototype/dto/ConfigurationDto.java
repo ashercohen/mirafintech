@@ -1,10 +1,6 @@
 package com.mirafintech.prototype.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,22 +8,21 @@ import java.util.List;
 /**
  * configuration object sent by the driver at startup
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConfigurationDto {
+public record ConfigurationDto(LocalDateTime initTimestamp,
+                               String paymentAllocationPolicy,
+                               // interest, on top of tranche interest, the consumer is charge by. decimal fraction (see example below)
+                               BigDecimal miraInterest,
+                               List<TrancheConfig> trancheConfigs) {
 
-    private LocalDateTime initTimestamp;
 
-    private List<TrancheConfig> trancheConfigs;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class TrancheConfig {
-        private int lowerBoundRiskScore; // inclusive
-        private int upperBoundRiskScore; // exclusive
-        private int initialValue; // USD
+    public static record TrancheConfig(int lowerBoundRiskScore, // inclusive
+                                       int upperBoundRiskScore, // exclusive
+                                       int initialValue,        // USD
+                                       BigDecimal interest) {    // as decimal for example: for 12.5% interest this value is 0.125
+        public TrancheConfig {
+            if (interest == null || interest.compareTo(BigDecimal.ZERO) <= 0 || interest.compareTo(BigDecimal.ONE) >= 0) {
+                throw new IllegalArgumentException("illegal value for tranche interest");
+            }
+        }
     }
 }

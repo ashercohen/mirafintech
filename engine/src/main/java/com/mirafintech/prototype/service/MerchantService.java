@@ -27,12 +27,12 @@ public class MerchantService {
     public Merchant addMerchant(MerchantDto merchantDto) {
 
         this.repository
-                .findById(merchantDto.getId())
+                .findById(merchantDto.id())
                 .ifPresent(merchant -> {
-                    throw new IllegalArgumentException("merchant already exists: id=" + merchantDto.getId());
+                    throw new IllegalArgumentException("merchant already exists: id=" + merchantDto.id());
                 });
 
-        Merchant merchant = new Merchant(merchantDto.getId(), merchantDto.getName(),  this.timeService.getCurrentDateTime());
+        Merchant merchant = new Merchant(merchantDto.id(), merchantDto.name(),  this.timeService.getCurrentDateTime());
 
         return this.repository.saveAndFlush(merchant);
     }

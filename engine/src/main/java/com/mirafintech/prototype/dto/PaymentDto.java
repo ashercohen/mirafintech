@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentDto {
 
-    private long id;
+    private long id; // mapped to payment externalId
 
     private LocalDateTime timestamp; // string in the format: 2021-05-08T17:15:30
 

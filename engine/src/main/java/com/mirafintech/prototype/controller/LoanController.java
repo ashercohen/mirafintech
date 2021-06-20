@@ -1,10 +1,13 @@
 package com.mirafintech.prototype.controller;
 
 import com.mirafintech.prototype.dto.LoanDto;
-import com.mirafintech.prototype.model.Consumer;
-import com.mirafintech.prototype.model.Loan;
-import com.mirafintech.prototype.model.Tranche;
-import com.mirafintech.prototype.service.*;
+import com.mirafintech.prototype.model.consumer.Consumer;
+import com.mirafintech.prototype.model.loan.Loan;
+import com.mirafintech.prototype.model.tranche.Tranche;
+import com.mirafintech.prototype.service.ConsumersService;
+import com.mirafintech.prototype.service.LoanService;
+import com.mirafintech.prototype.service.TimeService;
+import com.mirafintech.prototype.service.TranchesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +26,7 @@ public class LoanController implements ErrorHandler {
     private TranchesService tranchesService;
 
     @Autowired
-    private LoansService loansService;
+    private LoanService loanService;
 
     @Autowired
     private ConsumersService consumersService;
@@ -35,32 +38,33 @@ public class LoanController implements ErrorHandler {
     @RequestMapping(path = {"/{id}"}, method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Loan> addLoan(@RequestBody LoanDto loan, @PathVariable long id) {
 
-        if (loan.getId() != id) {
+        if (loan.id() != id) {
             return ResponseEntity.badRequest().build();
         }
 
-        this.timeService.setTime(loan.getTimestamp());
-        // persist loan
-        Loan persistedLoan = this.loansService.processLoan(loan);
-
-        // allocate to tranche
+        this.timeService.setTime(loan.timestamp());
+        Loan persistedLoan = this.loanService.processLoan(loan);
         Tranche tranche = tranchesService.allocateLoanToTranche(persistedLoan);
+        Consumer consumer = this.consumersService.findById(loan.consumerId()).orElseThrow(() -> new IllegalArgumentException("consumer not found: id=" + loan.consumerId()));
+        Loan updatedLoan = this.consumersService.addLoan(consumer, persistedLoan);
 
-        // TODO: update consumer balance
-        Consumer consumer = this.consumersService.addLoan(loan.getConsumerId(), persistedLoan);
+        // sanity
+        if (!persistedLoan.equals(updatedLoan)) {
+            throw new RuntimeException("persistedLoan != updatedLoan");
+        }
 
         return ResponseEntity.of(Optional.ofNullable(persistedLoan));
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(path = {"/{id}"}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Loan> getLoan(@PathVariable long id) {
-        return ResponseEntity.of(this.loansService.findById(id));
+    public ResponseEntity<Loan> findLoan(@PathVariable long id) {
+        return ResponseEntity.of(this.loanService.findById(id));
     }
 
     @Transactional(readOnly = true)
     @RequestMapping(path = {""}, method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<Loan>> getTranches() {
-        return ResponseEntity.ok(this.loansService.findAll());
+    public ResponseEntity<List<Loan>> findAll() {
+        return ResponseEntity.ok(this.loanService.findAll());
     }
 }

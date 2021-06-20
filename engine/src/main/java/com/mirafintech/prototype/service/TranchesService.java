@@ -1,7 +1,12 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.dto.ConfigurationDto;
-import com.mirafintech.prototype.model.*;
+import com.mirafintech.prototype.model.loan.Loan;
+import com.mirafintech.prototype.model.risk.DatedRiskScore;
+import com.mirafintech.prototype.model.risk.RiskScore;
+import com.mirafintech.prototype.model.tranche.Tranche;
+import com.mirafintech.prototype.model.tranche.event.TrancheEvent;
+import com.mirafintech.prototype.model.tranche.event.TrancheEventLoanAdded;
 import com.mirafintech.prototype.repository.TrancheRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,18 +55,19 @@ public class TranchesService {
     public int initializeTranches(List<ConfigurationDto.TrancheConfig> trancheConfigs) {
 
         LocalDateTime timestamp = timeService.getCurrentDateTime();
-        trancheConfigs.sort(Comparator.comparing(ConfigurationDto.TrancheConfig::getLowerBoundRiskScore));
+        trancheConfigs.sort(Comparator.comparing(ConfigurationDto.TrancheConfig::lowerBoundRiskScore));
 
         List<Tranche> added = IntStream.range(0, trancheConfigs.size())
                 .boxed()
                 .map(i -> {
                     ConfigurationDto.TrancheConfig config = trancheConfigs.get(i);
                     return Tranche.createEmptyTranche(
-                            new BigDecimal(config.getInitialValue()),
                             timestamp,
+                            new BigDecimal(config.initialValue()),
+                            resolveTrancheInterest(config.interest()),
                             i,
-                            new RiskScore(config.getLowerBoundRiskScore()),
-                            new RiskScore(config.getUpperBoundRiskScore()));
+                            new RiskScore(config.lowerBoundRiskScore()),
+                            new RiskScore(config.upperBoundRiskScore()));
                 })
                 .map(this::persistTranche)
                 .toList();
@@ -72,6 +78,16 @@ public class TranchesService {
         }
 
         return added.size();
+    }
+
+    /**
+     * this is a fake call to a "service"/method/routine that determines the tranche
+     * interest - at least the consumer facing interest (not including Mira's spread). after the tranche
+     * is auctioned, the interest will be lower or equal but never higher and Mira will pay the tranche
+     * according to a lower interest rate than the consumer pays (excluding Mira spread)
+     */
+    private BigDecimal resolveTrancheInterest(BigDecimal interestFromConfig) {
+        return interestFromConfig;
     }
 
     private Tranche persistTranche(Tranche tranche) {
@@ -116,8 +132,9 @@ public class TranchesService {
 
         Tranche newTranche =
                 Tranche.createEmptyTranche(
-                        tranche.getInitialValue(),
                         this.timeService.getCurrentDateTime(),
+                        tranche.getInitialValue(),
+                        tranche.getInterest(), // should we call resolveTrancheInterest() ?
                         tranche.getRiskLevel().getId(),
                         tranche.getRiskLevel().getLowerBound(),
                         tranche.getRiskLevel().getUpperBound());

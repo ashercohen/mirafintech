@@ -1,6 +1,6 @@
 package com.mirafintech.prototype.controller;
 
-import com.mirafintech.prototype.model.Tranche;
+import com.mirafintech.prototype.model.tranche.Tranche;
 import com.mirafintech.prototype.service.TranchesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
