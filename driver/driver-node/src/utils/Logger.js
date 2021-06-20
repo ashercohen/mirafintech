@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-const logger = require("log4js");
+const logger = require('log4js');
 let instance = null;
 
 class Logger {
@@ -10,8 +10,8 @@ class Logger {
      */
     constructor(filename, forceNew = false) {
         this.options = {
-            appenders: { "app": { type: "file", filename, layout: { type: "basic" } } },
-            categories: { default: { appenders: ["app"], level: "all" } }
+            appenders: { 'app': { type: 'file', filename, layout: { type: 'basic' } } },
+            categories: { default: { appenders: ['app'], level: 'all' } }
         };
 
         if (instance) {
