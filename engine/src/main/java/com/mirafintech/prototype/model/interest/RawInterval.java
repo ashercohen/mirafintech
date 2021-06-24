@@ -3,9 +3,9 @@ package com.mirafintech.prototype.model.interest;
 import java.time.LocalDate;
 
 
-public record RawTimeInterval(LocalDate from, LocalDate to) implements TimeInterval<Void> {
+public record RawInterval(LocalDate from, LocalDate to) implements Interval<Void> {
 
-    public RawTimeInterval {
+    public RawInterval {
         validate(from, to);
     }
 
@@ -19,7 +19,7 @@ public record RawTimeInterval(LocalDate from, LocalDate to) implements TimeInter
      * this.from >= other.from
      * this.to <= other.to
      */
-    public boolean isContainedIn(com.mirafintech.prototype.model.interest.RawTimeInterval other) {
+    public boolean isContainedIn(RawInterval other) {
         return !this.from.isBefore(other.from) && !this.to.isAfter(other.to);
     }
 }

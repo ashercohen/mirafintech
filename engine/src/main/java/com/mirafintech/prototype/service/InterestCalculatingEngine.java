@@ -20,37 +20,28 @@ public class InterestCalculatingEngine {
 
     public BigDecimal calculate(Loan loan, Consumer consumer) {
 
-        BigDecimal miraInterest = configurationService.getMiraInterest(); // TODO: probably not needed
+        BigDecimal miraInterest = configurationService.getMiraInterest(); // TODO: calculate mira interest
 
         // TODO: implement
-//        throw new RuntimeException("not implemented yet");
         return BigDecimal.valueOf(10L);
     }
 
-    private DailyInterestIntervals<?> convertToDailyInterest(AnnualInterestIntervals<?> annualInterestIntervals) {
+    private DailyInterestIntervalList<?> convertToDailyInterest(AnnualInterestIntervalList<?> annualInterestIntervals) {
         /**
          * TODO: base on config return one of the implementations of DailyInterestIntervals
-         *  currently only one is defined:
-         *  - DailyInterestIntervals365
-         *  should be defined:
-         *  - DailyInterestIntervals360 - only defined
+         *  - DailyInterestIntervalList365
+         *  - DailyInterestIntervalList360
          */
         return annualInterestIntervals.toDailyInterestIntervals365();
     }
 
-    public BigDecimal calculate(final BalanceIntervals balanceIntervals, final AnnualInterestIntervals<?> annualInterestIntervals) {
+    public BigDecimal calculate(final BalanceIntervalListImpl balanceIntervals, final AnnualInterestIntervalList<?> annualInterestIntervals) {
 
-//        BalanceIntervals.Interval firstBalanceInterval = balanceIntervals.intervals().get(0);
-//        BalanceIntervals.Interval lastBalanceInterval = balanceIntervals.intervals().get(balanceIntervals.intervals().size() - 1);
-        RawTimeInterval balancesDatesRange = balanceIntervals.entireDatesRange().orElseThrow(() -> new RuntimeException("empty balanceIntervals range"));
-
-        DailyInterestIntervals<?> dailyInterestIntervals = convertToDailyInterest(annualInterestIntervals);
-//        DailyInterestIntervals365 dailyInterestIntervals365 = annualInterestIntervals.toDailyInterestIntervals365();
+        RawInterval balancesDatesRange = balanceIntervals.entireDatesRange().orElseThrow(() -> new RuntimeException("empty balanceIntervals range"));
+        DailyInterestIntervalList<?> dailyInterestIntervals = convertToDailyInterest(annualInterestIntervals);
 
         BigDecimal interest = Stream.iterate(balancesDatesRange.from(), date -> date.plusDays(1L))
-//                .takeWhile(Predicate.not(date -> date.isAfter(balancesDatesRange.to())))
                 .takeWhile(date -> date.isBefore(balancesDatesRange.to()))
-//                .map(date -> calculateAtDate(date, balanceIntervals, interestIntervals))
                 .map(date -> calculateAtDate(date, balanceIntervals, dailyInterestIntervals))
                 .reduce(BigDecimal::add)
                 .orElseThrow(() -> new RuntimeException("daily interest reduction failed"));
@@ -58,66 +49,19 @@ public class InterestCalculatingEngine {
         return interest;
     }
 
-    private BigDecimal calculateAtDate(LocalDate date, final BalanceIntervals balanceIntervals, final DailyInterestIntervals<?> dailyInterestIntervals) {
+    private BigDecimal calculateAtDate(LocalDate date, final BalanceIntervalListImpl balanceIntervals, final DailyInterestIntervalList<?> dailyInterestIntervalList) {
 
-        BigDecimal balance = balanceIntervals.findByDate(date).map(TimeInterval::value).orElseThrow(() -> new NoSuchElementException("no balance interval for date: " + date.toString()));
-//        BigDecimal dailyInterest = interestIntervals.findByDate(date).map(TimeInterval::value).map(APR::toDailyInterest).map(DailyInterest::tranche).get();
+        BigDecimal balance =
+                balanceIntervals.findByDate(date)
+                        .map(BalanceInterval::value)
+                        .orElseThrow(() -> new NoSuchElementException("no balance interval for date: " + date.toString()));
 
         BigDecimal dailyInterest =
-                dailyInterestIntervals.findByDate(date)
-                        .map(TimeInterval::value)
+                dailyInterestIntervalList.findByDate(date)
+                        .map(InterestInterval::value)
                         .map(DailyInterest::tranche)
                         .orElseThrow(() -> new NoSuchElementException("no interest interval for date: " + date.toString()));
 
         return balance.multiply(dailyInterest);
     }
-
-//    private BigDecimal calculate(RawTimeInterval interval, BalanceIntervals balanceIntervals, InterestIntervals interestIntervals) {
-//
-//        // find the interest rate for this interval
-//
-//
-//        return BigDecimal.ZERO;
-//    }
-
-//    List<TimeInterval.RawTimeInterval> segment(BalanceIntervals balanceIntervals, InterestIntervals interestIntervals, LocalDate from, LocalDate to) {
-//
-//        /**
-//         * merge two lists of intervals to create an ordered list of the intervals 'to()' date
-//         * then fix the list:
-//         * - remove all dates that are before first balance interval 'from' date
-//         * - remove all dates that are after last balance interval 'to' date
-//         * - prepend first balance interval 'from' date
-//         * - append last balance interval 'to' date
-//         */
-//
-//        TimeInterval.RawTimeInterval entireBalanceRange = balanceIntervals.entireDateRange().orElseThrow();
-//        TimeInterval.RawTimeInterval entireInterestRange = interestIntervals.entireDateRange().orElseThrow();
-//
-//        if (!entireBalanceRange.isContainedIn(entireInterestRange)) {
-//            throw new RuntimeException("balance range is not contained in interest range");
-//        }
-//
-//
-//        List<LocalDate> intervalToList =
-//                Stream.concat(
-//                        balanceIntervals.intervals().stream().map(BalanceIntervals.Interval::to),
-//                        interestIntervals.intervals().stream().map(InterestIntervals.Interval::to)
-//                ).sorted(Comparator.comparing(Function.identity()))
-//                 .filter(localDate -> localDate.isAfter(from))
-//                 .filter(localDate -> localDate.isBefore(to))
-//                 .distinct()
-//                 .collect(Collectors.toCollection(ArrayList::new));
-//
-//        intervalToList.add(0, from);
-//        intervalToList.add(to);
-//
-//        /**
-//         * iterate using sliding window of size two and generate RawTimeInterval from each pair
-//         */
-//        return IntStream.rangeClosed(0, intervalToList.size() - 2)
-//                    .mapToObj(idx -> new TimeInterval.RawTimeInterval(intervalToList.get(idx), intervalToList.get(idx + 1)))
-//                    .toList();
-//    }
-
 }

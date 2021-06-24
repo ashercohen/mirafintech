@@ -11,74 +11,74 @@ public class IntervalsTest {
 
     @Test
     public void balanceIntervalTest() {
-        new BalanceIntervals.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO);
+        new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void malformedBalanceIntervalTest() {
-        new BalanceIntervals.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-15"), BigDecimal.ZERO);
+        new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-15"), BigDecimal.ZERO);
     }
 
     @Test
     public void balanceIntervalListTest() {
-        new BalanceIntervals(List.of(
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
+        new BalanceIntervalListImpl(List.of(
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
         ));
     }
 
     @Test (expected = IllegalArgumentException.class) // gaps between consecutive intervals are prohibited
     public void noGapsIntervalListTest() {
-        new BalanceIntervals(List.of(
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
+        new BalanceIntervalListImpl(List.of(
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
                 // missing day
 //                new BalanceIntervals.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
         ));
     }
 
 
     @Test (expected = IllegalArgumentException.class) // intervals must monotonic increase
     public void monotonicIncreasingIntervalListTest() {
-        new BalanceIntervals(List.of(
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
+        new BalanceIntervalListImpl(List.of(
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
                 // duplicate day
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
         ));
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void overlappingIntervalListTest() {
-        new BalanceIntervals(List.of(
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-14"), LocalDate.parse("2021-06-15"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
+        new BalanceIntervalListImpl(List.of(
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-14"), LocalDate.parse("2021-06-15"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
                 // overlapping interval
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-17"), LocalDate.parse("2021-06-18"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-18"), LocalDate.parse("2021-06-19"), BigDecimal.ZERO)
         ));
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void zeroLengthIntervalTest() {
-        new BalanceIntervals(List.of(
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-14"), LocalDate.parse("2021-06-15"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
+        new BalanceIntervalListImpl(List.of(
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-14"), LocalDate.parse("2021-06-15"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-15"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
                 // from=to
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
-                new BalanceIntervals.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO)
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-16"), BigDecimal.ZERO),
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-06-16"), LocalDate.parse("2021-06-17"), BigDecimal.ZERO)
         ));
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void emptyIntervalListTest() {
-        new BalanceIntervals(List.of(
+        new BalanceIntervalListImpl(List.of(
         ));
     }
 

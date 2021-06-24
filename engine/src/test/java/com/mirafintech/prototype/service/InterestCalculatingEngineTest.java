@@ -1,8 +1,8 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.model.interest.APR;
-import com.mirafintech.prototype.model.interest.BalanceIntervals;
-import com.mirafintech.prototype.model.interest.APRInterestIntervals;
+import com.mirafintech.prototype.model.interest.BalanceIntervalListImpl;
+import com.mirafintech.prototype.model.interest.APRInterestIntervalList;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -17,14 +17,13 @@ public class InterestCalculatingEngineTest {
 
     @Test
     void calculateTest() {
-        //public BigDecimal calculate(final BalanceIntervals balanceIntervals, final InterestIntervals interestIntervals) {
 
-        BalanceIntervals balanceIntervals = new BalanceIntervals(List.of(
-                new BalanceIntervals.Interval(LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"), new BigDecimal(1000))
+        BalanceIntervalListImpl balanceIntervals = new BalanceIntervalListImpl(List.of(
+                new BalanceIntervalListImpl.Interval(LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"), new BigDecimal(1000))
         ));
 
-        APRInterestIntervals annualInterestIntervals = new APRInterestIntervals(List.of(
-                new APRInterestIntervals.Interval(LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"), new APR(new BigDecimal("0.1"), BigDecimal.ZERO))
+        APRInterestIntervalList annualInterestIntervals = new APRInterestIntervalList(List.of(
+                new APRInterestIntervalList.Interval(LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"), new APR(new BigDecimal("0.1"), BigDecimal.ZERO))
         ));
 
         BigDecimal interest = engine.calculate(balanceIntervals, annualInterestIntervals);
