@@ -20,7 +20,8 @@ import static com.mirafintech.prototype.model.charge.ChargeStatus.*;
 //@MappedSuperclass
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public abstract class LoanCharge<P extends LoanPaymentAllocation> extends Charge {
+public abstract sealed class LoanCharge<P extends LoanPaymentAllocation> extends Charge
+        permits InterestCharge, LoanFee {
 
     public abstract boolean addPaymentAllocation(P paymentAllocation);
 

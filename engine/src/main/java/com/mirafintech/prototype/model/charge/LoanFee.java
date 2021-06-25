@@ -20,7 +20,7 @@ import java.util.List;
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class LoanFee extends LoanCharge<LoanFeePaymentAllocation> {
+public final class LoanFee extends LoanCharge<LoanFeePaymentAllocation> {
 
     @Column(name = "loan_fee__amount")
     @Getter(AccessLevel.PROTECTED)

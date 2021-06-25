@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 // a single allocation cannot include fee, interest, principle (mutually exclusive) => hierarchy
-public abstract class PaymentAllocation implements OneToManyEntityAssociation {
+public sealed abstract class PaymentAllocation implements OneToManyEntityAssociation
+        permits LoanPaymentAllocation, ConsumerPaymentAllocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

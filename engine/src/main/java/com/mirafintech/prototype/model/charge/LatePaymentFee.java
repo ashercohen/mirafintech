@@ -21,7 +21,7 @@ import java.util.List;
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class LatePaymentFee extends ConsumerCharge<LatePaymentFeePaymentAllocation> {
+public final class LatePaymentFee extends ConsumerCharge<LatePaymentFeePaymentAllocation> {
 
     @Column(name = "late_payment_fee__amount")
     @Getter(AccessLevel.PROTECTED)
