@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Exchange implements OneToManyEntityAssociation {
+public class Exchange {
 
     @Id
     private Long id;

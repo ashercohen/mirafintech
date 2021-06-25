@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 //@MappedSuperclass
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public abstract class LoanPaymentAllocation extends PaymentAllocation {
+public abstract sealed class LoanPaymentAllocation extends PaymentAllocation
+        permits InterestPaymentAllocation, PrinciplePaymentAllocation, LoanFeePaymentAllocation {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH, optional = true)
     @JsonIgnore

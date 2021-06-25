@@ -1,7 +1,6 @@
 package com.mirafintech.prototype.tests.association;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.tests.util.AbstractTest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -121,7 +120,7 @@ public class ManyToOneUniDeleteNotCascadedTest extends AbstractTest {
     @Setter
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class RiskLevel implements OneToManyEntityAssociation {
+    public static class RiskLevel {
 
         @Id
         private Long id;
@@ -141,7 +140,7 @@ public class ManyToOneUniDeleteNotCascadedTest extends AbstractTest {
     @Setter
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class Tranche implements OneToManyEntityAssociation {
+    public static class Tranche {
 
         @Id
         private Long id;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.DatedBalance;
 import com.mirafintech.prototype.model.Merchant;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.model.Payee;
 import com.mirafintech.prototype.model.charge.InterestCharge;
 import com.mirafintech.prototype.model.charge.LoanCharge;
@@ -30,13 +29,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
+import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
+
 
 @Entity
 @Table(name = "LOAN")
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Loan implements OneToManyEntityAssociation, Payee {
+public class Loan implements Payee {
 
     enum Status {
         ACTIVE, NOT_ACTIVE, PAID_IN_FULL // TODO: maybe add more states: DEFAULTED, ...

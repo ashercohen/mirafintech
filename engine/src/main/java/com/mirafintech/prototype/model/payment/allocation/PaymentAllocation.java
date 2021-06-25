@@ -2,7 +2,6 @@ package com.mirafintech.prototype.model.payment.allocation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.model.Payee;
 import com.mirafintech.prototype.model.payment.Payment;
 import lombok.Getter;
@@ -19,7 +18,8 @@ import java.time.LocalDateTime;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 // a single allocation cannot include fee, interest, principle (mutually exclusive) => hierarchy
-public abstract class PaymentAllocation implements OneToManyEntityAssociation {
+public sealed abstract class PaymentAllocation
+        permits LoanPaymentAllocation, ConsumerPaymentAllocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

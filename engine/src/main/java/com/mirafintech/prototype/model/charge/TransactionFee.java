@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class TransactionFee extends MerchantCharge {
+public final class TransactionFee extends MerchantCharge {
 
     @Column(name = "transaction_fee__amount")
     @Getter(AccessLevel.PROTECTED)

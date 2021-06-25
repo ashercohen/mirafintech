@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class PrinciplePaymentAllocation extends LoanPaymentAllocation {
+public final class PrinciplePaymentAllocation extends LoanPaymentAllocation {
 
     @Column(name = "principle__amount")
     private BigDecimal amount;

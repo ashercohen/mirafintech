@@ -16,12 +16,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
+import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
+
 
 @Entity
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class InterestCharge extends LoanCharge<InterestPaymentAllocation> {
+public final class InterestCharge extends LoanCharge<InterestPaymentAllocation> {
 
     @Column(name = "interest_charge__amount")
     @Getter(AccessLevel.PROTECTED)

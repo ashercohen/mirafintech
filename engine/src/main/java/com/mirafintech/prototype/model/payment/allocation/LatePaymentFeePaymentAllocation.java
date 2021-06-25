@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class LatePaymentFeePaymentAllocation extends ConsumerPaymentAllocation {
+public final class LatePaymentFeePaymentAllocation extends ConsumerPaymentAllocation {
 
     // n <--> 1 bi-di "child" side
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)

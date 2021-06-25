@@ -1,7 +1,6 @@
 package com.mirafintech.prototype.model.charge;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +15,8 @@ import java.time.LocalDateTime;
 //@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class Charge implements OneToManyEntityAssociation {
+public abstract sealed class Charge
+        permits ConsumerCharge, LoanCharge, MerchantCharge {
 
     abstract protected BigDecimal getAmount();
 

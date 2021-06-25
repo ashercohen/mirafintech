@@ -2,7 +2,6 @@ package com.mirafintech.prototype.model.tranche;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.model.Exchange;
 import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.model.risk.RiskLevel;
@@ -19,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
+
 
 @Entity
 @Table(name = "TRANCHE")
@@ -26,7 +27,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Tranche implements OneToManyEntityAssociation {
+public class Tranche {
 
     enum Status {
         ACTIVE, NOT_ACTIVE

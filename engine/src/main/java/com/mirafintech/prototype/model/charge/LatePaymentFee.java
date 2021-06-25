@@ -16,12 +16,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
+import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
+
 
 @Entity
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class LatePaymentFee extends ConsumerCharge<LatePaymentFeePaymentAllocation> {
+public final class LatePaymentFee extends ConsumerCharge<LatePaymentFeePaymentAllocation> {
 
     @Column(name = "late_payment_fee__amount")
     @Getter(AccessLevel.PROTECTED)
