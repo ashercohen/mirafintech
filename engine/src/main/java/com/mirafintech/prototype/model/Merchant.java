@@ -20,7 +20,7 @@ import java.util.Optional;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Merchant implements OneToManyEntityAssociation {
+public class Merchant {
 
     @Id
     private Long id;

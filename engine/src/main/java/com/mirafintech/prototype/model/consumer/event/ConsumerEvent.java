@@ -2,7 +2,6 @@ package com.mirafintech.prototype.model.consumer.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.model.consumer.Consumer;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(length = 100)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class ConsumerEvent implements OneToManyEntityAssociation {
+public abstract class ConsumerEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

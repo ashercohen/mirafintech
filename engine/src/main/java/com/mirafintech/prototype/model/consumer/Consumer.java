@@ -3,7 +3,6 @@ package com.mirafintech.prototype.model.consumer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.dto.ConsumerDto;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.model.Payee;
 import com.mirafintech.prototype.model.charge.ConsumerCharge;
 import com.mirafintech.prototype.model.charge.LatePaymentFee;
@@ -25,6 +24,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
+import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
+
 
 @Entity
 @Table(name = "CONSUMER")
@@ -32,7 +34,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Consumer implements OneToManyEntityAssociation, Payee {
+public class Consumer implements Payee {
 
     @Id
     private Long id;

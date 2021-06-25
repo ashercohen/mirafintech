@@ -2,7 +2,6 @@ package com.mirafintech.prototype.model.loan.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.model.loan.Loan;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 //@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public abstract class LoanEvent implements OneToManyEntityAssociation {
+public abstract class LoanEvent {
 
     /**
      *  this is a base class for an hierarchy of loan events.

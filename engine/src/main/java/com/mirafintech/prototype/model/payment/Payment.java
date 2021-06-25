@@ -2,7 +2,6 @@ package com.mirafintech.prototype.model.payment;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import com.mirafintech.prototype.model.consumer.Consumer;
 import com.mirafintech.prototype.model.payment.allocation.PaymentAllocation;
 import lombok.Getter;
@@ -15,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
+
 
 @Entity
 @Table(name = "PAYMENT")
@@ -22,7 +23,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Payment implements OneToManyEntityAssociation {
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

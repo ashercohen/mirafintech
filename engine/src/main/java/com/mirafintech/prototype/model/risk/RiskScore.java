@@ -1,7 +1,6 @@
 package com.mirafintech.prototype.model.risk;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mirafintech.prototype.model.OneToManyEntityAssociation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +15,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RiskScore implements OneToManyEntityAssociation {
+public class RiskScore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

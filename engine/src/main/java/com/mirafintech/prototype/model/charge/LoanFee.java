@@ -15,6 +15,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
+import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
+
 
 @Entity
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
