@@ -12,6 +12,7 @@ public record ConfigurationDto(LocalDateTime initTimestamp,
                                String paymentAllocationPolicy,
                                // interest, on top of tranche interest, the consumer is charge by. decimal fraction (see example below)
                                BigDecimal miraInterest,
+                               Integer gracePeriodLength,
                                List<TrancheConfig> trancheConfigs) {
 
 

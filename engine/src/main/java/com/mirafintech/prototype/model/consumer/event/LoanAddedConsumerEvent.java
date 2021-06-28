@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LoanAddedConsumerEvent extends ConsumerEvent {
+public final class LoanAddedConsumerEvent extends ConsumerEvent {
 
     // uni-directional many-to-one:  ConsumerEventLoanAdded n --> 1 ConsumerEvent
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
@@ -32,7 +32,7 @@ public class LoanAddedConsumerEvent extends ConsumerEvent {
     }
 
     public LoanAddedConsumerEvent(Loan loan, Consumer consumer, LocalDateTime timestamp, String cause) {
-        super(timestamp, consumer, cause);
+        super(null, timestamp, consumer, cause);
         this.loan = loan;
     }
 

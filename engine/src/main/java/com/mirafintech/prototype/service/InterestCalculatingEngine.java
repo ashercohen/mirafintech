@@ -62,6 +62,6 @@ public class InterestCalculatingEngine {
                         .map(DailyInterest::tranche)
                         .orElseThrow(() -> new NoSuchElementException("no interest interval for date: " + date.toString()));
 
-        return balance.multiply(dailyInterest);
+        return balance.multiply(dailyInterest); // TODO: split into tranche + mira
     }
 }

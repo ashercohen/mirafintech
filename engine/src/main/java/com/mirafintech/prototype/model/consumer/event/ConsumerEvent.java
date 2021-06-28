@@ -16,7 +16,8 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(length = 100)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class ConsumerEvent {
+public sealed abstract class ConsumerEvent
+        permits LoanAddedConsumerEvent, PaymentAllocationAddedConsumerEvent, MinimumPaymentConsumerEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -34,15 +35,11 @@ public abstract class ConsumerEvent {
     protected ConsumerEvent() {
     }
 
-    private ConsumerEvent(Long id, LocalDateTime timestamp, Consumer consumer, String cause) {
+    protected ConsumerEvent(Long id, LocalDateTime timestamp, Consumer consumer, String cause) {
         this.id = id;
         this.timestamp = timestamp;
         this.consumer = consumer;
         this.cause = cause;
-    }
-
-    protected ConsumerEvent(LocalDateTime timestamp, Consumer consumer, String cause) {
-        this(null, timestamp, consumer, cause);
     }
 
     // TODO: maybe make protected - probably move from here as this is a model

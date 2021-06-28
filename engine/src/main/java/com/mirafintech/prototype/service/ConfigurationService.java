@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * handles configuration message sent at startup
@@ -25,11 +26,22 @@ public class ConfigurationService {
     @Getter
     private BigDecimal miraInterest;
 
+    @Getter
+    private BigDecimal principleMinimumPaymentPercentage;
+
+    @Getter
+    private int gracePeriodLength;
+
+    // TODO: maybe get from config message
+    private static final BigDecimal DEFAULT_PRINCIPLE_MINIMUM_PAYMENT_PERCENTAGE = BigDecimal.ONE.divide(new BigDecimal(36), 10, RoundingMode.HALF_UP);
+
     public int apply(ConfigurationDto configuration) {
 
         PaymentAllocationPolicy allocationPolicy = this.paymentAllocationPolicyFactory.create(configuration.paymentAllocationPolicy());
         this.paymentAllocationService.setAllocationPolicy(allocationPolicy);
         this.miraInterest = configuration.miraInterest();
+        this.gracePeriodLength = configuration.gracePeriodLength();
+        this.principleMinimumPaymentPercentage = DEFAULT_PRINCIPLE_MINIMUM_PAYMENT_PERCENTAGE;
 
         return tranchesService.initializeTranches(configuration.trancheConfigs());
     }

@@ -26,7 +26,6 @@ import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
 public final class LoanFee extends LoanCharge<LoanFeePaymentAllocation> {
 
     @Column(name = "loan_fee__amount")
-    @Getter(AccessLevel.PROTECTED)
     private BigDecimal amount;
 
     // 1 <--> n bi-di "parent" side

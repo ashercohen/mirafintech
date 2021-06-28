@@ -1,6 +1,7 @@
 package com.mirafintech.prototype.model.charge;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mirafintech.prototype.model.HasAmount;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,10 +16,12 @@ import java.time.LocalDateTime;
 //@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract /*sealed*/ class Charge
-        /*permits ConsumerCharge, LoanCharge, MerchantCharge*/ {
+public abstract /*sealed*/ class Charge implements HasAmount
+        /*permits ConsumerCharge, LoanCharge, MerchantCharge */{
+//public abstract /*sealed*/ class Charge
+//        /*permits ConsumerCharge, LoanCharge, MerchantCharge*/ {
 
-    abstract protected BigDecimal getAmount();
+    abstract public /*protected*/ BigDecimal getAmount();
 
     //TODO: do we need this method??
 //    //    need to implement in derived classes

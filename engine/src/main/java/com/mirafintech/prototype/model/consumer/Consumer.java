@@ -8,6 +8,7 @@ import com.mirafintech.prototype.model.charge.ConsumerCharge;
 import com.mirafintech.prototype.model.charge.LatePaymentFee;
 import com.mirafintech.prototype.model.consumer.event.ConsumerEvent;
 import com.mirafintech.prototype.model.consumer.event.LoanAddedConsumerEvent;
+import com.mirafintech.prototype.model.consumer.event.MinimumPaymentConsumerEvent;
 import com.mirafintech.prototype.model.consumer.event.PaymentAllocationAddedConsumerEvent;
 import com.mirafintech.prototype.model.credit.DatedCreditScore;
 import com.mirafintech.prototype.model.loan.Loan;
@@ -162,6 +163,10 @@ public class Consumer implements Payee {
         writeToEventLog(event);
 
         return addToCollection(this.loans, loan, this, "loan", loan::setConsumer);
+    }
+
+    public boolean addMinimumPaymentEvent(MinimumPaymentConsumerEvent event) {
+        return writeToEventLog(event);
     }
 
     public Optional<Payment> latestPayment() {

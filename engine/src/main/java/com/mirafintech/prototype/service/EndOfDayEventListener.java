@@ -1,7 +1,7 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.event.EndOfDayEvent;
-import com.mirafintech.prototype.model.charge.InterestCharge;
+import com.mirafintech.prototype.model.consumer.event.MinimumPaymentConsumerEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
@@ -30,11 +30,18 @@ public class EndOfDayEventListener implements ApplicationListener<EndOfDayEvent>
          *  - check if consumer risk level changed - this might trigger moving loans between tranches
          *  - more...
          */
-        List<InterestCharge> interestCharges = generateInterestCharges(event.getDayEnded());
+
+        List<MinimumPaymentConsumerEvent> minimumPaymentConsumerEvents = generateMinimumPaymentCharges(event.getDayEnded());
+        minimumPaymentConsumerEvents.forEach(evt -> evt.getConsumer().addMinimumPaymentEvent(evt));
+
         System.out.println();
     }
 
-    private List<InterestCharge> generateInterestCharges(LocalDate date) {
-        return loanService.generateInterestCharges(date);
+//    private List<InterestCharge> generateInterestCharges(LocalDate date) {
+//        return this.loanService.generateInterestCharges(date);
+//    }
+
+    private List<MinimumPaymentConsumerEvent> generateMinimumPaymentCharges(LocalDate date) {
+        return this.loanService.generateMinimumPaymentNotifications(date);
     }
 }

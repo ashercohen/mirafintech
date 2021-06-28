@@ -22,6 +22,9 @@ public record APR(BigDecimal tranche, BigDecimal mira) implements AnnualInterest
     }
 
     public DailyInterest360 toDailyInterest360() {
-        throw new RuntimeException("not implemented yet");
+        return new DailyInterest360(
+                this.tranche.divide(threeSixty, PRECISION, ROUNDING_MODE),
+                this.mira.divide(threeSixty, PRECISION, ROUNDING_MODE)
+        );
     }
 }

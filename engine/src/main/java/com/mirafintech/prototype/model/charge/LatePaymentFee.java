@@ -27,7 +27,6 @@ import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
 public final class LatePaymentFee extends ConsumerCharge<LatePaymentFeePaymentAllocation> {
 
     @Column(name = "late_payment_fee__amount")
-    @Getter(AccessLevel.PROTECTED)
     private BigDecimal amount;
 
     // 1 <--> n bi-di "parent" side
