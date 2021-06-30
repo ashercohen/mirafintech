@@ -18,8 +18,8 @@ import static com.mirafintech.prototype.model.charge.ChargeStatus.*;
 //@MappedSuperclass
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public abstract sealed class MerchantCharge extends Charge
-        permits TransactionFee {
+public abstract /*sealed*/ class MerchantCharge extends Charge
+        /*permits TransactionFee*/ {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     @JsonIgnore

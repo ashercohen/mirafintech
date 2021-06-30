@@ -20,8 +20,8 @@ import static com.mirafintech.prototype.model.charge.ChargeStatus.*;
 //@MappedSuperclass
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public abstract sealed class ConsumerCharge<P extends ConsumerPaymentAllocation> extends Charge
-        permits LatePaymentFee {
+public abstract /*sealed*/ class ConsumerCharge<P extends ConsumerPaymentAllocation> extends Charge
+        /*permits LatePaymentFee*/ {
 
     public abstract boolean addPaymentAllocation(P paymentAllocation);
 

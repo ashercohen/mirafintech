@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 //@MappedSuperclass
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public abstract sealed class ConsumerPaymentAllocation extends PaymentAllocation
-        permits LatePaymentFeePaymentAllocation {
+public abstract /*sealed*/ class ConsumerPaymentAllocation extends PaymentAllocation
+        /*permits LatePaymentFeePaymentAllocation*/ {
 
     // TODO: maybe CascadeType.REFRESH
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)

@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 //@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract sealed class Charge
-        permits ConsumerCharge, LoanCharge, MerchantCharge {
+public abstract /*sealed*/ class Charge
+        /*permits ConsumerCharge, LoanCharge, MerchantCharge*/ {
 
     abstract protected BigDecimal getAmount();
 
