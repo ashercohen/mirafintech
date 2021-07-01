@@ -68,9 +68,9 @@ download postgres installer from https://www.enterprisedb.com/downloads/postgres
    `createdb -U postgres -W mirafintech` - if prompt for password use... `mirafintech`
 8. check that everything created successfully:
    `psql -U postgres -d mirafintech` (password=`mirafintech`)
-   in the psql tool run
-   `\l` to list databases: `mirafintech` should appear in the list
-   `\du` to list users/roles: `mirafintech` should appear in the list 
+   in the psql tool run \
+   `\l` to list databases: `mirafintech` should appear in the list \
+   `\du` to list users/roles: `mirafintech` should appear in the list \ 
    `\q` to exit the tool
 
 ### Building and Running the Engine using command line / bash (no need for IDE)
