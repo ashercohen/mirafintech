@@ -8,7 +8,7 @@ default branch: *main*  (the "master" has retired)
 
 ### java openjdk 16 - Linux/Mac/Windows
 info: https://openjdk.java.net/projects/jdk/16/ \
-binaries: https://jdk.java.net/16/
+binaries: https://jdk.java.net/16/ \
 Oracle JDK/Java SDK (not JRE) probably works as well - I didn't test it
 
 ### maven 3.8.1 (or higher) - on Mac, do NOT use brew
