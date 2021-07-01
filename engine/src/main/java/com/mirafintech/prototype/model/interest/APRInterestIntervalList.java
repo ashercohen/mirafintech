@@ -31,7 +31,7 @@ public record APRInterestIntervalList(List<Interval> intervals) implements Annua
         );
     }
 
-    public static record Interval(LocalDate from, LocalDate to, APR apr) implements AnnualInterestInterval<APR> {
+    public static record Interval(LocalDate from, LocalDate to, APR apr) implements AnnualInterestRateInterval<APR> {
 
         public Interval {
             validate(from, to);

@@ -3,7 +3,7 @@ package com.mirafintech.prototype.model.interest;
 import java.time.LocalDate;
 
 public sealed interface Interval<V>
-        permits BalanceInterval, InterestInterval, RawInterval {
+        permits BalanceInterval, InterestRateInterval, RawInterval {
 
     LocalDate from(); // inclusive
     LocalDate to();   // exclusive

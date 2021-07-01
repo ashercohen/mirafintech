@@ -1,6 +1,6 @@
 package com.mirafintech.prototype.model.interest;
 
 
-sealed interface AnnualInterest extends Interest
+sealed interface AnnualInterestRate extends InterestRate
         permits APR {}
 

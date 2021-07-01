@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public record DailyInterestIntervalList365(List<Interval> intervals) implements DailyInterestIntervalList<DailyInterest365> {
+public record DailyInterestIntervalList365(List<Interval> intervals) implements DailyInterestIntervalList<DailyInterestRate365> {
 
     public DailyInterestIntervalList365(List<Interval> intervals) {
 
@@ -19,14 +19,14 @@ public record DailyInterestIntervalList365(List<Interval> intervals) implements 
         this.intervals = sortedIntervals;
     }
 
-    public static record Interval(LocalDate from, LocalDate to, DailyInterest365 dailyInterest365) implements DailyInterestInterval<DailyInterest365> {
+    public static record Interval(LocalDate from, LocalDate to, DailyInterestRate365 dailyInterest365) implements DailyInterestRateInterval<DailyInterestRate365> {
 
         public Interval {
             validate(from, to);
         }
 
         @Override
-        public DailyInterest365 value() {
+        public DailyInterestRate365 value() {
             return dailyInterest365;
         }
     }

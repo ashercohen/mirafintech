@@ -78,8 +78,8 @@ public class InterestCalculatingEngine {
 
         BigDecimal dailyInterest =
                 dailyInterestIntervalList.findByDate(date)
-                        .map(InterestInterval::value)
-                        .map(DailyInterest::tranche)
+                        .map(InterestRateInterval::value)
+                        .map(DailyInterestRate::tranche)
                         .orElseThrow(() -> new NoSuchElementException("no interest interval for date: " + date.toString()));
 
         return balance.multiply(dailyInterest); // TODO: split into tranche + mira
