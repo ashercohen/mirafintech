@@ -6,15 +6,16 @@ default branch: *main*  (the "master" has retired)
 
 ## Environment Setup
 
-### java openjdk 16  
+### java openjdk 16 - Linux/Mac/Windows
 info: https://openjdk.java.net/projects/jdk/16/ \
 binaries: https://jdk.java.net/16/
+Oracle JDK/Java SDK (not JRE) probably works as well - I didn't test it
 
 ### maven 3.8.1 (or higher) - on Mac, do NOT use brew
 **maven added to the repository - no need to install it** \
 info: https://maven.apache.org/download.cgi
 
-### IDE IntellijIDEA 2021.1
+### IDE IntellijIDEA 2021.1 - Required for coding, not required for running
 https://www.jetbrains.com/idea/download/ \
 if using another IDE make sure Java 16 is supported
 
