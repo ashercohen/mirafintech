@@ -1,10 +1,6 @@
 package com.mirafintech.prototype.model.interest;
 
-import java.math.BigDecimal;
 
-sealed interface InterestRate
+sealed interface InterestRate extends Interest
         permits DailyInterestRate, AnnualInterestRate {
-
-    BigDecimal tranche();
-    BigDecimal mira();
 }
