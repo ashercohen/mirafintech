@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 
-sealed interface IntervalList<V>
+public sealed interface IntervalList<V>
         permits InterestIntervalList, BalanceIntervalList {
 
     List<? extends Interval<V>> intervals();

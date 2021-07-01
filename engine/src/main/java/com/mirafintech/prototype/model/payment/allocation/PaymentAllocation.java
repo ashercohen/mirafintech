@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -35,6 +36,9 @@ public /*sealed*/ abstract class PaymentAllocation
 
     @JsonIgnore
     public abstract Payee getPayee();
+
+    @JsonIgnore
+    public abstract BigDecimal getAmount();
 
     protected PaymentAllocation() {
     }

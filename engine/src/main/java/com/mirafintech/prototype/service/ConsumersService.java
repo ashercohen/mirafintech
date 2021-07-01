@@ -1,15 +1,23 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.dto.ConsumerDto;
+import com.mirafintech.prototype.model.charge.InterestCharge;
+import com.mirafintech.prototype.model.charge.LoanFee;
 import com.mirafintech.prototype.model.consumer.Consumer;
+import com.mirafintech.prototype.model.consumer.event.MinimumPaymentConsumerEvent;
 import com.mirafintech.prototype.model.loan.Loan;
+import com.mirafintech.prototype.model.payment.PrincipleMinimumPayment;
 import com.mirafintech.prototype.repository.ConsumerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @Service
@@ -24,7 +32,14 @@ public class ConsumersService {
     @Autowired
     private RiskService riskService;
 
+    @Autowired
+    private InterestCalculatingEngine interestEngine;
+
+    @Autowired
+    private ConfigurationService configurationService;
+
     private static List<Integer> availableBillingCycleStartDays = List.of(1, 8, 15, 22);
+
 
     public Loan addLoan(Consumer consumer, Loan loan) {
 
@@ -75,7 +90,7 @@ public class ConsumersService {
         }
     }
 
-    private static int allocateBillingCycleStartDayOfMonth(long consumerId) {
+        private static int allocateBillingCycleStartDayOfMonth(long consumerId) {
 
         int idx = (int)consumerId % availableBillingCycleStartDays.size();
         return availableBillingCycleStartDays.get(idx);

@@ -18,24 +18,35 @@ public class InterestCalculatingEngine {
     @Autowired
     private ConfigurationService configurationService;
 
-    public BigDecimal calculate(Loan loan, Consumer consumer) {
+    /**
+     * calculate interest for a loan
+     */
+    public BigDecimal calculate(Loan loan, RawInterval calculationInterval) {
+
+//        this interest calculated, is it for a single loan or is it for a single consumer? I think consumer - so remove the loan argument and make sure this method is not called
+//                multiple times for a single consumer with multiple loans
+
 
         BigDecimal miraInterest = configurationService.getMiraInterest(); // TODO: calculate mira interest
 
+//        BalanceIntervalList balanceIntervalList = consumer.getBalanceIntervalList(from, to);
+        BalanceIntervalList balanceIntervalList = loan.balanceIntervalList(calculationInterval);
+        AnnualInterestIntervalList<?> aprInterestIntervalList = loan.interestIntervalList(calculationInterval);
+
+        // TODO: update APR with mira interest
+
+        BigDecimal bigDecimal = doCalculate(balanceIntervalList, aprInterestIntervalList);
         // TODO: implement
         return BigDecimal.valueOf(10L);
     }
 
-    private DailyInterestIntervalList<?> convertToDailyInterest(AnnualInterestIntervalList<?> annualInterestIntervals) {
-        /**
-         * TODO: base on config return one of the implementations of DailyInterestIntervals
-         *  - DailyInterestIntervalList365
-         *  - DailyInterestIntervalList360
-         */
-        return annualInterestIntervals.toDailyInterestIntervals365();
+    private void prepareBalanceIntervals(Consumer consumer) {
+
+//        consumer.getBalance()
+
     }
 
-    public BigDecimal calculate(final BalanceIntervalListImpl balanceIntervals, final AnnualInterestIntervalList<?> annualInterestIntervals) {
+    BigDecimal doCalculate(final BalanceIntervalList balanceIntervals, final AnnualInterestIntervalList<?> annualInterestIntervals) {
 
         RawInterval balancesDatesRange = balanceIntervals.entireDatesRange().orElseThrow(() -> new RuntimeException("empty balanceIntervals range"));
         DailyInterestIntervalList<?> dailyInterestIntervals = convertToDailyInterest(annualInterestIntervals);
@@ -49,7 +60,16 @@ public class InterestCalculatingEngine {
         return interest;
     }
 
-    private BigDecimal calculateAtDate(LocalDate date, final BalanceIntervalListImpl balanceIntervals, final DailyInterestIntervalList<?> dailyInterestIntervalList) {
+    private DailyInterestIntervalList<?> convertToDailyInterest(AnnualInterestIntervalList<?> annualInterestIntervals) {
+        /**
+         * TODO: base on config return one of the implementations of DailyInterestIntervals
+         *  - DailyInterestIntervalList365
+         *  - DailyInterestIntervalList360
+         */
+        return annualInterestIntervals.toDailyInterestIntervals365();
+    }
+
+    private BigDecimal calculateAtDate(LocalDate date, final BalanceIntervalList balanceIntervals, final DailyInterestIntervalList<?> dailyInterestIntervalList) {
 
         BigDecimal balance =
                 balanceIntervals.findByDate(date)

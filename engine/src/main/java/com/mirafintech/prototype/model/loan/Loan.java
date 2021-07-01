@@ -2,6 +2,7 @@ package com.mirafintech.prototype.model.loan;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mirafintech.prototype.model.Dated;
 import com.mirafintech.prototype.model.DatedBalance;
 import com.mirafintech.prototype.model.Merchant;
 import com.mirafintech.prototype.model.Payee;
@@ -9,6 +10,7 @@ import com.mirafintech.prototype.model.charge.InterestCharge;
 import com.mirafintech.prototype.model.charge.LoanCharge;
 import com.mirafintech.prototype.model.charge.LoanFee;
 import com.mirafintech.prototype.model.consumer.Consumer;
+import com.mirafintech.prototype.model.interest.*;
 import com.mirafintech.prototype.model.loan.event.InterestChargeAddedLoanEvent;
 import com.mirafintech.prototype.model.loan.event.LoanEvent;
 import com.mirafintech.prototype.model.loan.event.PaymentAllocationAddedLoanEvent;
@@ -23,11 +25,13 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
 import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
@@ -184,9 +188,65 @@ public class Loan implements Payee {
         return this.trancheHistory.add(new DatedTranche(timestamp, tranche));
     }
 
+    public AnnualInterestIntervalList<?> interestIntervalList(RawInterval interval) {
+
+        record DatedInterest(LocalDateTime timestamp, APR apr) implements Dated<APR, APRInterestIntervalList.Interval, APRInterestIntervalList> {
+
+            // instance to call default methods from static context
+            private static final DatedInterest DATED_INTEREST = new DatedInterest(LocalDateTime.now(), APR.ZERO);
+
+            public static APRInterestIntervalList getInterestHistory(List<DatedInterest> list, LocalDate from, LocalDate to) {
+                return DATED_INTEREST.getHistory(list, from, to);
+            }
+
+            public static Stream<APRInterestIntervalList.Interval> toIntervalStream(List<DatedInterest> sortedHistory, LocalDate to) {
+                return DATED_INTEREST.toIntervals(sortedHistory, to);
+            }
+
+            @Override
+            public LocalDateTime getTimestamp() {
+                return timestamp();
+            }
+
+            @Override
+            public APR getV() {
+                return apr();
+            }
+
+            @Override
+            public APRInterestIntervalList.Interval newInterval(LocalDate from, LocalDate to, APR value) {
+                return new APRInterestIntervalList.Interval(from, to, value);
+            }
+
+            @Override
+            public DatedInterest newDummyInstance(LocalDateTime timestamp) {
+                return new DatedInterest(timestamp, APR.ZERO);
+            }
+
+            @Override
+            public APRInterestIntervalList newIntervalList(List<APRInterestIntervalList.Interval> intervals) {
+                return new APRInterestIntervalList(intervals);
+            }
+        }
+
+        List<DatedInterest> datedInterests = this.trancheHistory.stream()
+                .map(datedTranche ->
+                        new DatedInterest(
+                                datedTranche.getTimestamp(),
+                                new APR(datedTranche.getTranche().getInterest(), BigDecimal.ZERO)
+                        )
+                ).toList();
+
+        return DatedInterest.getInterestHistory(datedInterests, interval.from(), interval.to());
+    }
+
     public BigDecimal currentBalance() {
         DatedBalance currentDatedBalance = currentDatedBalance();
         return currentDatedBalance.getBalance();
+    }
+
+    public BalanceIntervalList balanceIntervalList(RawInterval interval) {
+        return DatedBalance.getBalanceHistory(this.balanceHistory, interval.from(), interval.to());
     }
 
     public List<DatedBalance> getBalanceHistory(LocalDateTime dateTime) {

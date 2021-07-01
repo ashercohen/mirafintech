@@ -10,6 +10,7 @@ import java.util.List;
  */
 public record ConfigurationDto(LocalDateTime initTimestamp,
                                String paymentAllocationPolicy,
+                               String interestCalculationMethod, // TODO: create enum, use in interestEngine::convertToDailyInterest
                                // interest, on top of tranche interest, the consumer is charge by. decimal fraction (see example below)
                                BigDecimal miraInterest,
                                Integer gracePeriodLength,
@@ -19,7 +20,7 @@ public record ConfigurationDto(LocalDateTime initTimestamp,
     public static record TrancheConfig(int lowerBoundRiskScore, // inclusive
                                        int upperBoundRiskScore, // exclusive
                                        int initialValue,        // USD
-                                       BigDecimal interest) {    // as decimal for example: for 12.5% interest this value is 0.125
+                                       BigDecimal interest) {   // as decimal for example: for 12.5% interest this value is 0.125
         public TrancheConfig {
             if (interest == null || interest.compareTo(BigDecimal.ZERO) <= 0 || interest.compareTo(BigDecimal.ONE) >= 0) {
                 throw new IllegalArgumentException("illegal value for tranche interest");

@@ -52,4 +52,9 @@ public final class InterestPaymentAllocation extends LoanPaymentAllocation {
     public InterestPaymentAllocation(LocalDateTime timestamp, Loan loan, InterestCharge interestCharge, BigDecimal trancheInterest, BigDecimal miraInterest) {
         this(null, timestamp, null, loan, null, interestCharge, trancheInterest, miraInterest);
     }
+
+    @Override
+    public BigDecimal getAmount() {
+        return this.trancheInterest.add(this.miraInterest);
+    }
 }

@@ -2,11 +2,11 @@ package com.mirafintech.prototype.model.interest;
 
 import java.time.LocalDate;
 
-sealed interface Interval<V>
+public sealed interface Interval<V>
         permits BalanceInterval, InterestInterval, RawInterval {
 
-    LocalDate from();
-    LocalDate to();
+    LocalDate from(); // inclusive
+    LocalDate to();   // exclusive
     V value();
 
     default void validate(LocalDate from, LocalDate to) {

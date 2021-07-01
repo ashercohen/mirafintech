@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 
-sealed interface BalanceIntervalList extends IntervalList<BigDecimal>
+public sealed interface BalanceIntervalList extends IntervalList<BigDecimal>
         permits BalanceIntervalListImpl {
 
     @Override

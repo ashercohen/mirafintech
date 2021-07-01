@@ -26,7 +26,7 @@ public class InterestCalculatingEngineTest {
                 new APRInterestIntervalList.Interval(LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"), new APR(new BigDecimal("0.1"), BigDecimal.ZERO))
         ));
 
-        BigDecimal interest = engine.calculate(balanceIntervals, annualInterestIntervals);
+        BigDecimal interest = engine.doCalculate(balanceIntervals, annualInterestIntervals);
 
         System.out.println(interest);
     }

@@ -1,6 +1,7 @@
 package com.mirafintech.prototype.service;
 
 import com.mirafintech.prototype.event.EndOfDayEvent;
+import com.mirafintech.prototype.model.charge.InterestCharge;
 import com.mirafintech.prototype.model.consumer.event.MinimumPaymentConsumerEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -31,8 +32,7 @@ public class EndOfDayEventListener implements ApplicationListener<EndOfDayEvent>
          *  - more...
          */
 
-        List<MinimumPaymentConsumerEvent> minimumPaymentConsumerEvents = generateMinimumPaymentCharges(event.getDayEnded());
-        minimumPaymentConsumerEvents.forEach(evt -> evt.getConsumer().addMinimumPaymentEvent(evt));
+        generateMinimumPaymentCharges(event.getDayEnded());
 
         System.out.println();
     }
@@ -41,7 +41,13 @@ public class EndOfDayEventListener implements ApplicationListener<EndOfDayEvent>
 //        return this.loanService.generateInterestCharges(date);
 //    }
 
-    private List<MinimumPaymentConsumerEvent> generateMinimumPaymentCharges(LocalDate date) {
-        return this.loanService.generateMinimumPaymentNotifications(date);
+    private void generateMinimumPaymentCharges(LocalDate date) {
+        List<MinimumPaymentConsumerEvent> minimumPaymentConsumerEvents = this.loanService.generateMinimumPaymentNotifications(date);
+        minimumPaymentConsumerEvents.forEach(evt -> evt.getConsumer().addMinimumPaymentEvent(evt));
     }
+
+//    private void generateMinimumPaymentCharges(LocalDate date) {
+//        List<MinimumPaymentConsumerEvent> minimumPaymentConsumerEvents = this.consumersService.generateMinimumPaymentNotifications(date);
+//        minimumPaymentConsumerEvents.forEach(evt -> evt.getConsumer().addMinimumPaymentEvent(evt));
+//    }
 }

@@ -38,6 +38,7 @@ public final class LoanAddedConsumerEvent extends ConsumerEvent {
 
     @Override
     public void handle() {
+        // TODO: maybe use balanceHistory list instead of getBalance()
         this.consumerBalanceBefore = this.consumer.getBalance();
         this.consumerBalanceAfter = this.consumerBalanceBefore.subtract(this.loan.getAmount());
     }

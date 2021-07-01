@@ -14,12 +14,21 @@ public record RawInterval(LocalDate from, LocalDate to) implements Interval<Void
         return null;
     }
 
+//    /**
+//     * return true if this interval is contained in (or equals to) other:
+//     * this.from >= other.from
+//     * this.to <= other.to
+//     */
+//    public boolean isContainedIn(RawInterval other) {
+//        return !this.from.isBefore(other.from) && !this.to.isAfter(other.to);
+//    }
+
+
     /**
-     * return true if this interval is contained in (or equals to) other:
-     * this.from >= other.from
-     * this.to <= other.to
+     * return true if this raw interval and other interval have date(s) intersection
+     *
      */
-    public boolean isContainedIn(RawInterval other) {
-        return !this.from.isBefore(other.from) && !this.to.isAfter(other.to);
+    public boolean intersects(Interval<?> other) {
+        return this.to.isAfter(other.from()) && other.to().isAfter(this.from);
     }
 }

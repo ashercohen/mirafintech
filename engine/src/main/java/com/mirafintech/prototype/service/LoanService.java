@@ -6,6 +6,7 @@ import com.mirafintech.prototype.model.charge.InterestCharge;
 import com.mirafintech.prototype.model.charge.LoanFee;
 import com.mirafintech.prototype.model.consumer.Consumer;
 import com.mirafintech.prototype.model.consumer.event.MinimumPaymentConsumerEvent;
+import com.mirafintech.prototype.model.interest.RawInterval;
 import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.model.payment.PrincipleMinimumPayment;
 import com.mirafintech.prototype.repository.ConsumerRepository;
@@ -112,6 +113,7 @@ public class LoanService {
          * if EndOfDay event date is 10/06/2021, we need to find all the loans that their cycle start day is 11.
          */
         LocalDateTime tomorrowMidnight = date.plusDays(1).atTime(LocalTime.MIDNIGHT);
+        RawInterval interestCalculationInterval = new RawInterval(tomorrowMidnight.toLocalDate().minusMonths(1), tomorrowMidnight.toLocalDate());
         final List<Loan> loansWithBillingCycleEnd = findAllWithBillingCycleEnd(tomorrowMidnight);
 
         return loansWithBillingCycleEnd.stream()
@@ -121,7 +123,7 @@ public class LoanService {
                                 .filter(loansWithBillingCycleEnd::contains)
                                 .map(loan ->
                                         new MinimumPaymentBreakdown(
-                                                List.of(new InterestCharge(tomorrowMidnight, loan, this.interestEngine.calculate(loan, loan.getConsumer()))),
+                                                List.of(new InterestCharge(tomorrowMidnight, loan, this.interestEngine.calculate(loan, interestCalculationInterval))),
                                                 loan.getUnpaidLoanFees(),
                                                 List.of(new PrincipleMinimumPayment(loan, getMinimumPrinciplePayments(loan.currentBalance())))))
                                 .reduce(MinimumPaymentBreakdown::merge)
@@ -138,6 +140,27 @@ public class LoanService {
                                 .orElseThrow(() -> new RuntimeException("could not generate minimum payment consumer event: consumerId=" + consumer.getId()))
                 )
                 .toList();
+    }
+
+    /**
+     * find all loans that billing cycle ends and interest charge should be generated
+     * - loan is active
+     * - loan cycle start day = dateTime.dayOfMonth
+     * - loan is older than 1 month - interest is not charged in first month/cycle
+     */
+    private List<Loan> findAllWithBillingCycleEnd(LocalDateTime dateTime) {
+
+        return this.loanRepository.findAll()
+                .stream()
+                .filter(Loan::isActive)
+                .filter(loan -> loan.getConsumer().getBillingCycleStartDay() == dateTime.getDayOfMonth())
+                // TODO: this filter must be removed since we do want "fresh" loans to have minimum payment, we just don't want them to include interest (in the first month)
+//                .filter(loan -> loan.getCreationDate().plusMonths(1L).isBefore(dateTime))
+                .toList();
+    }
+
+    private BigDecimal getMinimumPrinciplePayments(BigDecimal loanBalance) {
+        return loanBalance.multiply(this.configurationService.getPrincipleMinimumPaymentPercentage());
     }
 
     // TODO: not used anymore. we generate minimum payment consumer event that contains interest charges
@@ -161,24 +184,4 @@ public class LoanService {
 //                })
 //                .toList();
 //    }
-
-    /**
-     * find all loans that billing cycle ends and interest charge should be generated
-     * - loan is active
-     * - loan cycle start day = dateTime.dayOfMonth
-     * - loan is older than 1 month - interest is not charged in first month/cycle
-     */
-    private List<Loan> findAllWithBillingCycleEnd(LocalDateTime dateTime) {
-
-        return this.loanRepository.findAll()
-                .stream()
-                .filter(Loan::isActive)
-                .filter(loan -> loan.getConsumer().getBillingCycleStartDay() == dateTime.getDayOfMonth())
-                .filter(loan -> loan.getCreationDate().plusMonths(1L).isBefore(dateTime))
-                .toList();
-    }
-
-    private BigDecimal getMinimumPrinciplePayments(BigDecimal loanBalance) {
-        return loanBalance.multiply(this.configurationService.getPrincipleMinimumPaymentPercentage());
-    }
 }
