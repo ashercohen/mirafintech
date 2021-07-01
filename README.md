@@ -73,7 +73,9 @@ download postgres installer from https://www.enterprisedb.com/downloads/postgres
    `\du` to list users/roles: `mirafintech` should appear in the list \
    `\q` to exit the tool
 
-### Scripts for building and running the engine using command line / bash (no need for IDE)
+### Building and Running the engine
+- scripts are for bash/cmd and located under `engine` directory \
+- open bash/cmd and cd to `engine` directory and run:
 
 #### Linux/Mac
 - build: [build_engine.sh](https://github.com/ashercohen/mirafintech/blob/main/engine/build_engine.sh)
