@@ -62,22 +62,23 @@ download postgres installer from https://www.enterprisedb.com/downloads/postgres
 4. create `logs` directory next to the `data` directory: `C:\Users\Asher\Documents\logs`
 5. start the database server (make sure you're at postgres bin directory) \
    `pg_ctl -D "C:\Users\Asher\Documents\data" -l "C:\Users\Asher\Documents\logs\log.txt" start`
-6. create user/role
+6. create user/role \
    `createuser.exe -U postgres -W -d -P mirafintech` - when prompt for password enter `mirafintech` 3 times (crazy windows port...)
-7. create database
+7. create database \
    `createdb -U postgres -W mirafintech` - if prompt for password use... `mirafintech`
-8. check that everything created successfully:
-   `psql -U postgres -d mirafintech` (password=`mirafintech`)
-   in the psql tool run \
+8. check that everything created successfully: \
+   `psql -U postgres -d mirafintech` (password=`mirafintech`) \
+   in the psql tool run: \
    `\l` to list databases: `mirafintech` should appear in the list \
    `\du` to list users/roles: `mirafintech` should appear in the list \
    `\q` to exit the tool
 
-### Building and Running the Engine using command line / bash (no need for IDE)
+### Scripts for building and running the engine using command line / bash (no need for IDE)
+
 #### Linux/Mac
-- build: `build_engine.sh`
-- run: `run_engine.sh`
+- build: [build_engine.sh](https://github.com/ashercohen/mirafintech/blob/main/engine/build_engine.sh)
+- run: [run_engine.sh](https://github.com/ashercohen/mirafintech/blob/main/engine/run_engine.sh)
 
 #### Windows
-- build: `build_engine_windows.bat`
-- run: `run_engine_windows.bat`
+- build: [build_engine_windows.bat](https://github.com/ashercohen/mirafintech/blob/main/engine/build_engine_windows.bat)
+- run: [run_engine_windows.bat](https://github.com/ashercohen/mirafintech/blob/main/engine/run_engine_windows.bat)
