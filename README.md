@@ -60,7 +60,7 @@ download postgres installer from https://www.enterprisedb.com/downloads/postgres
    `set` 
    scroll up the list and verify that `PGDATA` is defined with the correct value
 4. create `logs` directory next to the `data` directory: `C:\Users\Asher\Documents\logs`
-5. start the database server (make sure you're at postgres bin directory)
+5. start the database server (make sure you're at postgres bin directory) \
    `pg_ctl -D "C:\Users\Asher\Documents\data" -l "C:\Users\Asher\Documents\logs\log.txt" start`
 6. create user/role
    `createuser.exe -U postgres -W -d -P mirafintech` - when prompt for password enter `mirafintech` 3 times (crazy windows port...)
