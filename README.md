@@ -18,8 +18,7 @@ info: https://maven.apache.org/download.cgi
 https://www.jetbrains.com/idea/download/ \
 if using another IDE make sure Java 16 is supported
 
-### Setting Up PostgresSQL Locally
-Linux/Ubuntu
+### Setting Up PostgresSQL Locally - Linux/Ubuntu (MacOS should be very similar - path prefixes probably differ)
 #### install postgres 12
 #### prepare data dir
 `/usr/lib/postgresql/12/bin/pg_ctl init -D ~/postgresql/12/main/`
@@ -35,7 +34,7 @@ when prompt for password enter `mirafintech` and reconfirm
 (type `exit` to quit) \
 if it complains about missing user, create additional user/role as your machine's login user
 
-### PostgresSQL Setup - Windows 10
+### Setting Up PostgresSQL Locally - Windows 10
 
 download postgres installer from https://www.enterprisedb.com/downloads/postgres-postgresql-downloads \
    make sure to select version **12.7 Windows x86-64**
