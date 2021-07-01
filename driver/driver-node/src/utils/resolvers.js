@@ -4,13 +4,19 @@ const path = require('path');
 const faker = require('faker');
 const { 
     add, isDate, isAfter,
-    addDays, addMonths, startOfDay,
+    addDays, startOfDay,
     startOfHour, startOfYear, startOfToday,
     startOfMonth, startOfMinute, startOfSecond,
-    lastDayOfMonth, formatISO, format
+    lastDayOfMonth, format
 } = require('date-fns');
 
 const merchants = require('../../data/source/Merchant.json');
+
+const MIRA_INTEREST = 0.025;
+const LOW_INTEREST  = 0.075;
+const MED_INTEREST  = 0.095;
+const HIGH_INTEREST  = 0.125;
+const DEFAULT_PAYMENT_POLICY = 'defaultPaymentPolicy';
 
 const ID_MAX = 2000000000;
 const ID_MIN = 1000000000;
@@ -118,11 +124,14 @@ const getRandomPaymentDates = (numOfMonths, start = getISOStartDate()) => {
 /**
  * 
  * @typedef {Object} Config
- * @property {String} initTimestamp         - starting timestamp for the simulation
- * @property {Object[]} trancheConfigs      - Array of tranche configs objects
- * @property {Number} lowerBoundRiskScore   - lower limit of a tranche risk score
- * @property {Number} upperBoundRiskScore   - upper limit of a tranche risk score
- * @property {Number} initialValue          - dollar value of the tranche at initialization
+ * @property {String} initTimestamp            - starting timestamp for the simulation
+ * @property {String} paymentAllocationPolicy  - allocation policy
+ * @property {Number} miraInterest             - interest rate for Mira
+ * @property {Object[]} trancheConfigs         - Array of tranche configs objects
+ * @property {Number} lowerBoundRiskScore      - lower limit of a tranche risk score
+ * @property {Number} upperBoundRiskScore      - upper limit of a tranche risk score
+ * @property {Number} initialValue             - dollar value of the tranche at initialization
+ * @property {Number} interest                 - tranche interest value
  */
 
 /**
@@ -133,21 +142,26 @@ const getRandomPaymentDates = (numOfMonths, start = getISOStartDate()) => {
 const resolveConfigData = startDate => {
     return {
         initTimestamp: startDate,
+        miraInterest: MIRA_INTEREST,
+        paymentAllocationPolicy: DEFAULT_PAYMENT_POLICY,
         trancheConfigs: [
             {
                 lowerBoundRiskScore: 0,
                 upperBoundRiskScore: 25,
-                initialValue: 1000000
+                initialValue: 1000000,
+                interest: LOW_INTEREST
             }, 
             {
                 lowerBoundRiskScore: 25,
                 upperBoundRiskScore: 50,
-                initialValue: 2000000
+                initialValue: 2000000,
+                interest: MED_INTEREST
             },
             {
                 lowerBoundRiskScore: 50,
                 upperBoundRiskScore: 100,
-                initialValue: 5000000
+                initialValue: 5000000,
+                interest: HIGH_INTEREST
             }
         ]
     };
