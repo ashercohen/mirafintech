@@ -3,6 +3,7 @@ package com.mirafintech.prototype.service;
 import com.mirafintech.prototype.model.interest.APR;
 import com.mirafintech.prototype.model.interest.BalanceIntervalListImpl;
 import com.mirafintech.prototype.model.interest.APRInterestIntervalList;
+import com.mirafintech.prototype.model.interest.CalculatedInterest;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -23,10 +24,10 @@ public class InterestCalculatingEngineTest {
         ));
 
         APRInterestIntervalList annualInterestIntervals = new APRInterestIntervalList(List.of(
-                new APRInterestIntervalList.Interval(LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"), new APR(new BigDecimal("0.1"), BigDecimal.ZERO))
+                new APRInterestIntervalList.Interval(LocalDate.parse("2021-01-01"), LocalDate.parse("2022-01-01"), new APR(new BigDecimal("0.1"), new BigDecimal("0.005")))
         ));
 
-        BigDecimal interest = engine.doCalculate(balanceIntervals, annualInterestIntervals);
+        CalculatedInterest interest = engine.doCalculate(balanceIntervals, annualInterestIntervals);
 
         System.out.println(interest);
     }

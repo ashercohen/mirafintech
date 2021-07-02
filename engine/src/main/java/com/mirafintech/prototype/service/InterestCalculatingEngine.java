@@ -21,43 +21,33 @@ public class InterestCalculatingEngine {
     /**
      * calculate interest for a loan
      */
-    public BigDecimal calculate(Loan loan, RawInterval calculationInterval) {
+    public CalculatedInterest calculate(Loan loan, RawInterval calculationInterval) {
 
 //        this interest calculated, is it for a single loan or is it for a single consumer? I think consumer - so remove the loan argument and make sure this method is not called
 //                multiple times for a single consumer with multiple loans
 
 
-        BigDecimal miraInterest = configurationService.getMiraInterest(); // TODO: calculate mira interest
+        BigDecimal miraInterest = configurationService.getMiraInterest();
 
 //        BalanceIntervalList balanceIntervalList = consumer.getBalanceIntervalList(from, to);
         BalanceIntervalList balanceIntervalList = loan.balanceIntervalList(calculationInterval);
-        AnnualInterestIntervalList<?> aprInterestIntervalList = loan.interestIntervalList(calculationInterval);
+        AnnualInterestIntervalList<?> aprInterestIntervalList = loan.interestIntervalList(calculationInterval, miraInterest);
 
-        // TODO: update APR with mira interest
-
-        BigDecimal bigDecimal = doCalculate(balanceIntervalList, aprInterestIntervalList);
-        // TODO: implement
-        return BigDecimal.valueOf(10L);
+        return doCalculate(balanceIntervalList, aprInterestIntervalList);
     }
 
-    private void prepareBalanceIntervals(Consumer consumer) {
-
-//        consumer.getBalance()
-
-    }
-
-    BigDecimal doCalculate(final BalanceIntervalList balanceIntervals, final AnnualInterestIntervalList<?> annualInterestIntervals) {
+    CalculatedInterest doCalculate(final BalanceIntervalList balanceIntervals, final AnnualInterestIntervalList<?> annualInterestIntervals) {
 
         RawInterval balancesDatesRange = balanceIntervals.entireDatesRange().orElseThrow(() -> new RuntimeException("empty balanceIntervals range"));
         DailyInterestIntervalList<?> dailyInterestIntervals = convertToDailyInterest(annualInterestIntervals);
 
-        BigDecimal interest = Stream.iterate(balancesDatesRange.from(), date -> date.plusDays(1L))
+        final CalculatedInterest calculatedInterest = Stream.iterate(balancesDatesRange.from(), date -> date.plusDays(1L))
                 .takeWhile(date -> date.isBefore(balancesDatesRange.to()))
                 .map(date -> calculateAtDate(date, balanceIntervals, dailyInterestIntervals))
-                .reduce(BigDecimal::add)
+                .reduce(CalculatedInterest::add)
                 .orElseThrow(() -> new RuntimeException("daily interest reduction failed"));
 
-        return interest;
+        return calculatedInterest;
     }
 
     private DailyInterestIntervalList<?> convertToDailyInterest(AnnualInterestIntervalList<?> annualInterestIntervals) {
@@ -69,19 +59,26 @@ public class InterestCalculatingEngine {
         return annualInterestIntervals.toDailyInterestIntervals365();
     }
 
-    private BigDecimal calculateAtDate(LocalDate date, final BalanceIntervalList balanceIntervals, final DailyInterestIntervalList<?> dailyInterestIntervalList) {
+    private CalculatedInterest calculateAtDate(LocalDate date, final BalanceIntervalList balanceIntervals, final DailyInterestIntervalList<?> dailyInterestIntervalList) {
 
         BigDecimal balance =
                 balanceIntervals.findByDate(date)
                         .map(BalanceInterval::value)
                         .orElseThrow(() -> new NoSuchElementException("no balance interval for date: " + date.toString()));
 
-        BigDecimal dailyInterest =
-                dailyInterestIntervalList.findByDate(date)
-                        .map(InterestRateInterval::value)
-                        .map(DailyInterestRate::tranche)
-                        .orElseThrow(() -> new NoSuchElementException("no interest interval for date: " + date.toString()));
+        final DailyInterestRate dailyInterest = dailyInterestIntervalList.findByDate(date)
+                .map(InterestRateInterval::value)
+                .orElseThrow(() -> new NoSuchElementException("no interest interval for date: " + date.toString()));
 
-        return balance.multiply(dailyInterest); // TODO: split into tranche + mira
+        return new CalculatedInterest(dailyInterest, balance);
+
+
+//        BigDecimal dailyInterest =
+//                dailyInterestIntervalList.findByDate(date)
+//                        .map(InterestRateInterval::value)
+//                        .map(DailyInterestRate::tranche)
+//                        .orElseThrow(() -> new NoSuchElementException("no interest interval for date: " + date.toString()));
+
+//        return balance.multiply(dailyInterest); // TODO: split into tranche + mira
     }
 }

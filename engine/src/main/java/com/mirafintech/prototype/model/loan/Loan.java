@@ -188,7 +188,7 @@ public class Loan implements Payee {
         return this.trancheHistory.add(new DatedTranche(timestamp, tranche));
     }
 
-    public AnnualInterestIntervalList<?> interestIntervalList(RawInterval interval) {
+    public AnnualInterestIntervalList<?> interestIntervalList(RawInterval interval, BigDecimal miraInterest) {
 
         record DatedInterest(LocalDateTime timestamp, APR apr) implements Dated<APR, APRInterestIntervalList.Interval, APRInterestIntervalList> {
 
@@ -233,7 +233,7 @@ public class Loan implements Payee {
                 .map(datedTranche ->
                         new DatedInterest(
                                 datedTranche.getTimestamp(),
-                                new APR(datedTranche.getTranche().getInterest(), BigDecimal.ZERO)
+                                new APR(datedTranche.getTranche().getInterest(), miraInterest)
                         )
                 ).toList();
 

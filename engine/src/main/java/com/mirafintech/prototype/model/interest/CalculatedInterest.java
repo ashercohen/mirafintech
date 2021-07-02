@@ -7,4 +7,16 @@ import java.math.BigDecimal;
  */
 // TODO: maybe add RawInterval???
 public record CalculatedInterest(BigDecimal tranche, BigDecimal mira) implements Interest {
+
+    public CalculatedInterest(InterestRate rate, BigDecimal balance) {
+        this(rate.tranche().multiply(balance), rate.mira().multiply(balance));
+    }
+
+    public CalculatedInterest add(CalculatedInterest other) {
+        return new CalculatedInterest(this.tranche.add(other.tranche), this.mira.add(other.mira));
+    }
+
+    public BigDecimal total() {
+        return tranche.add(mira);
+    }
 }
