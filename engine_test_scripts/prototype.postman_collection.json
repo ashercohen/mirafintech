@@ -1,0 +1,637 @@
+{
+	"info": {
+		"_postman_id": "561a2da6-96f3-4d82-b695-2af31eead622",
+		"name": "prototype",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "script 1",
+			"item": [
+				{
+					"name": "01 - global constants",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"initTimestamp\": \"2021-02-01T00:00:00\",\n\n    \"paymentAllocationPolicy\": \"defaultPaymentPolicy\",\n\n    \"miraInterest\": 0.005,\n\n    \"gracePeriodLength\": 14,\n\n    \"trancheConfigs\": [\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.115,\n            \"lowerBoundRiskScore\": 0,\n            \"upperBoundRiskScore\": 35\n        },\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.085,\n            \"lowerBoundRiskScore\": 35,\n            \"upperBoundRiskScore\": 50\n        },\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.0725,\n            \"lowerBoundRiskScore\": 50,\n            \"upperBoundRiskScore\": 85\n        },\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.065,\n            \"lowerBoundRiskScore\": 85,\n            \"upperBoundRiskScore\": 100\n        }\n    ]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/set/config",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"set",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02 - Consumer Creation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 4,\n    \"limitBalance\": 10000,\n    \"education\": 2,\n    \"sex\": 1,\n    \"martialStatus\": 1,\n    \"age\": 30,\n    \"initialCreditScore\": 62\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/consumers/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"consumers",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "03 - Amazon",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"name\": \"Amazon\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/merchants/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"merchants",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "04 - Target",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 2,\n    \"name\": \"Target\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/merchants/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"merchants",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "05 - Loan #1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"timestamp\": \"2021-02-09T12:00:00\",\n    \"id\": 1000,\n    \"consumerId\": 4,\n    \"amount\": 1000.0,\n    \"merchantId\": 1\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/loans/1000",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"loans",
+								"1000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "06 - Loan #2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"timestamp\": \"2021-02-16T13:00:00\",\n    \"id\": 1001,\n    \"consumerId\": 4,\n    \"amount\": 500.0,\n    \"merchantId\": 2\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/loans/1001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"loans",
+								"1001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "07 - Billing #1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "2021-03-01T01:00:00"
+						},
+						"url": {
+							"raw": "http://localhost:8080/set/time",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"set",
+								"time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "08 - Payment #1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 10002,\n    \"timestamp\": \"2021-03-10T13:00:00\",\n    \"consumerId\": 4,\n    \"amount\": 180.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/payments/10002",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payments",
+								"10002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "09 - Billing #2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "2021-04-01T01:00:00"
+						},
+						"url": {
+							"raw": "http://localhost:8080/set/time",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"set",
+								"time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "10 - Payment #2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 10003,\n    \"timestamp\": \"2021-04-05T10:00:00\",\n    \"consumerId\": 4,\n    \"amount\": 200.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/payments/10003",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payments",
+								"10003"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "11 - Billing #3",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "2021-05-01T01:00:00"
+						},
+						"url": {
+							"raw": "http://localhost:8080/set/time",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"set",
+								"time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "12 - Payment #3",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 10004,\n    \"timestamp\": \"2021-05-09T16:00:00\",\n    \"consumerId\": 4,\n    \"amount\": 360.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/payments/10004",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"payments",
+								"10004"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "loans/<id>",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"timestamp\": \"2021-05-01T13:00:00\",\n    \"id\": 1001,\n    \"consumerId\": 1,\n    \"amount\": 1000.0,\n    \"merchantId\": 1\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/loans/1001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"loans",
+						"1001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consumers/<id>",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"limitBalance\": 1000,\n    \"education\": 2,\n    \"sex\": 1,\n    \"martialStatus\": 1,\n    \"age\": 30,\n    \"initialCreditScore\": 75\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/consumers/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"consumers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set/time",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "2021-06-09T01:00:00"
+				},
+				"url": {
+					"raw": "http://localhost:8080/set/time",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"set",
+						"time"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set/config",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"initTimestamp\": \"2021-05-01T12:00:00\",\n\n    \"paymentAllocationPolicy\": \"defaultPaymentPolicy\",\n\n    \"miraInterest\": 0.015,\n\n    \"gracePeriodLength\": 14,\n\n    \"trancheConfigs\": [\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.125,\n            \"lowerBoundRiskScore\": 0,\n            \"upperBoundRiskScore\": 30\n        },\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.10,\n            \"lowerBoundRiskScore\": 30,\n            \"upperBoundRiskScore\": 50\n        },\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.09,\n            \"lowerBoundRiskScore\": 50,\n            \"upperBoundRiskScore\": 75\n        },\n        {\n            \"initialValue\": 1000000,\n            \"interest\": 0.07,\n            \"lowerBoundRiskScore\": 75,\n            \"upperBoundRiskScore\": 100\n        }\n    ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/set/config",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"set",
+						"config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "merchants/<id>",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 1,\n    \"name\": \"The only Merchant\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/merchants/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"merchants",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "loans/<id> GET",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/loans/1002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"loans",
+						"1002"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consumers/<id> GET",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/consumers/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"consumers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "merchants/<id> GET",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/merchants/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"merchants",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get/time GET",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/set/time",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"set",
+						"time"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "tranches/<id>",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/tranches/11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tranches",
+						"11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "payments/<id>",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "payments/<id>",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 10002,\n\n    \"timestamp\": \"2021-06-11T19:19:29\",\n\n    \"consumerId\": 1,\n\n    \"amount\": 150.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/payments/10002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payments",
+						"10002"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
