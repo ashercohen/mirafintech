@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class LoanAddedConsumerEvent extends ConsumerEvent {
+public final class LoanAddedConsumerEvent extends ConsumerEvent {
 
     // uni-directional many-to-one:  ConsumerEventLoanAdded n --> 1 ConsumerEvent
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
@@ -22,22 +22,23 @@ public class LoanAddedConsumerEvent extends ConsumerEvent {
     @JsonIgnore
     private Loan loan;
 
-    @Column(name = "loan_added__balance_before")
+    @Column(name = "loan_added__balance_before", precision = 13, scale = 5)
     private BigDecimal consumerBalanceBefore;
 
-    @Column(name = "loan_added__balance_after")
+    @Column(name = "loan_added__balance_after", precision = 13, scale = 5)
     private BigDecimal consumerBalanceAfter;
 
     protected LoanAddedConsumerEvent() {
     }
 
     public LoanAddedConsumerEvent(Loan loan, Consumer consumer, LocalDateTime timestamp, String cause) {
-        super(timestamp, consumer, cause);
+        super(null, timestamp, consumer, cause);
         this.loan = loan;
     }
 
     @Override
     public void handle() {
+        // TODO: maybe use balanceHistory list instead of getBalance()
         this.consumerBalanceBefore = this.consumer.getBalance();
         this.consumerBalanceAfter = this.consumerBalanceBefore.subtract(this.loan.getAmount());
     }

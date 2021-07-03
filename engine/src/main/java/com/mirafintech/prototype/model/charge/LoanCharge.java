@@ -25,7 +25,7 @@ public abstract /*sealed*/ class LoanCharge<P extends LoanPaymentAllocation> ext
 
     public abstract boolean addPaymentAllocation(P paymentAllocation);
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
     @Setter // TODO: check if required - see Loan::addLoanCharge
     @JsonIgnore
     protected Loan loan;

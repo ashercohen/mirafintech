@@ -2,6 +2,7 @@ package com.mirafintech.prototype.model.charge;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mirafintech.prototype.model.interest.CalculatedInterest;
 import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.model.payment.allocation.InterestPaymentAllocation;
 import com.mirafintech.prototype.model.payment.allocation.PaymentAllocation;
@@ -26,9 +27,14 @@ import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
 @Getter
 public final class InterestCharge extends LoanCharge<InterestPaymentAllocation> {
 
-    @Column(name = "interest_charge__amount")
-    @Getter(AccessLevel.PROTECTED)
+    @Column(name = "interest_charge__amount", precision = 13, scale = 5)
     private BigDecimal amount;
+
+    @Column(name = "tranche_interest_charge__amount", precision = 13, scale = 5)
+    private BigDecimal trancheInterest;
+
+    @Column(name = "mira_interest_charge__amount", precision = 13, scale = 5)
+    private BigDecimal miraInterest;
 
     // 1 <--> n bi-di "parent" side
     @OneToMany(mappedBy = "interestCharge", cascade = CascadeType.ALL, orphanRemoval = false)
@@ -40,18 +46,20 @@ public final class InterestCharge extends LoanCharge<InterestPaymentAllocation> 
     }
 
     private InterestCharge(Long id,
-                           LocalDateTime timestamp,
-                           Loan loan,
-                           ChargeStatus status,
-                           BigDecimal amount,
-                           List<InterestPaymentAllocation> interestPaymentAllocations) {
+                          LocalDateTime timestamp,
+                          Loan loan,
+                          ChargeStatus status,
+                          CalculatedInterest calculatedInterest,
+                          List<InterestPaymentAllocation> interestPaymentAllocations) {
         super(id, timestamp, loan, status);
-        this.amount = amount;
+        this.amount = calculatedInterest.total();
+        this.trancheInterest = calculatedInterest.tranche();
+        this.miraInterest = calculatedInterest.mira();
         this.interestPaymentAllocations = createIfNull(interestPaymentAllocations);
     }
 
-    public InterestCharge(LocalDateTime timestamp, Loan loan, BigDecimal amount) {
-        this(null, timestamp, loan, ChargeStatus.NOT_PAID, amount, null);
+    public InterestCharge(LocalDateTime timestamp, Loan loan, CalculatedInterest calculatedInterest) {
+        this(null, timestamp, loan, ChargeStatus.NOT_PAID, calculatedInterest, null);
     }
 
     public BigDecimal balance() {

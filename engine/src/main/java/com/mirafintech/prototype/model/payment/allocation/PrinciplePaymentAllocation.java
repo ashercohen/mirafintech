@@ -18,22 +18,43 @@ import java.time.LocalDateTime;
 @Getter
 public final class PrinciplePaymentAllocation extends LoanPaymentAllocation {
 
-    @Column(name = "principle__amount")
+    @Column(name = "principle__amount", precision = 13, scale = 5)
     private BigDecimal amount;
 
-    @Column(name = "principle__loan_balance")
+    @Column(name = "principle__loan_balance", precision = 13, scale = 5)
     private BigDecimal loanPrincipleBalance; // this value is informational - not needed in order to update the loan balance
+
+    @Column(name = "principle__inside_grace_period", precision = 13, scale = 5)
+    private boolean insideGracePeriod;
+
+    @Column(name = "principle__grace_period_start", precision = 13, scale = 5)
+    private LocalDateTime gracePeriodStart;
 
     protected PrinciplePaymentAllocation() {
     }
 
-    private PrinciplePaymentAllocation(Long id, LocalDateTime timestamp, Payment payment, Loan loan, Tranche tranche, BigDecimal amount, BigDecimal loanPrincipleBalance) {
+    private PrinciplePaymentAllocation(Long id,
+                                       LocalDateTime timestamp,
+                                       Payment payment,
+                                       Loan loan,
+                                       Tranche tranche,
+                                       BigDecimal amount,
+                                       BigDecimal loanPrincipleBalance,
+                                       boolean insideGracePeriod,
+                                       LocalDateTime gracePeriodStart) {
         super(id, timestamp, payment, loan, tranche);
         this.amount = amount;
         this.loanPrincipleBalance = loanPrincipleBalance;
+        this.insideGracePeriod = insideGracePeriod;
+        this.gracePeriodStart = gracePeriodStart;
     }
 
-    public PrinciplePaymentAllocation(LocalDateTime timestamp, Loan loan, BigDecimal amount, BigDecimal loanPrincipleBalance) {
-        this(null, timestamp, null, loan, null, amount, loanPrincipleBalance);
+    public PrinciplePaymentAllocation(LocalDateTime timestamp,
+                                      Loan loan,
+                                      BigDecimal amount,
+                                      BigDecimal loanPrincipleBalance,
+                                      boolean insideGracePeriod,
+                                      LocalDateTime gracePeriodStart) {
+        this(null, timestamp, null, loan, null, amount, loanPrincipleBalance, insideGracePeriod, gracePeriodStart);
     }
 }

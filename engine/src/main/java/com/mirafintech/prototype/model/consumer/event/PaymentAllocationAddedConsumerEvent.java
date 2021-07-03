@@ -3,13 +3,10 @@ package com.mirafintech.prototype.model.consumer.event;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.charge.ChargeStatus;
-import com.mirafintech.prototype.model.charge.InterestCharge;
 import com.mirafintech.prototype.model.charge.LatePaymentFee;
-import com.mirafintech.prototype.model.charge.LoanFee;
 import com.mirafintech.prototype.model.consumer.Consumer;
-import com.mirafintech.prototype.model.loan.Loan;
-import com.mirafintech.prototype.model.loan.event.LoanEvent;
-import com.mirafintech.prototype.model.payment.allocation.*;
+import com.mirafintech.prototype.model.payment.allocation.ConsumerPaymentAllocation;
+import com.mirafintech.prototype.model.payment.allocation.LatePaymentFeePaymentAllocation;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -21,7 +18,7 @@ import java.time.LocalDateTime;
 //@DiscriminatorValue(value = "<unique value for all objects of this subclass>")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-public class PaymentAllocationAddedConsumerEvent extends ConsumerEvent {
+public final class PaymentAllocationAddedConsumerEvent extends ConsumerEvent { // TODO: consider removing this event
 
     // uni-directional many-to-one:  PaymentAllocationAddedConsumerEvent n --> 1 ConsumerEvent
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = true)
@@ -29,16 +26,16 @@ public class PaymentAllocationAddedConsumerEvent extends ConsumerEvent {
     @JsonIgnore
     private ConsumerPaymentAllocation paymentAllocation; // TODO: maybe 1:1
 
-    @Column(name = "allocation_added__consumer_balance_before")
+    @Column(name = "allocation_added__consumer_balance_before", precision = 13, scale = 5)
     private BigDecimal consumerBalanceBefore;
 
-    @Column(name = "allocation_added__consumer_balance_after")
+    @Column(name = "allocation_added__consumer_balance_after", precision = 13, scale = 5)
     private BigDecimal consumerBalanceAfter;
 
-    @Column(name = "allocation_added__fee_balance_before")
+    @Column(name = "allocation_added__fee_balance_before", precision = 13, scale = 5)
     private BigDecimal feeBalanceBefore;
 
-    @Column(name = "allocation_added__fee_balance_after")
+    @Column(name = "allocation_added__fee_balance_after", precision = 13, scale = 5)
     private BigDecimal feeBalanceAfter;
 
     protected PaymentAllocationAddedConsumerEvent() {
@@ -49,7 +46,7 @@ public class PaymentAllocationAddedConsumerEvent extends ConsumerEvent {
                                                Consumer consumer,
                                                String cause,
                                                ConsumerPaymentAllocation paymentAllocation) {
-        super(timestamp, consumer, cause);
+        super(null, timestamp, consumer, cause);
         this.paymentAllocation = paymentAllocation;
     }
 

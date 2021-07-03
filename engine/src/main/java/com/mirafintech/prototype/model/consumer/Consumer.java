@@ -3,13 +3,17 @@ package com.mirafintech.prototype.model.consumer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.dto.ConsumerDto;
+import com.mirafintech.prototype.model.DatedBalance;
 import com.mirafintech.prototype.model.Payee;
+import com.mirafintech.prototype.model.charge.Charge;
 import com.mirafintech.prototype.model.charge.ConsumerCharge;
 import com.mirafintech.prototype.model.charge.LatePaymentFee;
 import com.mirafintech.prototype.model.consumer.event.ConsumerEvent;
 import com.mirafintech.prototype.model.consumer.event.LoanAddedConsumerEvent;
+import com.mirafintech.prototype.model.consumer.event.MinimumPaymentConsumerEvent;
 import com.mirafintech.prototype.model.consumer.event.PaymentAllocationAddedConsumerEvent;
 import com.mirafintech.prototype.model.credit.DatedCreditScore;
+import com.mirafintech.prototype.model.interest.BalanceIntervalList;
 import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.model.payment.Payment;
 import com.mirafintech.prototype.model.payment.PaymentDetails;
@@ -21,6 +25,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -76,6 +81,10 @@ public class Consumer implements Payee {
     @OneToMany(mappedBy = "consumer", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
     private List<ConsumerPaymentAllocation> consumerPaymentAllocations = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+    @JoinColumn(name = "consumer_fk")
+    private List<DatedBalance> balanceHistory = new ArrayList<>();
+
     @OneToMany(mappedBy = "consumer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConsumerEvent> eventLog = new ArrayList<>();
 
@@ -91,6 +100,7 @@ public class Consumer implements Payee {
                      List<Loan> loans,
                      List<Payment> payments,
                      List<ConsumerCharge<? extends ConsumerPaymentAllocation>> charges,
+                     List<DatedBalance> balanceHistory,
                      List<ConsumerEvent> eventLog) {
         this.id = id;
         this.limitBalance = limitBalance;
@@ -104,6 +114,7 @@ public class Consumer implements Payee {
         this.loans = createIfNull(loans);
         this.payments = createIfNull(payments);
         this.charges = createIfNull(charges);
+        this.balanceHistory = createIfNull(balanceHistory);
         this.eventLog = createIfNull(eventLog);
     }
 
@@ -117,6 +128,7 @@ public class Consumer implements Payee {
              billingCycleStartDay,
              timestamp,
              new ArrayList<>(List.of(creditScore)),
+             null,
              null,
              null,
              null,
@@ -141,6 +153,42 @@ public class Consumer implements Payee {
         return loansBalance.add(chargesBalance).negate();
     }
 
+    public BalanceIntervalList getBalanceIntervalList(LocalDate from, LocalDate to) {
+
+        return null;//DatedBalance.getBalanceHistory(this.balanceHistory, from, to);
+    }
+
+    private BigDecimal currentBalance() {
+        return this.balanceHistory.stream().max(Comparator.comparing(DatedBalance::getTimestamp)).map(DatedBalance::getBalance).orElse(BigDecimal.ZERO);
+    }
+
+    private void updateBalance(Loan newLoan, LocalDateTime timestamp) {
+        doUpdateBalance(newLoan.getAmount(), timestamp);
+    }
+
+    private void updateBalance(Charge newCharge, LocalDateTime timestamp) {
+        doUpdateBalance(newCharge.getAmount(), timestamp);
+    }
+
+    private void updateBalance(Payment payment, LocalDateTime timestamp) {
+
+        BigDecimal paymentAllocationsSum = payment.getPaymentAllocations().stream()
+                .map(PaymentAllocation::getAmount)
+                .reduce(BigDecimal::add)
+                .orElseThrow(() -> new RuntimeException("could not sum payment allocations"));
+
+        // sanity
+        if (payment.getAmount().compareTo(paymentAllocationsSum) != 0) {
+            throw new RuntimeException("sum of payment allocations does not match payment amount");
+        }
+
+        doUpdateBalance(paymentAllocationsSum, timestamp);
+    }
+
+    private void doUpdateBalance(BigDecimal amountToAdd, LocalDateTime timestamp) {
+        this.balanceHistory.add(new DatedBalance(timestamp, currentBalance().add(amountToAdd)));
+    }
+
     public DatedCreditScore currentCreditScore() {
         return this.datedCreditScores
                 .stream()
@@ -162,6 +210,10 @@ public class Consumer implements Payee {
         writeToEventLog(event);
 
         return addToCollection(this.loans, loan, this, "loan", loan::setConsumer);
+    }
+
+    public boolean addMinimumPaymentEvent(MinimumPaymentConsumerEvent event) {
+        return writeToEventLog(event);
     }
 
     public Optional<Payment> latestPayment() {
@@ -198,6 +250,7 @@ public class Consumer implements Payee {
                 .anyMatch(l -> l.getExternalId().longValue() == loan.getExternalId().longValue());
     }
 
+    // TODO: remove if unused
     public boolean hasLoan(Loan loan) {
         return this.loans.stream().anyMatch(l -> l.getId().longValue() == loan.getId().longValue());
     }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,6 +28,9 @@ public class DefaultPaymentAllocationPolicy implements PaymentAllocationPolicy {
 
     @Autowired
     private TimeService timeService;
+
+    @Autowired
+    private ConfigurationService configurationService;
 
     private record AllocationTarget(AllocationType type,
                                     Loan loan,
@@ -61,7 +65,7 @@ public class DefaultPaymentAllocationPolicy implements PaymentAllocationPolicy {
          * collect payment targets: fees (consumer+loan), interest charges and principle
          */
         // TODO: remove this fake fee
-        List<LatePaymentFee> latePaymentFees = List.of(new LatePaymentFee(timestamp, consumer, BigDecimal.valueOf(7)));//  consumer.unpaidFees();
+        List<LatePaymentFee> latePaymentFees = consumer.unpaidFees(); // List.of(new LatePaymentFee(timestamp, consumer, BigDecimal.valueOf(7)));//  consumer.unpaidFees();
         List<AllocationTarget> allocationTargets = collectLoansAllocationTargets(consumer);
 
         /**
@@ -237,11 +241,38 @@ public class DefaultPaymentAllocationPolicy implements PaymentAllocationPolicy {
         for (AllocationTarget principleTarget : principleTargets) {
             BigDecimal principle = principleTarget.principleAmount().orElse(BigDecimal.ZERO);
             BigDecimal allocationAmount = calculateAllocationAmount(budgetBalance, principle);
-            allocations.add(new PrinciplePaymentAllocation(timestamp, principleTarget.loan(), allocationAmount, principle));
+            final GracePeriodInfo gracePeriodInfo = isInsideGracePeriod(timestamp.toLocalDate(), principleTarget.loan());
+            allocations.add(
+                    new PrinciplePaymentAllocation(
+                            timestamp,
+                            principleTarget.loan(),
+                            allocationAmount,
+                            principle,
+                            gracePeriodInfo.isInside(),
+                            gracePeriodInfo.gracePeriodStart()
+                    ));
             budgetBalance = budgetBalance.subtract(allocationAmount);
         }
 
         return new Allocation(allocations, budget.subtract(budgetBalance));
+    }
+
+    /**
+     * TODO:
+     *   while calculation is correct this is a hack.
+     *   need to find a better place to have this logic
+     */
+    private record GracePeriodInfo(LocalDateTime gracePeriodStart, boolean isInside) {}
+
+    private GracePeriodInfo isInsideGracePeriod(LocalDate paymentDate, Loan loan) {
+
+        // consumer grace period in the month this payment takes place
+        final LocalDate gracePeriodStart = paymentDate.withDayOfMonth(loan.getConsumer().getBillingCycleStartDay());
+        final LocalDate gracePeriodEnd = gracePeriodStart.plusDays(this.configurationService.getGracePeriodLength());
+
+        return new GracePeriodInfo(
+                gracePeriodStart.atStartOfDay(),
+                !gracePeriodStart.isAfter(paymentDate) &&  !gracePeriodEnd.isBefore(paymentDate));
     }
 
     /**

@@ -2,7 +2,6 @@ package com.mirafintech.prototype.model.charge;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.Merchant;
-import lombok.AccessLevel;
 import lombok.Getter;
 
 import javax.persistence.Column;
@@ -17,8 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 public final class TransactionFee extends MerchantCharge {
 
-    @Column(name = "transaction_fee__amount")
-    @Getter(AccessLevel.PROTECTED)
+    @Column(name = "transaction_fee__amount", precision = 13, scale = 5)
     private BigDecimal amount;
 
     protected TransactionFee() {

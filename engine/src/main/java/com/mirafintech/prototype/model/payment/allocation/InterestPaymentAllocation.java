@@ -26,10 +26,10 @@ public final class InterestPaymentAllocation extends LoanPaymentAllocation {
     @JsonIgnore
     private InterestCharge interestCharge;
 
-    @Column(name = "interest_tranche")
+    @Column(name = "interest_tranche", precision = 13, scale = 5)
     private BigDecimal trancheInterest;
 
-    @Column(name = "interest_mira")
+    @Column(name = "interest_mira", precision = 13, scale = 5)
     private BigDecimal miraInterest;
 
     protected InterestPaymentAllocation() {
@@ -51,5 +51,10 @@ public final class InterestPaymentAllocation extends LoanPaymentAllocation {
 
     public InterestPaymentAllocation(LocalDateTime timestamp, Loan loan, InterestCharge interestCharge, BigDecimal trancheInterest, BigDecimal miraInterest) {
         this(null, timestamp, null, loan, null, interestCharge, trancheInterest, miraInterest);
+    }
+
+    @Override
+    public BigDecimal getAmount() {
+        return this.trancheInterest.add(this.miraInterest);
     }
 }

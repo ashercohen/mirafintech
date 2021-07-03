@@ -23,10 +23,10 @@ public class InterestChargeAddedLoanEvent extends LoanEvent {
     @JsonIgnore
     private InterestCharge interestCharge; // TODO: maybe 1:1
 
-    @Column(name = "interest_added__amount")
+    @Column(name = "interest_added__amount", precision = 13, scale = 5)
     private BigDecimal amount;
 
-    @Column(name = "interest_added__balance_after")
+    @Column(name = "interest_added__balance_after", precision = 13, scale = 5)
     private BigDecimal loanBalanceBefore;
 
     protected InterestChargeAddedLoanEvent() {
