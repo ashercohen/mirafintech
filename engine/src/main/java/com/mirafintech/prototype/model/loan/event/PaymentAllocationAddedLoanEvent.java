@@ -32,22 +32,22 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
     @JsonIgnore
     private LoanPaymentAllocation paymentAllocation; // TODO: maybe 1:1
 
-    @Column(name = "allocation_added__loan_balance_before")
+    @Column(name = "allocation_added__loan_balance_before", precision = 13, scale = 5)
     private BigDecimal loanBalanceBefore;
 
-    @Column(name = "allocation_added__loan_balance_after")
+    @Column(name = "allocation_added__loan_balance_after", precision = 13, scale = 5)
     private BigDecimal loanBalanceAfter;
 
-    @Column(name = "allocation_added__fee_balance_before")
+    @Column(name = "allocation_added__fee_balance_before", precision = 13, scale = 5)
     private BigDecimal feeBalanceBefore;
 
-    @Column(name = "allocation_added__fee_balance_after")
+    @Column(name = "allocation_added__fee_balance_after", precision = 13, scale = 5)
     private BigDecimal feeBalanceAfter;
 
-    @Column(name = "allocation_added__interest_balance_before")
+    @Column(name = "allocation_added__interest_balance_before", precision = 13, scale = 5)
     private BigDecimal interestBalanceBefore;
 
-    @Column(name = "allocation_added__interest_balance_after")
+    @Column(name = "allocation_added__interest_balance_after", precision = 13, scale = 5)
     private BigDecimal interestBalanceAfter;
 
     protected PaymentAllocationAddedLoanEvent() {
@@ -141,10 +141,21 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
         interestCharge.addPaymentAllocation(interestPaymentAllocation);
     }
 
+    /**
+     * TODO:
+     *   in this event handling, the Loan is updated.
+     *   need to set rules whether events (+ event handling) do change/mutate the loan/consumer/tranche/... or
+     *   just used for tracking/logging/...
+     */
     private void handle(PrinciplePaymentAllocation principlePaymentAllocation) {
 
         this.loanBalanceBefore = this.loan.currentBalance();
         BigDecimal amount = principlePaymentAllocation.getAmount();
-        this.loanBalanceAfter = this.loan.deposit(amount, paymentAllocation.getTimestamp());
+
+        LocalDateTime paymentConsiderationDate = principlePaymentAllocation.isInsideGracePeriod()
+                ? principlePaymentAllocation.getGracePeriodStart()
+                : paymentAllocation.getTimestamp();
+
+        this.loanBalanceAfter = this.loan.deposit(amount, paymentConsiderationDate);
     }
 }

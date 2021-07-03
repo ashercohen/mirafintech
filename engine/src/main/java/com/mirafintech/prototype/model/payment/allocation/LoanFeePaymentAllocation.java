@@ -27,7 +27,7 @@ public final class LoanFeePaymentAllocation extends LoanPaymentAllocation {
     @JsonIgnore
     private LoanFee loanFee;
 
-    @Column(name = "loan_fee_amount")
+    @Column(name = "loan_fee_amount", precision = 13, scale = 5)
     private BigDecimal amount;
 
     protected LoanFeePaymentAllocation() {

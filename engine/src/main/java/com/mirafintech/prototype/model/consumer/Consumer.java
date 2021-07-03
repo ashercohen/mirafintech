@@ -14,7 +14,6 @@ import com.mirafintech.prototype.model.consumer.event.MinimumPaymentConsumerEven
 import com.mirafintech.prototype.model.consumer.event.PaymentAllocationAddedConsumerEvent;
 import com.mirafintech.prototype.model.credit.DatedCreditScore;
 import com.mirafintech.prototype.model.interest.BalanceIntervalList;
-import com.mirafintech.prototype.model.interest.BalanceIntervalListImpl;
 import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.model.payment.Payment;
 import com.mirafintech.prototype.model.payment.PaymentDetails;
@@ -29,7 +28,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
 import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;

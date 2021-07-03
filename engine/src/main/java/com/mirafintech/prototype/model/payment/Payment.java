@@ -37,6 +37,7 @@ public class Payment {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Consumer consumer;
 
+    @Column(precision = 13, scale = 5)
     private BigDecimal amount;
 
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)

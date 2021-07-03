@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -114,14 +116,25 @@ public class LoanService {
          */
         LocalDateTime tomorrowMidnight = date.plusDays(1).atTime(LocalTime.MIDNIGHT);
         RawInterval interestCalculationInterval = new RawInterval(tomorrowMidnight.toLocalDate().minusMonths(1), tomorrowMidnight.toLocalDate());
+        /**
+         * TODO:
+         *  should be moved to consumerService to find all consumer who's billing cycle ends tomorrowMidnight
+         *  meanwhile, it is handled here
+         */
         final List<Loan> loansWithBillingCycleEnd = findAllWithBillingCycleEnd(tomorrowMidnight);
+        final Set<Consumer> consumers = loansWithBillingCycleEnd.stream().map(Loan::getConsumer).collect(Collectors.toUnmodifiableSet());
+        return consumers.stream()
+                .map(consumer ->
+                    consumer.getLoans().stream()
+                            .map(loan -> /*)
+                })
 
         return loansWithBillingCycleEnd.stream()
                 .map(Loan::getConsumer)
                 .map(consumer ->
                         consumer.getLoans().stream()
-                                .filter(loansWithBillingCycleEnd::contains)
-                                .map(loan ->
+                                .filter(loansWithBillingCycleEnd::contains)*//*
+                                .map(loan ->*/
                                         new MinimumPaymentBreakdown(
                                                 List.of(new InterestCharge(tomorrowMidnight, loan, this.interestEngine.calculate(loan, interestCalculationInterval))),
                                                 loan.getUnpaidLoanFees(),

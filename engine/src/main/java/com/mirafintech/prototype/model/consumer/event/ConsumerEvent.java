@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(length = 100)
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public sealed abstract class ConsumerEvent
-        permits LoanAddedConsumerEvent, PaymentAllocationAddedConsumerEvent, MinimumPaymentConsumerEvent {
+public /*sealed*/ abstract class ConsumerEvent
+        /*permits LoanAddedConsumerEvent, PaymentAllocationAddedConsumerEvent, MinimumPaymentConsumerEvent*/ {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

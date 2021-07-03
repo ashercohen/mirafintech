@@ -39,12 +39,15 @@ public class Tranche {
 
     private LocalDateTime creationDate;
 
+    @Column(precision = 13, scale = 5)
     private BigDecimal initialValue;
 
+    @Column(precision = 13, scale = 5)
     private BigDecimal interest;
 
     // TODO: add history of currentDebt (rename for a better name - balance?)
     //  in addition, we should record any operation that changed the balance (type: withdrawal, deposit; which loan, timestamp, etc)
+    @Column(precision = 13, scale = 5)
     private BigDecimal currentBalance;
 
     // uni-directional many-to-one:  Tranche n --> 1 RiskLevel

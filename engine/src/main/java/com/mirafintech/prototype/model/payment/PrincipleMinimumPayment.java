@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model.payment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.HasAmount;
 import com.mirafintech.prototype.model.loan.Loan;
@@ -27,10 +28,13 @@ public class PrincipleMinimumPayment implements HasAmount {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, orphanRemoval = false)
+    @JsonIgnore
+//    @OneToOne(fetch = FetchType.LAZY, optional = false, orphanRemoval = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "loan_fk")
     private Loan loan;
 
+    @Column(precision = 13, scale = 5)
     private BigDecimal amount;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true, orphanRemoval = false)

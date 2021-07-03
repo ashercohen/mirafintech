@@ -23,13 +23,15 @@ public class InterestCalculatingEngine {
      */
     public CalculatedInterest calculate(Loan loan, RawInterval calculationInterval) {
 
-//        this interest calculated, is it for a single loan or is it for a single consumer? I think consumer - so remove the loan argument and make sure this method is not called
-//                multiple times for a single consumer with multiple loans
-
+        /**
+         * loans do not carry interest for the first billing cycle
+         */
+        if (loan.getCreationDate().toLocalDate().isAfter(calculationInterval.from())) {
+            return CalculatedInterest.ZERO;
+        }
 
         BigDecimal miraInterest = configurationService.getMiraInterest();
 
-//        BalanceIntervalList balanceIntervalList = consumer.getBalanceIntervalList(from, to);
         BalanceIntervalList balanceIntervalList = loan.balanceIntervalList(calculationInterval);
         AnnualInterestIntervalList<?> aprInterestIntervalList = loan.interestIntervalList(calculationInterval, miraInterest);
 

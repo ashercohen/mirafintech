@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 public final class TransactionFee extends MerchantCharge {
 
-    @Column(name = "transaction_fee__amount")
+    @Column(name = "transaction_fee__amount", precision = 13, scale = 5)
     private BigDecimal amount;
 
     protected TransactionFee() {

@@ -1,5 +1,6 @@
 package com.mirafintech.prototype.model.consumer.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mirafintech.prototype.model.HasAmount;
 import com.mirafintech.prototype.model.charge.InterestCharge;
@@ -29,6 +30,7 @@ public final class MinimumPaymentConsumerEvent extends ConsumerEvent { // TODO: 
     @JoinColumn(name = "minimum_payment_event_fk") // references from consumer
     private List<InterestCharge> interestCharges = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "minimum_payment_event_fk") // references from consumer
     private List<LoanFee> loanFees;
@@ -37,9 +39,16 @@ public final class MinimumPaymentConsumerEvent extends ConsumerEvent { // TODO: 
     @JoinColumn(name = "minimum_payment_event_fk") // references from consumer
     private List<PrincipleMinimumPayment> principleMinimumPayments;
 
+    @Column(precision = 13, scale = 5)
     private BigDecimal totalInterestCharges;
+
+    @Column(precision = 13, scale = 5)
     private BigDecimal totalFees;
+
+    @Column(precision = 13, scale = 5)
     private BigDecimal totalPrinciple;
+
+    @Column(precision = 13, scale = 5)
     private BigDecimal total;
 
     protected MinimumPaymentConsumerEvent() {

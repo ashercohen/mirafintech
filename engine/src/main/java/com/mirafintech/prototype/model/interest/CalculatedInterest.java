@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 // TODO: maybe add RawInterval???
 public record CalculatedInterest(BigDecimal tranche, BigDecimal mira) implements Interest {
 
+    public static final CalculatedInterest ZERO = new CalculatedInterest(BigDecimal.ZERO, BigDecimal.ZERO);
+
     public CalculatedInterest(InterestRate rate, BigDecimal balance) {
         this(rate.tranche().multiply(balance), rate.mira().multiply(balance));
     }

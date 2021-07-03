@@ -26,16 +26,16 @@ public final class PaymentAllocationAddedConsumerEvent extends ConsumerEvent { /
     @JsonIgnore
     private ConsumerPaymentAllocation paymentAllocation; // TODO: maybe 1:1
 
-    @Column(name = "allocation_added__consumer_balance_before")
+    @Column(name = "allocation_added__consumer_balance_before", precision = 13, scale = 5)
     private BigDecimal consumerBalanceBefore;
 
-    @Column(name = "allocation_added__consumer_balance_after")
+    @Column(name = "allocation_added__consumer_balance_after", precision = 13, scale = 5)
     private BigDecimal consumerBalanceAfter;
 
-    @Column(name = "allocation_added__fee_balance_before")
+    @Column(name = "allocation_added__fee_balance_before", precision = 13, scale = 5)
     private BigDecimal feeBalanceBefore;
 
-    @Column(name = "allocation_added__fee_balance_after")
+    @Column(name = "allocation_added__fee_balance_after", precision = 13, scale = 5)
     private BigDecimal feeBalanceAfter;
 
     protected PaymentAllocationAddedConsumerEvent() {

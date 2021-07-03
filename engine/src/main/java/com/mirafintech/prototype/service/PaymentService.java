@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -58,10 +59,11 @@ public class PaymentService {
         // allocatePayment to loans/interest/principle/unpaidFees/charges/....
         List<PaymentAllocation> paymentAllocations = this.paymentAllocationService.allocatePayment(consumer, paymentDto.getAmount(), timestamp);
 
-        for (PaymentAllocation allocation : paymentAllocations) {
-            allocation.getPayee().accept(allocation);
-        }
+        paymentAllocations.stream()
+                .filter(paymentAllocation -> paymentAllocation.getAmount().compareTo(BigDecimal.ZERO) > 0)
+                .forEach(allocation -> allocation.getPayee().accept(allocation));
 
+        // TODO: we're adding here PAs that might be of $0
         Payment payment = Payment.create(paymentDto.getId(), timestamp, consumer, paymentDto.getAmount(), paymentAllocations);
 
         return this.paymentRepository.save(payment);

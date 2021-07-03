@@ -21,10 +21,10 @@ public class TrancheEventLoanAdded extends TrancheEvent {
     @JoinColumn(name = "loan_fk")
     private Loan loan;
 
-    @Column(name = "loan_added__balance_before")
+    @Column(name = "loan_added__balance_before", precision = 13, scale = 5)
     private BigDecimal trancheBalanceBefore;
 
-    @Column(name = "loan_added__balance_after")
+    @Column(name = "loan_added__balance_after", precision = 13, scale = 5)
     private BigDecimal trancheBalanceAfter;
 
     /**
