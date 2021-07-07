@@ -31,11 +31,11 @@ const streamFileAndGenerateData = filePath => {
                 const risk = resolveConsumerRisk(obj);
                 const consumer = resolveConsumer(obj, risk);
                 const loan = resolveConsumerLoan(obj);
-                // const payment = resolveConsumerPayment(obj);
+                const payment = resolveConsumerPayment(obj);
 
                 consumers.push(consumer);
                 consumerTransactions.push(...loan);
-                // consumerTransactions.push(...payment);
+                consumerTransactions.push(...payment);
             })
                 .on('error', function (err) {
                     console.log('Error while reading file.', err);

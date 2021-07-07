@@ -15,6 +15,7 @@ const merchants = require('../../data/source/Merchant.json');
 const MIRA_INTEREST = 0.025;
 const LOW_INTEREST  = 0.075;
 const MED_INTEREST  = 0.095;
+const MED_HIGH_INTEREST = 0.011;
 const HIGH_INTEREST  = 0.125;
 const DEFAULT_PAYMENT_POLICY = 'defaultPaymentPolicy';
 
@@ -144,6 +145,7 @@ const resolveConfigData = startDate => {
         initTimestamp: startDate,
         miraInterest: MIRA_INTEREST,
         paymentAllocationPolicy: DEFAULT_PAYMENT_POLICY,
+        gracePeriodLength: 14,
         trancheConfigs: [
             {
                 lowerBoundRiskScore: 0,
@@ -154,13 +156,19 @@ const resolveConfigData = startDate => {
             {
                 lowerBoundRiskScore: 25,
                 upperBoundRiskScore: 50,
-                initialValue: 2000000,
+                initialValue: 1000000,
                 interest: MED_INTEREST
             },
             {
                 lowerBoundRiskScore: 50,
+                upperBoundRiskScore: 75,
+                initialValue: 1000000,
+                interest: MED_HIGH_INTEREST
+            },
+            {
+                lowerBoundRiskScore: 75,
                 upperBoundRiskScore: 100,
-                initialValue: 5000000,
+                initialValue: 1000000,
                 interest: HIGH_INTEREST
             }
         ]

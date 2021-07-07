@@ -86,7 +86,7 @@ public class ConsumersService {
          *  this might change when we allow a user to keep a positive balance
          */
         if (paymentAmount.compareTo(consumer.getBalance().abs()) > 0) {
-            throw new RuntimeException("consumer balance is smaller than payment");
+          //  throw new RuntimeException("consumer balance is smaller than payment");
         }
     }
 
