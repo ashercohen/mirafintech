@@ -60,7 +60,12 @@ const setEngineTime = async time => {
         headers: { 'content-type': 'text/json'},
         data: START_DATE
     };
-    await axios(options);
+
+    try {
+        await axios(options);
+    } catch (error) {
+        logger.error(`Error in setting the Engine Time: ${JSON.stringify(options.data)} Error: ${error}`);
+    }
     
     console.log('Server time set successfully!');
 };
@@ -78,9 +83,14 @@ const setTrancheEngineConfig = async date => {
         method: HTTP_METHODS.POST,
         data: resolveConfigData(date)
     };
-    const result = await axios(options);
+
+    try {
+        const result = await axios(options);
+        console.log(result.data);
+    } catch (error) {
+        logger.error(`Error in setting the Engine Configuration: ${JSON.stringify(options.data)} Error: ${error}`);
+    }
     
-    console.log(result.data);
     console.log('Server config set successfully!');
 };
 
@@ -101,9 +111,13 @@ const sendMerchants = async () => {
             method: HTTP_METHODS.POST,
             data: merchant
         };
-        const result = await axios(options);
         
-        console.log(result.data);
+        try {
+            const result = await axios(options);
+            console.log(result.data);
+        } catch (error) {
+            logger.error(`Error in sending the Merchant: ${JSON.stringify(options.data)} Error: ${error}`);
+        }
     }
 
     console.log('Merchant records sent successfully!');
@@ -126,9 +140,12 @@ const sendConsumers = async () => {
             method: HTTP_METHODS.POST,
             data: consumer
         };
-        const result = await axios(options);
-        
-        console.log(result.data);
+        try {
+            const result = await axios(options);
+            console.log(result.data);
+        } catch (error) {
+            logger.error(`Error in setting the Consumer: ${JSON.stringify(options.data)} Error: ${error}`);
+        }
     }
 
     console.log('Consumer records sent successfully!');
@@ -154,9 +171,12 @@ const sendTransactions = async () => {
             data: transaction
         };
         
-        const result = await axios(options);
-        
-        console.log(result.data);
+        try {
+            const result = await axios(options);
+            console.log(result.data);
+        } catch (error) {
+            logger.error(`Error in setting the Transaction: ${JSON.stringify(options.data)} Error: ${error}`);
+        }
     }
 
     console.log('Transaction records sent successfully!');
