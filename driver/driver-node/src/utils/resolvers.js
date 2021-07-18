@@ -36,7 +36,9 @@ const addReducer = (accumulator, currentValue) => accumulator + currentValue;
 
 const getBillArray = obj => [obj.BILL_AMT1, obj.BILL_AMT2, obj.BILL_AMT3, obj.BILL_AMT4, obj.BILL_AMT5, obj.BILL_AMT6];
 const getPaymentsArray = obj => [obj.PAY_AMT1, obj.PAY_AMT2, obj.PAY_AMT3, obj.PAY_AMT4, obj.PAY_AMT5, obj.PAY_AMT6];
+const getPayDelayArray = obj => [obj.PAY_0, obj.PAY_2, obj.PAY_3, obj.PAY_4, obj.PAY_5, obj.PAY_6];
 const getConsumerId = obj => obj.ID;
+const getLimitBal = obj => obj.LIMIT_BAL;
 
 const getISOStartDate = () => startOfYear(startOfToday());
 const getServerStartDate = () => format(startOfYear(startOfToday()), 'yyyy-MM-dd\'T\'HH:mm:ss');
@@ -148,26 +150,26 @@ const resolveConfigData = startDate => {
         gracePeriodLength: 14,
         trancheConfigs: [
             {
-                lowerBoundRiskScore: 0,
-                upperBoundRiskScore: 25,
+                lowerBoundRiskScore: -9999,
+                upperBoundRiskScore: -172,
                 initialValue: 1000000,
                 interest: LOW_INTEREST
             }, 
             {
-                lowerBoundRiskScore: 25,
-                upperBoundRiskScore: 50,
+                lowerBoundRiskScore: -171,
+                upperBoundRiskScore: 661,
                 initialValue: 1000000,
                 interest: MED_INTEREST
             },
             {
-                lowerBoundRiskScore: 50,
-                upperBoundRiskScore: 75,
+                lowerBoundRiskScore: 662,
+                upperBoundRiskScore: 1278,
                 initialValue: 1000000,
                 interest: MED_HIGH_INTEREST
             },
             {
-                lowerBoundRiskScore: 75,
-                upperBoundRiskScore: 100,
+                lowerBoundRiskScore: 1279,
+                upperBoundRiskScore: 99999,
                 initialValue: 1000000,
                 interest: HIGH_INTEREST
             }
@@ -180,7 +182,7 @@ const resolveConfigData = startDate => {
  * @param {Object} obj - A row from the input file
  * @returns {Number} risk score
  */
-const resolveConsumerRisk = (obj) => {
+const resolveConsumerRisk2 = (obj) => {
     const totalLoan = getBillArray(obj).reduce(addReducer, 0);
 
     if (totalLoan === 0 )
@@ -189,6 +191,32 @@ const resolveConsumerRisk = (obj) => {
     const totalPayment = getPaymentsArray(obj).reduce(addReducer, 0);
 
     return totalLoan ? 0 : Math.round((totalPayment / totalLoan) * 100) || 0;
+};
+
+/**
+ * Derive risk score based on the input file record
+ * @param {Object} obj - A row from the input file
+ * @returns {Number} risk score
+ * avg pay delay
+    max of the pay delay array
+    diff between avg and max value
+    max bill amount, limit balance
+    (limit balance) / (max bill)
+    risk = 2 * Avg Pay + (Max Pay)/2 + Utilization
+ */
+const resolveConsumerRisk = (obj) => {
+    const paymentDelayArray = getPayDelayArray(obj);
+    const avgPayDelay = (paymentDelayArray.reduce(addReducer, 0) / paymentDelayArray.length).toFixed(2);
+    const maxPayDelay = Math.max(...paymentDelayArray);
+    const diffPay = maxPayDelay - avgPayDelay;
+    
+    const maxBill = Math.max(...getBillArray(obj));
+    const limitBalance = getLimitBal(obj);
+    const utilization = maxBill / limitBalance;
+
+    const risk = parseInt(((2 * avgPayDelay + utilization + diffPay / 2) * 1000).toFixed(0), 0) || 0;
+
+    return risk;
 };
 
 /**
@@ -287,6 +315,7 @@ module.exports = {
     resolveConfigData,
     resolveConsumerLoan,
     resolveConsumerRisk,
+    resolveConsumerRisk2,
     resolveConsumerPayment,
     getServerStartDate,
     getRandomPaymentDates,
