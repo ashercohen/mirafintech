@@ -30,7 +30,10 @@ public class ConfigurationService {
     private BigDecimal principleMinimumPaymentPercentage;
 
     @Getter
-    private int gracePeriodLength;
+    private Integer gracePeriodLength;
+
+    @Getter
+    private BigDecimal trancheBalanceTolerance;
 
     // TODO: maybe get from config message
     private static final BigDecimal DEFAULT_PRINCIPLE_MINIMUM_PAYMENT_PERCENTAGE = BigDecimal.ONE.divide(new BigDecimal(36), 10, RoundingMode.HALF_UP);
@@ -41,8 +44,9 @@ public class ConfigurationService {
         this.paymentAllocationService.setAllocationPolicy(allocationPolicy);
         this.miraInterest = configuration.miraInterest();
         this.gracePeriodLength = configuration.gracePeriodLength();
+        this.trancheBalanceTolerance = configuration.trancheBalanceTolerance();
         this.principleMinimumPaymentPercentage = DEFAULT_PRINCIPLE_MINIMUM_PAYMENT_PERCENTAGE;
 
-        return tranchesService.initializeTranches(configuration.trancheConfigs());
+        return tranchesService.initializeTranches(configuration.trancheConfigs(), this.trancheBalanceTolerance);
     }
 }
