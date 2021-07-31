@@ -60,7 +60,7 @@ public class Loan implements Payee {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {}, optional = false)
     private Consumer consumer;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)

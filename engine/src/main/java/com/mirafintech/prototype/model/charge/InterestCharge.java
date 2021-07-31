@@ -27,13 +27,13 @@ import static com.mirafintech.prototype.model.AssociationHelper.createIfNull;
 @Getter
 public final class InterestCharge extends LoanCharge<InterestPaymentAllocation> {
 
-    @Column(name = "interest_charge__amount", precision = 13, scale = 5)
+    @Column(name = "interest_charge__amount", precision = 16, scale = 5)
     private BigDecimal amount;
 
-    @Column(name = "tranche_interest_charge__amount", precision = 13, scale = 5)
+    @Column(name = "tranche_interest_charge__amount", precision = 16, scale = 5)
     private BigDecimal trancheInterest;
 
-    @Column(name = "mira_interest_charge__amount", precision = 13, scale = 5)
+    @Column(name = "mira_interest_charge__amount", precision = 16, scale = 5)
     private BigDecimal miraInterest;
 
     // 1 <--> n bi-di "parent" side

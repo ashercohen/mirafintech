@@ -32,22 +32,22 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
     @JsonIgnore
     private LoanPaymentAllocation paymentAllocation; // TODO: maybe 1:1
 
-    @Column(name = "allocation_added__loan_balance_before", precision = 13, scale = 5)
+    @Column(name = "allocation_added__loan_balance_before", precision = 16, scale = 5)
     private BigDecimal loanBalanceBefore;
 
-    @Column(name = "allocation_added__loan_balance_after", precision = 13, scale = 5)
+    @Column(name = "allocation_added__loan_balance_after", precision = 16, scale = 5)
     private BigDecimal loanBalanceAfter;
 
-    @Column(name = "allocation_added__fee_balance_before", precision = 13, scale = 5)
+    @Column(name = "allocation_added__fee_balance_before", precision = 16, scale = 5)
     private BigDecimal feeBalanceBefore;
 
-    @Column(name = "allocation_added__fee_balance_after", precision = 13, scale = 5)
+    @Column(name = "allocation_added__fee_balance_after", precision = 16, scale = 5)
     private BigDecimal feeBalanceAfter;
 
-    @Column(name = "allocation_added__interest_balance_before", precision = 13, scale = 5)
+    @Column(name = "allocation_added__interest_balance_before", precision = 16, scale = 5)
     private BigDecimal interestBalanceBefore;
 
-    @Column(name = "allocation_added__interest_balance_after", precision = 13, scale = 5)
+    @Column(name = "allocation_added__interest_balance_after", precision = 16, scale = 5)
     private BigDecimal interestBalanceAfter;
 
     protected PaymentAllocationAddedLoanEvent() {

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Optional;
 
 /**
  * handles configuration message sent at startup
@@ -43,7 +44,7 @@ public class ConfigurationService {
         PaymentAllocationPolicy allocationPolicy = this.paymentAllocationPolicyFactory.create(configuration.paymentAllocationPolicy());
         this.paymentAllocationService.setAllocationPolicy(allocationPolicy);
         this.miraInterest = configuration.miraInterest();
-        this.gracePeriodLength = configuration.gracePeriodLength();
+        this.gracePeriodLength = Optional.ofNullable(configuration.gracePeriodLength()).orElse(14);
         this.trancheBalanceTolerance = configuration.trancheBalanceTolerance();
         this.principleMinimumPaymentPercentage = DEFAULT_PRINCIPLE_MINIMUM_PAYMENT_PERCENTAGE;
 

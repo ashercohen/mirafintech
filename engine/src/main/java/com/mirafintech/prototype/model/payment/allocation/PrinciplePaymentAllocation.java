@@ -18,16 +18,16 @@ import java.time.LocalDateTime;
 @Getter
 public final class PrinciplePaymentAllocation extends LoanPaymentAllocation {
 
-    @Column(name = "principle__amount", precision = 13, scale = 5)
+    @Column(name = "principle__amount", precision = 16, scale = 5)
     private BigDecimal amount;
 
-    @Column(name = "principle__loan_balance", precision = 13, scale = 5)
+    @Column(name = "principle__loan_balance", precision = 16, scale = 5)
     private BigDecimal loanPrincipleBalance; // this value is informational - not needed in order to update the loan balance
 
-    @Column(name = "principle__inside_grace_period", precision = 13, scale = 5)
+    @Column(name = "principle__inside_grace_period", precision = 16, scale = 5)
     private boolean insideGracePeriod;
 
-    @Column(name = "principle__grace_period_start", precision = 13, scale = 5)
+    @Column(name = "principle__grace_period_start", precision = 16, scale = 5)
     private LocalDateTime gracePeriodStart;
 
     protected PrinciplePaymentAllocation() {

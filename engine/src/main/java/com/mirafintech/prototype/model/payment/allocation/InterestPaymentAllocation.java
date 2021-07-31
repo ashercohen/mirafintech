@@ -26,10 +26,10 @@ public final class InterestPaymentAllocation extends LoanPaymentAllocation {
     @JsonIgnore
     private InterestCharge interestCharge;
 
-    @Column(name = "interest_tranche", precision = 13, scale = 5)
+    @Column(name = "interest_tranche", precision = 16, scale = 5)
     private BigDecimal trancheInterest;
 
-    @Column(name = "interest_mira", precision = 13, scale = 5)
+    @Column(name = "interest_mira", precision = 16, scale = 5)
     private BigDecimal miraInterest;
 
     protected InterestPaymentAllocation() {
