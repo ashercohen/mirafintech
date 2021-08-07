@@ -151,7 +151,12 @@ const sendTransactions = async () => {
             data: transaction
         };
         
-        await axios(options);
+        try {
+            const result = await axios(options);
+            console.log(result.data);
+        } catch (error) {
+            logger.error(`Error in setting the Transaction: ${JSON.stringify(options.data)} Error: ${error}`);
+        }
         
     }
     console.log('Transaction records sent successfully!');
