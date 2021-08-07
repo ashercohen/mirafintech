@@ -17,6 +17,7 @@ const LOW_INTEREST  = 0.075;
 const MED_INTEREST  = 0.095;
 const MED_HIGH_INTEREST = 0.011;
 const HIGH_INTEREST  = 0.125;
+const TRANCHE_BALANCE_TOLERANCE = 0.005
 const DEFAULT_PAYMENT_POLICY = 'defaultPaymentPolicy';
 
 const ID_MAX = 2000000000;
@@ -148,6 +149,7 @@ const resolveConfigData = startDate => {
         miraInterest: MIRA_INTEREST,
         paymentAllocationPolicy: DEFAULT_PAYMENT_POLICY,
         gracePeriodLength: 14,
+        trancheBalanceTolerance: TRANCHE_BALANCE_TOLERANCE,
         trancheConfigs: [
             {
                 lowerBoundRiskScore: -9999,
