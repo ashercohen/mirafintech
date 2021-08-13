@@ -45,7 +45,7 @@ public class ConfigurationService {
         this.paymentAllocationService.setAllocationPolicy(allocationPolicy);
         this.miraInterest = configuration.miraInterest();
         this.gracePeriodLength = Optional.ofNullable(configuration.gracePeriodLength()).orElse(14);
-        this.trancheBalanceTolerance = configuration.trancheBalanceTolerance();
+        this.trancheBalanceTolerance = Optional.ofNullable(configuration.trancheBalanceTolerance()).orElse(new BigDecimal("0.005"));
         this.principleMinimumPaymentPercentage = DEFAULT_PRINCIPLE_MINIMUM_PAYMENT_PERCENTAGE;
 
         return tranchesService.initializeTranches(configuration.trancheConfigs(), this.trancheBalanceTolerance);
