@@ -34,7 +34,7 @@ public class PrincipleMinimumPayment implements HasAmount {
     @JoinColumn(name = "loan_fk")
     private Loan loan;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal amount;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true, orphanRemoval = false)

@@ -21,10 +21,10 @@ public class TrancheEventLoanAdded extends TrancheEvent {
     @JoinColumn(name = "loan_fk")
     private Loan loan;
 
-    @Column(name = "loan_added__balance_before", precision = 13, scale = 5)
+    @Column(name = "loan_added__balance_before", precision = 16, scale = 5)
     private BigDecimal trancheBalanceBefore;
 
-    @Column(name = "loan_added__balance_after", precision = 13, scale = 5)
+    @Column(name = "loan_added__balance_after", precision = 16, scale = 5)
     private BigDecimal trancheBalanceAfter;
 
     /**
@@ -50,8 +50,20 @@ public class TrancheEventLoanAdded extends TrancheEvent {
 
     @Override
     public void handle() {
-        this.trancheBalanceBefore = this.tranche.currentBalance();
-        this.trancheBalanceAfter = this.trancheBalanceBefore.subtract(this.loan.getAmount());
-        this.tranche.setCurrentBalance(this.trancheBalanceAfter);
+        BigDecimal before = this.tranche.currentBalance();
+        BigDecimal after = before.add(this.loan.getAmount());
+
+        if (after.compareTo(this.tranche.getMaxToleratedValue()) > 0) {
+            throw new RuntimeException(String.format("tranche balance exceeds max tolerated value: current balance=%s, loan amount=%s, tolerated value=%s",
+                    before, this.loan.getAmount(), this.tranche.getMaxToleratedValue()));
+        }
+
+        this.trancheBalanceBefore = before;
+        this.trancheBalanceAfter = after;
+        this.tranche.setCurrentBalance(after);
+
+        if (this.tranche.isFullyAllocated()) {
+            this.tranche.setStatus(Tranche.Status.FULLY_ALLOCATED);
+        }
     }
 }

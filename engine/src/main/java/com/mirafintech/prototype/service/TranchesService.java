@@ -31,8 +31,6 @@ public class TranchesService {
     @Autowired
     private TimeService timeService;
 
-    private List<Tranche> tranches = new ArrayList<>();
-
     /**
      * allocate transaction to a tranche incl.:
      * - find a suitable tranche - created if needed
@@ -52,7 +50,7 @@ public class TranchesService {
         return tranche;
     }
 
-    public int initializeTranches(List<ConfigurationDto.TrancheConfig> trancheConfigs) {
+    public int initializeTranches(List<ConfigurationDto.TrancheConfig> trancheConfigs, BigDecimal trancheBalanceTolerance) {
 
         LocalDateTime timestamp = timeService.getCurrentDateTime();
         trancheConfigs.sort(Comparator.comparing(ConfigurationDto.TrancheConfig::lowerBoundRiskScore));
@@ -61,9 +59,10 @@ public class TranchesService {
                 .boxed()
                 .map(i -> {
                     ConfigurationDto.TrancheConfig config = trancheConfigs.get(i);
-                    return Tranche.createEmptyTranche(
+                    return new Tranche(
                             timestamp,
                             new BigDecimal(config.initialValue()),
+                            trancheBalanceTolerance,
                             resolveTrancheInterest(config.interest()),
                             i,
                             new RiskScore(config.lowerBoundRiskScore()),
@@ -80,6 +79,10 @@ public class TranchesService {
         return added.size();
     }
 
+    private List<Tranche> getTranches() {
+        return this.repository.findAll();
+    }
+
     /**
      * this is a fake call to a "service"/method/routine that determines the tranche
      * interest - at least the consumer facing interest (not including Mira's spread). after the tranche
@@ -92,7 +95,6 @@ public class TranchesService {
 
     private Tranche persistTranche(Tranche tranche) {
         Tranche persistedTranche = this.repository.save(tranche);
-        this.tranches.add(persistedTranche);
 
         return persistedTranche;
     }
@@ -104,9 +106,10 @@ public class TranchesService {
     private Tranche findTranche(DatedRiskScore loanRiskScore, BigDecimal amount) {
 
         List<Tranche> matchingTranches =
-                this.tranches.stream()
+                getTranches().stream()
+                        .filter(tranche -> tranche.getStatus() == Tranche.Status.ACTIVE)
                         .filter(tranche -> tranche.getRiskLevel().contains(loanRiskScore.getRiskScore()))
-                        .filter(tranche -> tranche.currentBalance().compareTo(amount) >= 0)
+                        .filter(tranche -> tranche.currentBalance().add(amount).compareTo(tranche.getMaxToleratedValue()) <= 0)
                         .toList();
 
         return switch (matchingTranches.size()) {
@@ -118,10 +121,12 @@ public class TranchesService {
             }
 
             // one matching tranche - return it
-            case 1 -> this.repository.findById(matchingTranches.get(0).getId()).orElseThrow();
+            case 1 -> matchingTranches.get(0);
 
-            // multiple matches - return any // TODO: selecting one of many matching tranches requires additional logic
-            default -> this.repository.findById(matchingTranches.get(0).getId()).orElseThrow();
+            // multiple matches - return tranche with highest balance
+            default -> matchingTranches.stream()
+                    .max(Comparator.comparing(Tranche::currentBalance))
+                    .orElseThrow(() -> new RuntimeException("couldn't find max element in non-empty stream"));
         };
     }
 
@@ -130,20 +135,13 @@ public class TranchesService {
      */
     private Tranche allocateNewTrancheLike(Tranche tranche) {
 
-        Tranche newTranche =
-                Tranche.createEmptyTranche(
-                        this.timeService.getCurrentDateTime(),
-                        tranche.getInitialValue(),
-                        tranche.getInterest(), // should we call resolveTrancheInterest() ?
-                        tranche.getRiskLevel().getId(),
-                        tranche.getRiskLevel().getLowerBound(),
-                        tranche.getRiskLevel().getUpperBound());
+        Tranche newTranche = new Tranche(this.timeService.getCurrentDateTime(), tranche);
 
         return persistTranche(newTranche);
     }
 
     private Tranche findBy(RiskScore riskScore) {
-        return this.tranches.stream()
+        return getTranches().stream()
                 .filter(tranche -> tranche.getRiskLevel().contains(riskScore))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("could not find tranche for risk score of: " + riskScore.getValue()));

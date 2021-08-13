@@ -6,9 +6,8 @@ import com.mirafintech.prototype.model.interest.RawInterval;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -48,13 +47,10 @@ public interface Dated<V, I extends Interval<V>, L extends IntervalList<V>> { //
 
         // fix from of first interval if needed
         if (intervals.get(0).from().isBefore(from)) {
-//            BalanceIntervalListImpl.Interval remove = intervals.remove(0);
             Interval<V> remove = intervals.remove(0);
-//            intervals.add(0, new BalanceIntervalListImpl.Interval(from, remove.to(), remove.balance()));
             intervals.add(0, newInterval(from, remove.to(), remove.value()));
         }
 
-//        return new BalanceIntervalListImpl(intervals.stream().toList());
         return newIntervalList(intervals.stream().toList());
     }
 
@@ -67,39 +63,39 @@ public interface Dated<V, I extends Interval<V>, L extends IntervalList<V>> { //
                             to,
                             sortedHistory.get(0).getV())
             );
-
-//            return Stream.of(new Interval(
-//                    sortedHistory.get(0).getTimestamp().toLocalDate(),
-//                    to,
-//                    sortedHistory.get(0).getV())
-//            );
         }
 
-        if (sortedHistory.get(sortedHistory.size() - 1).getTimestamp().toLocalDate().isBefore(to)) {
+        // for each date in the sortedHistory, take the latest value/entry (in case there is more than one)
+        TreeMap<LocalDate, List<T>> balanceByDate = sortedHistory.stream()
+                .collect(Collectors.groupingBy(
+                        e -> e.getTimestamp().toLocalDate(),
+                        TreeMap::new,
+                        Collectors.mapping(Function.identity(), Collectors.toList())
+                ));
+
+        List<T> history = balanceByDate.values().stream()
+                .map(l -> l.stream().max(Comparator.comparing(Dated::getTimestamp)))
+                .flatMap(Optional::stream)
+                .sorted(Comparator.comparing(Dated::getTimestamp))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+
+        if (history.get(history.size() - 1).getTimestamp().toLocalDate().isBefore(to)) {
             // add 'to' as dummy element to be used as the last interval's 'to'
-//            sortedHistory.add(new DatedBalance(to.atStartOfDay(), BigDecimal.ZERO));
-            sortedHistory.add(newDummyInstance(to.atStartOfDay()));
+            history.add(newDummyInstance(to.atStartOfDay()));
         }
 
-        return IntStream.rangeClosed(0, sortedHistory.size() - 2)
+        return IntStream.rangeClosed(0, history.size() - 2)
                 .boxed()
                 .map(idx -> {
-//                    DatedBalance current = sortedHistory.get(idx);
-                    T current = sortedHistory.get(idx);
-//                    DatedBalance next = sortedHistory.get(idx + 1);
-                    T next = sortedHistory.get(idx + 1);
+                    T current = history.get(idx);
+                    T next = history.get(idx + 1);
 
                     return newInterval(
                             current.getTimestamp().toLocalDate(),
                             next.getTimestamp().toLocalDate(),
                             current.getV()
                     );
-
-//                    return new BalanceIntervalListImpl.Interval(
-//                            current.getTimestamp().toLocalDate(),
-//                            next.getTimestamp().toLocalDate(),
-//                            current.getBalance()
-//                    );
                 });
     }
 

@@ -25,7 +25,7 @@ public final class LatePaymentFeePaymentAllocation extends ConsumerPaymentAlloca
     @Setter
     private LatePaymentFee latePaymentFee;
 
-    @Column(name = "late_payment_fee_amount", precision = 13, scale = 5)
+    @Column(name = "late_payment_fee_amount", precision = 16, scale = 5)
     private BigDecimal amount;
 
     protected LatePaymentFeePaymentAllocation() {

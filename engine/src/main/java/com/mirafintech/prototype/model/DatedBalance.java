@@ -26,7 +26,7 @@ public class DatedBalance implements Dated<BigDecimal, BalanceIntervalListImpl.I
 
     private LocalDateTime timestamp;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal balance;
 
     private DatedBalance(Long id, LocalDateTime timestamp, BigDecimal balance) {

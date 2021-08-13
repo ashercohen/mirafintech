@@ -10,7 +10,7 @@ public sealed interface Interval<V>
     V value();
 
     default void validate(LocalDate from, LocalDate to) {
-        if (from.isAfter(to)) {
+        if (!from.isBefore(to)) {
             throw new IllegalArgumentException(String.format("illegal interval: from=%s, to=%s", from, to));
         }
     }

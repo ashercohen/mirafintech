@@ -7,6 +7,7 @@ import com.mirafintech.prototype.model.loan.Loan;
 import com.mirafintech.prototype.model.risk.RiskLevel;
 import com.mirafintech.prototype.model.risk.RiskScore;
 import com.mirafintech.prototype.model.tranche.event.TrancheEvent;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,8 +30,8 @@ import static com.mirafintech.prototype.model.AssociationHelper.addToCollection;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tranche {
 
-    enum Status {
-        ACTIVE, NOT_ACTIVE
+    public enum Status {
+        ACTIVE, FULLY_ALLOCATED, NOT_ACTIVE
     }
 
     @Id
@@ -39,15 +40,18 @@ public class Tranche {
 
     private LocalDateTime creationDate;
 
-    @Column(precision = 13, scale = 5)
-    private BigDecimal initialValue;
+    @Column(precision = 16, scale = 5)
+    private BigDecimal value;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
+    private BigDecimal maxToleratedValue;
+
+    @Column(precision = 16, scale = 5)
     private BigDecimal interest;
 
     // TODO: add history of currentDebt (rename for a better name - balance?)
     //  in addition, we should record any operation that changed the balance (type: withdrawal, deposit; which loan, timestamp, etc)
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal currentBalance;
 
     // uni-directional many-to-one:  Tranche n --> 1 RiskLevel
@@ -57,6 +61,7 @@ public class Tranche {
     private RiskLevel riskLevel;
 
     @Enumerated(EnumType.STRING)
+    @Setter(AccessLevel.NONE)
     private Status status;
 
     // TODO:
@@ -89,9 +94,10 @@ public class Tranche {
 
     private Tranche(Long id,
                     LocalDateTime creationDate,
-                    BigDecimal initialValue,
+                    BigDecimal value,
+                    BigDecimal maxToleratedValue,
                     BigDecimal interest,
-                    BigDecimal currentBalance,
+                    BigDecimal initialBalance,
                     RiskLevel riskLevel,
                     Status status,
                     List<Loan> loans,
@@ -99,9 +105,10 @@ public class Tranche {
                     List<TrancheEvent> eventLog) {
         this.id = id;
         this.creationDate = creationDate;
-        this.initialValue = initialValue;
+        this.value = value;
+        this.maxToleratedValue = maxToleratedValue;
         this.interest = interest;
-        this.currentBalance = currentBalance;
+        this.currentBalance = initialBalance;
         this.riskLevel = riskLevel;
         this.status = status;
         this.loans = loans == null ? new ArrayList<>() : loans;
@@ -109,27 +116,45 @@ public class Tranche {
         this.eventLog = eventLog == null ? new ArrayList<>() : eventLog;
     }
 
-    /**
-     * factory method
-     */
-    public static Tranche createEmptyTranche(LocalDateTime timestamp,
-                                             BigDecimal initialValue,
-                                             BigDecimal interest,
-                                             long riskLevelId,
-                                             RiskScore lowerBound,
-                                             RiskScore upperBound) {
+    public Tranche(LocalDateTime timestamp,
+                   BigDecimal value,
+                   BigDecimal trancheBalanceTolerance,
+                   BigDecimal interest,
+                   long riskLevelId,
+                   RiskScore lowerBound,
+                   RiskScore upperBound) {
 
-        return new Tranche(
-                null,
-                timestamp,
-                initialValue, // this value is also current balance
-                interest,
-                initialValue,
-                new RiskLevel(riskLevelId, lowerBound, upperBound),
-                Status.ACTIVE,
-                null,
-                null,
-                null);
+        this(null,
+             timestamp,
+             value,
+             value.multiply(trancheBalanceTolerance.add(BigDecimal.ONE)),
+             interest,
+             BigDecimal.ZERO,
+             new RiskLevel(riskLevelId, lowerBound, upperBound),
+             Status.ACTIVE,
+             null,
+             null,
+             null
+        );
+    }
+
+    /**
+     * "copy ctor"
+     */
+    public Tranche(LocalDateTime timestamp, Tranche other) {
+
+        this(null,
+             timestamp,
+             other.value,
+             other.maxToleratedValue,
+             other.interest, // should we call resolveTrancheInterest() ?
+             BigDecimal.ZERO,
+             other.riskLevel,
+             Status.ACTIVE,
+             null,
+             null,
+             null
+        );
     }
 
     public BigDecimal currentBalance() {
@@ -163,10 +188,23 @@ public class Tranche {
         throw new RuntimeException("Tranche::removeTrancheEvent operation not supported");
     }
 
+    public boolean isFullyAllocated() {
+        return this.currentBalance.compareTo(this.value) >= 0;
+    }
+
+    public void setStatus(Status status) {
+
+        if (status.ordinal() - this.status.ordinal() != 1) {
+            throw new RuntimeException(String.format("illegal status transition: current=%s, new=%s", this.status, status));
+        }
+
+        this.status = status;
+    }
+
     /**
      * formatted view of the riskLevel
      * used for json serialization only
-     * name format is also a hack
+     * name format is also a hack (used by jackson)
      */
     public String get_riskLevel() {
         return this.riskLevel.toString();

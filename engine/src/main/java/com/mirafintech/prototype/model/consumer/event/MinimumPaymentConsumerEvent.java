@@ -39,16 +39,16 @@ public final class MinimumPaymentConsumerEvent extends ConsumerEvent { // TODO: 
     @JoinColumn(name = "minimum_payment_event_fk") // references from consumer
     private List<PrincipleMinimumPayment> principleMinimumPayments;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal totalInterestCharges;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal totalFees;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal totalPrinciple;
 
-    @Column(precision = 13, scale = 5)
+    @Column(precision = 16, scale = 5)
     private BigDecimal total;
 
     protected MinimumPaymentConsumerEvent() {

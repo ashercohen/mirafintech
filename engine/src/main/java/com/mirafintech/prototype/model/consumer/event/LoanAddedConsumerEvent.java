@@ -22,10 +22,10 @@ public final class LoanAddedConsumerEvent extends ConsumerEvent {
     @JsonIgnore
     private Loan loan;
 
-    @Column(name = "loan_added__balance_before", precision = 13, scale = 5)
+    @Column(name = "loan_added__balance_before", precision = 16, scale = 5)
     private BigDecimal consumerBalanceBefore;
 
-    @Column(name = "loan_added__balance_after", precision = 13, scale = 5)
+    @Column(name = "loan_added__balance_after", precision = 16, scale = 5)
     private BigDecimal consumerBalanceAfter;
 
     protected LoanAddedConsumerEvent() {

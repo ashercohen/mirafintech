@@ -15,6 +15,7 @@ import lombok.Getter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Entity
@@ -32,22 +33,22 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
     @JsonIgnore
     private LoanPaymentAllocation paymentAllocation; // TODO: maybe 1:1
 
-    @Column(name = "allocation_added__loan_balance_before", precision = 13, scale = 5)
+    @Column(name = "allocation_added__loan_balance_before", precision = 16, scale = 5)
     private BigDecimal loanBalanceBefore;
 
-    @Column(name = "allocation_added__loan_balance_after", precision = 13, scale = 5)
+    @Column(name = "allocation_added__loan_balance_after", precision = 16, scale = 5)
     private BigDecimal loanBalanceAfter;
 
-    @Column(name = "allocation_added__fee_balance_before", precision = 13, scale = 5)
+    @Column(name = "allocation_added__fee_balance_before", precision = 16, scale = 5)
     private BigDecimal feeBalanceBefore;
 
-    @Column(name = "allocation_added__fee_balance_after", precision = 13, scale = 5)
+    @Column(name = "allocation_added__fee_balance_after", precision = 16, scale = 5)
     private BigDecimal feeBalanceAfter;
 
-    @Column(name = "allocation_added__interest_balance_before", precision = 13, scale = 5)
+    @Column(name = "allocation_added__interest_balance_before", precision = 16, scale = 5)
     private BigDecimal interestBalanceBefore;
 
-    @Column(name = "allocation_added__interest_balance_after", precision = 13, scale = 5)
+    @Column(name = "allocation_added__interest_balance_after", precision = 16, scale = 5)
     private BigDecimal interestBalanceAfter;
 
     protected PaymentAllocationAddedLoanEvent() {
@@ -142,7 +143,7 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
     }
 
     /**
-     * TODO:
+     * TODO: - this is related also to the comment below!!!!
      *   in this event handling, the Loan is updated.
      *   need to set rules whether events (+ event handling) do change/mutate the loan/consumer/tranche/... or
      *   just used for tracking/logging/...
@@ -152,8 +153,19 @@ public class PaymentAllocationAddedLoanEvent extends LoanEvent {
         this.loanBalanceBefore = this.loan.currentBalance();
         BigDecimal amount = principlePaymentAllocation.getAmount();
 
+        // TODO:
+        //   this code is problematic: a payment inside the grace period should be considered as it was paid in the beginning of the grace period => "backdated"
+        //   we add the payment to the last millisecond of the first day of the grace period in order to apply the payment after all the days activities (we had
+        //   a case where a new loan was taken on the day of grace period start and the this payment is applied to loan so it must be applied at the very end of
+        //   the day in order to be applied against the loan principle.
+        //   THE PROBLEM:
+        //   what happens if multiple payment happen during the same grace period and need to be applied to the millisecond? what is the 'currentBalance'
+        //   we should refer to?
+        //   SOLUTION: (not implemented) Do not update/mutate the loan balance, always keep all the transaction history ("immutably") and calculate the
+        //   balance on demand
+
         LocalDateTime paymentConsiderationDate = principlePaymentAllocation.isInsideGracePeriod()
-                ? principlePaymentAllocation.getGracePeriodStart()
+                ? principlePaymentAllocation.getGracePeriodStart().toLocalDate().atTime(LocalTime.parse("23:59:59.999"))
                 : paymentAllocation.getTimestamp();
 
         this.loanBalanceAfter = this.loan.deposit(amount, paymentConsiderationDate);

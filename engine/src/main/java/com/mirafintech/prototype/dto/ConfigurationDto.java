@@ -14,6 +14,7 @@ public record ConfigurationDto(LocalDateTime initTimestamp,
                                // interest, on top of tranche interest, the consumer is charge by. decimal fraction (see example below)
                                BigDecimal miraInterest,
                                Integer gracePeriodLength,
+                               BigDecimal trancheBalanceTolerance,
                                List<TrancheConfig> trancheConfigs) {
 
 
